@@ -69,7 +69,7 @@ if [[ $kernel =~ $platform ]] ; then
     make
 
     # install libraries
-    sudo make install
+    echo $PASSWORD | sudo -S make install
     cd ~/$main_path
 fi
 #===========================================================================
@@ -111,15 +111,15 @@ echo $PASSWORD | sudo -S apt install -y \
 # install dependencies 
 echo "Setup YDLidar X4 , and it information in ~/${workspace}/catkin_ws/src/ydlidar/README.md "
 cd ~/$main_path/catkin_ws/src/ydlidar/startup
-echo $PASSWORD | sudo chmod 777 ./*
-echo $PASSWORD | sudo sh initenv.sh
+echo $PASSWORD | sudo -S chmod 777 ./*
+echo $PASSWORD | sudo -S sh initenv.sh
 
 cd ~/$main_path/catkin_ws/src/omnibot_car/startup
-echo $PASSWORD | sudo chmod 777 ./*
-echo $PASSWORD | sudo sh initenv.sh
+echo $PASSWORD | sudo -S chmod 777 ./*
+echo $PASSWORD | sudo -S sh initenv.sh
 
-echo $PASSWORD | sudo udevadm control --reload-rules
-echo $PASSWORD | sudo udevadm trigger
+echo $PASSWORD | sudo -S udevadm control --reload-rules
+echo $PASSWORD | sudo -S udevadm trigger
 #===========================================================================
 
 
