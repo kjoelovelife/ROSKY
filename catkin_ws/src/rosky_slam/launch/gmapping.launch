@@ -3,25 +3,13 @@
 <launch>
 
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-
-    <include file="$(find duckietown)/machines"/>
-
-    <!--<master auto="start"/>-->
-
     <arg name="use_rviz" default="false" />
 
     <!-- YDLidar -->
-    <include if="$(arg local)" file="$(find ydlidar)/launch/lidar.launch" />
-    <include unless="$(arg local)" file="$(find ydlidar)/launch/lidar.launch" />
-    <!--
-    <node if="$(arg local)" pkg="ydlidar" type="ydlidar_node" name="ydlidar_node" output="screen">
-    </node>
-    <node unless="$(arg local)" machine="$(arg veh)" pkg="ydlidar" type="ydlidar_node" name="ydlidar_node" output="screen">
-    </node>
-    -->
+    <include file="$(find ydlidar)/launch/lidar.launch" />
+
     <!-- TF setting -->
 	<node pkg="tf" type="static_transform_publisher" name="base_footprint2base_link" args="0 0 0.06 0 0 0 /base_footprint /base_link 10"/>
     <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0.0 0 0.09 3.1415927 0 0 /base_link /laser_frame 10"/>
