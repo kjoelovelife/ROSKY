@@ -42,6 +42,7 @@ shell=`echo $SHELL | awk -F '/' '{print $NF}'`
 ### install package ###
 ros1=false
 rosky=false
+ssh_setup=false
 
 ## Configure power mode
 if [[ $kernel =~ $platform ]] ; then
@@ -63,19 +64,33 @@ else
 fi
 
 ## install ROSKY-jetson_nano dependencies
-echo -n "Do you use ROSKY-jetson_nano? (y/N): "
+echo -n "Do you use ROSKY-jetson_nano and want to install dependenices? (y/N): "
 read ROSKY_jetson_nano
 if [ "$ROSKY_jetson_nano" '==' "y" ] || [ "$ROSKY_jetson_nano" '==' "Y" ];
 then
     echo "Do not leave your seat!! Some package you need to chek...."
-    sleep 10s
+    sleep 5s
     # Install jetson-inference
-    ./$install_source/$ros1_install_script
+    ./$install_source/rosky_jetson_nano_dependiences.sh
     rosky=true
 else
     echo "Skip installing ROSKY-jetson_nano dependencies"
 fi
 
+
+## setup ssh
+echo -n "Do you want to setup ssh? (y/N): "
+read ssh_
+if [ "$ssh_" '==' "y" ] || [ "$ssh_" '==' "Y" ];
+then
+    # setup ssh
+    ./$install_source/ssh_setup.sh
+    ssh_setup=true
+else
+    echo "Skip setup ssh."
+fi
+
+## install done
 echo "install done. You install :"
 echo ""
 
@@ -88,4 +103,6 @@ if [ $rosky == true ] ; then
     echo "ROSKY dependenices."
 fi
 
-
+if [ $ssh_setup == true ] ; then
+    echo "SSH."
+fi
