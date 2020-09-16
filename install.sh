@@ -55,7 +55,7 @@ if [[ $kernel =~ $platform ]] ; then
 fi
 
 ## install ros
-echo -n "Do you want to install ROS automatically? (y/N): "
+echo -n "\nDo you want to install ROS automatically? (y/N): "
 read ros_install
 if [ "$ros_install" '==' "y" ] || [ "$ros_install" '==' "Y" ];
 then
@@ -67,22 +67,22 @@ else
 fi
 
 ## install ROSKY-jetson_nano dependencies
-echo -n "Do you use ROSKY-jetson_nano and want to install dependenices? (y/N): "
+echo -n "\nDo you use ROSKY-jetson_nano and want to install dependenices? (y/N): "
 read ROSKY_jetson_nano
 if [ "$ROSKY_jetson_nano" '==' "y" ] || [ "$ROSKY_jetson_nano" '==' "Y" ];
 then
-    echo "Do not leave your seat!! Some package you need to chek...."
+    echo "\nDo not leave your seat!! Some package you need to chek...."
     sleep 5s
     # Install jetson-inference
     ~/$main_path/$install_source/rosky_jetson_nano_dependiences.sh
     rosky=true
 else
-    echo "Skip installing ROSKY-jetson_nano dependencies"
+    echo "\nSkip installing ROSKY-jetson_nano dependencies"
 fi
 
 
 ## setup ssh
-echo -n "Do you want to setup ssh? (y/N): "
+echo -n "\nDo you want to setup ssh? (y/N): "
 read ssh_
 if [ "$ssh_" '==' "y" ] || [ "$ssh_" '==' "Y" ];
 then
@@ -90,7 +90,7 @@ then
     ~/$main_path/$install_source/ssh_setup.sh
     ssh_setup=true
 else
-    echo "Skip setup ssh."
+    echo "\nSkip setup ssh."
 fi
 
 ## install done
