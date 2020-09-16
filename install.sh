@@ -71,6 +71,8 @@ echo -n "Do you use ROSKY-jetson_nano and want to install dependenices? (y/N): "
 read ROSKY_jetson_nano
 if [ "$ROSKY_jetson_nano" '==' "y" ] || [ "$ROSKY_jetson_nano" '==' "Y" ];
 then
+    echo "Please check your internet , we'll download package."
+    echo "we suggest downloading all module for machine learning."
     echo "Do not leave your seat!! Some package you need to chek...."
     sleep 5s
     # Install jetson-inference
