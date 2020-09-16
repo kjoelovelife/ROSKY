@@ -24,10 +24,17 @@ echo "...done."
 echo "Setting up PYTHONPATH."
 export PYTHONPATH=~/$main_path/$work_space:$PYTHONPATH
 
-## setup ros hostname and source seyup.bash 
+## setup ros hostname and source setup.bash 
 echo "Setup ROS_HOSTNAME. Now your ip adress : $current_ip "
 export ROS_HOSTNAME=$HOSTNAME.local
 source ~/$main_path/catkin_ws/devel/setup.bash
+
+## setup ros master
+source ./set_ros_master.sh 
+
+## setup vehicle name
+source ./set_vehicle_name.sh
+
 
 
 # TODO: check that the time is >= 2015
