@@ -25,11 +25,13 @@ class keyboardMapper(object):
         # timer
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
         self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
-        self.omega_gain = self.setupParam("~steer_gain", 10.0) #8.3
+        self.omega_gain = self.setupParam("~steer_gain", 1.0) #8.3
+        self.v_gain_default = 0.5
+        self.omega_gain_default = 1.0
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
-        self.omega_gain = rospy.get_param("~steer_gain", 10.0)
+        self.omega_gain = rospy.get_param("~steer_gain", 1.0)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -47,8 +49,11 @@ class keyboardMapper(object):
         car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
         # setup parameter for inverse_kinematics_node.py use
-        if self.cmd.linear.x != 0 : 
+        if self.cmd.linear.x != 0 and self.cmd.linear.x != self.v_gain_default : 
             self.ros_param_gain = rospy.set_param("~gain", car_cmd_msg.v)
+        if self.cmd.angular.z != 0 and self.cmd.angular.z != self.omega_gain_default : 
+            self.ros_param_gain = rospy.set_param("~steerGain", car_cmd_msg.omega)
+
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
 if __name__ == "__main__":
