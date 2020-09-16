@@ -32,7 +32,7 @@
 ### ros information ###
 ros1_distro=melodic
 ros1_install_script="ros_install_$ros1_disrto.sh"
-install_source="install_scripts"
+install_source="install_script"
 
 ### hardware ###
 platform="tegra"
