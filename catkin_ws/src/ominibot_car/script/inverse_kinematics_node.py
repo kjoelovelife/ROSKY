@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStamped, Twist2DStamped
-from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
+from rosky_msgs.msg import WheelsCmdStamped, Twist2DStamped
+from rosky_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
 import rospkg
@@ -26,7 +26,7 @@ class InverseKinematicsNode(object):
         self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
         self.baseline = self.setup_parameter("~baseline", 0.1)
-        self.radius = self.setup_parameter("~radius", 0.0318)
+        self.radius = self.setup_parameter("~radius", 0.075)
         self.k = self.setup_parameter("~k", 27.0)
         self.limit = self.setup_parameter("~limit", 1.0)
         self.limit_max = 1.0
@@ -77,10 +77,11 @@ class InverseKinematicsNode(object):
 
     def getFilePath(self, name):
         rospack = rospkg.RosPack()
-        return rospack.get_path('duckietown')+'/config/baseline/calibration/kinematics/' + name + ".yaml"        
+        return rospack.get_path('rosky_base')+'/config/baseline/calibration/kinematics/' + name + ".yaml"        
 
     def saveCalibration(self):
         # Write to yaml
+        self.gain = abs(rospy.get_param("/edu/keyboard_mapper_node/gain",1.0))
         data = {
             "calibration_time": time.strftime("%Y-%m-%d-%H-%M-%S"),
             "gain": self.gain,

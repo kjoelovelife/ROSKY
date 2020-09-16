@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 import math
-from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
+from rosky_msgs.msg import  Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 import time
@@ -13,24 +13,23 @@ from __builtin__ import True
 class keyboardMapper(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.param_veh = rospy.get_param("~/param_veh", 'pimar')
-        self.pub_topic_name = "/" + self.param_veh + "/joy_mapper_node/car_cmd"
+        self.param_veh = rospy.get_param(self.node_name + "/veh", 'rosky')
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
         # Publications
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
 
         # Subscriptions
-        self.sub_cmd_ = rospy.Subscriber("cmd_vel", Twist, self.cbCmd, queue_size=1)
+        self.sub_cmd_ = rospy.Subscriber("~cmd_vel", Twist, self.cbCmd, queue_size=1)
         
         # timer
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
-        self.v_gain = self.setupParam("~speed_gain", 0.41) #0.41
-        self.omega_gain = self.setupParam("~steer_gain", 8.3) #8.3
+        self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
+        self.omega_gain = self.setupParam("~steer_gain", 10.0) #8.3
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
-        self.omega_gain = rospy.get_param("~steer_gain", 10)
+        self.omega_gain = rospy.get_param("~steer_gain", 10.0)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -47,6 +46,9 @@ class keyboardMapper(object):
         #car_cmd_msg.header.stamp = self.joy.header.stamp
         car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
+        # setup parameter for inverse_kinematics_node.py use
+        if self.cmd.linear.x != 0 : 
+            self.ros_param_gain = rospy.set_param("~gain", car_cmd_msg.v)
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
 if __name__ == "__main__":

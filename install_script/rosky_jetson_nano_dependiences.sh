@@ -105,6 +105,7 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-vision-msgs \
         ros-$ros1_distro-image-transport \
         ros-$ros1_distro-image-publisher \
+        ros-$ros1_distro-teleop-teist-keyboard \
         byobu
 #===========================================================================
 

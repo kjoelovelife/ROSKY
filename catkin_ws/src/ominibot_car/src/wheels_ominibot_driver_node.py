@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 import rospy , time
-from duckietown_msgs.msg import WheelsCmdStamped, BoolStamped
-from dagu_car.smart_robotV12_driver import smart_robotV12 #DaguWheelsDriver
+from rosky_msgs.msg import WheelsCmdStamped, BoolStamped
+from ominibot_car.ominibot_car_driver import ominibot_car #DaguWheelsDriver
 
 class WheelsDriverNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.estop=False
-        self.board_name = rospy.get_param("/board_name","smart_robot_omnibotV12")
+        self.board_name = rospy.get_param( rospy.get_name() + "/board_name","ominibot_car")
         self.port = "/dev/" + self.board_name
         self.baud = 115200
 
         # Setup publishers
-        self.driver = smart_robotV12(self.port,self.baud)
+        self.driver = ominibot_car(self.port,self.baud)
         self.driver.connect()
        
         # set system node  ===============================

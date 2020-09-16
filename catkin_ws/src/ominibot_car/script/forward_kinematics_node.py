@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStamped, Twist2DStamped
-from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
+from rosky_msgs.msg import WheelsCmdStamped, Twist2DStamped
+from rosky_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
 import rospkg
@@ -67,7 +67,7 @@ class ForwardKinematicsNode(object):
 
     def getFilePath(self, name):
         rospack = rospkg.RosPack()
-        return rospack.get_path('duckietown') + '/config/baseline/calibration/kinematics/' + name + ".yaml"
+        return rospack.get_path('rosky_base') + '/config/baseline/calibration/kinematics/' + name + ".yaml"
 
     def printValues(self):
         rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k))

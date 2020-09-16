@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import Twist2DStamped, Pose2DStamped
+from rosky_msgs.msg import Twist2DStamped, Pose2DStamped
 from numpy import *
 
 
