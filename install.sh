@@ -44,6 +44,9 @@ ros1=false
 rosky=false
 ssh_setup=false
 
+## file path
+main_path="ROSKY"
+
 ## Configure power mode
 if [[ $kernel =~ $platform ]] ; then
     #echo $PASSWORD | sudo -S nvpmodel -m1 # 5W
@@ -57,7 +60,7 @@ read ros_install
 if [ "$ros_install" '==' "y" ] || [ "$ros_install" '==' "Y" ];
 then
     # Install ROS 1 melodic
-    ./$install_source/$ros1_install_script
+    ~/$main_path/$install_source/$ros1_install_script
     ros1=true
 else
     echo "Skip installing ROS"
@@ -71,7 +74,7 @@ then
     echo "Do not leave your seat!! Some package you need to chek...."
     sleep 5s
     # Install jetson-inference
-    ./$install_source/rosky_jetson_nano_dependiences.sh
+    ~/$main_path/$install_source/rosky_jetson_nano_dependiences.sh
     rosky=true
 else
     echo "Skip installing ROSKY-jetson_nano dependencies"
@@ -84,7 +87,7 @@ read ssh_
 if [ "$ssh_" '==' "y" ] || [ "$ssh_" '==' "Y" ];
 then
     # setup ssh
-    ./$install_source/ssh_setup.sh
+    ~/$main_path/$install_source/ssh_setup.sh
     ssh_setup=true
 else
     echo "Skip setup ssh."
