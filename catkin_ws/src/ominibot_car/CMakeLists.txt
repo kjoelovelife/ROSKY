@@ -9,9 +9,7 @@ project(ominibot_car)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  adafruit_drivers
-  pkg_name
-  duckietown_msgs # Every duckietown packages should use this.
+  rosky_msgs # Every duckietown packages should use this.
 )
 
 ## System dependencies are found with CMake's conventions

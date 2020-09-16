@@ -50,7 +50,7 @@ echo $PASSWORD | sudo -S apt-get install python3-pip
 echo $PASSWORD | sudo -S usermod -aG i2c $USER
 #==============================================================================
 
-#=========step 3. Download jetson-inference ===================================
+#=========step 3. Download jetson-inference and jetbot_ros ===================================
 # git and cmake should be installed
 echo $PASSWORD | sudo -S apt-get install git cmake
 
@@ -70,7 +70,8 @@ if [[ $kernel =~ $platform ]] ; then
 
     # install libraries
     echo $PASSWORD | sudo -S make install
-    cd ~/$main_path
+    cd ~/$main_path/
+    #git clone https://github.com/dusty-nv/jetbot_ros ~/$main_path/catkin_ws/src/jetbot_ros
 fi
 #===========================================================================
 
