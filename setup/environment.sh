@@ -30,10 +30,10 @@ export ROS_HOSTNAME=$HOSTNAME.local
 source ~/$main_path/catkin_ws/devel/setup.bash
 
 ## setup ros master
-source ./set_ros_master.sh 
+source ~/$main_path/setup/set_ros_master.sh 
 
 ## setup vehicle name
-source ./set_vehicle_name.sh
+source ~/$main_path/setup/set_vehicle_name.sh
 
 
 
