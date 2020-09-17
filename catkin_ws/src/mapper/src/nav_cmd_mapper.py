@@ -2,6 +2,9 @@
 import rospy
 import numpy as np
 import math
+import rospkg
+import os.path
+import yaml
 from rosky_msgs.msg import  Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
@@ -13,8 +16,8 @@ from __builtin__ import True
 class CmdMapper(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.param_veh = rospy.get_param(self.node_name + "/veh", 'rosky')
-        self.pub_topic_name = self.node_name + "/" + self.param_veh + "/car_cmd"
+        self.veh_name = self.node_name.split("/")[1]
+        self.pub_topic_name = self.node_name + "/" + self.veh_name + "/car_cmd"
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
         # Publications
@@ -23,20 +26,36 @@ class CmdMapper(object):
         # Subscriptions
         self.sub_cmd_ = rospy.Subscriber("/cmd_vel", Twist, self.cbCmd, queue_size=1)
         
-        # timer
-        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
-        self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
-        self.omega_gain = self.setupParam("~steer_gain", 1.0) #8.3
+        # set steerGain
+        self.readParamFromFile()
 
-    def cbParamTimer(self,event):
-        self.v_gain = rospy.get_param("~speed_gain", 1.0)
-        self.omega_gain = rospy.get_param("~steer_gain", 1.0)
+    def readParamFromFile(self):
+        # Check file existence
+        fname = self.getFilePath(self.veh_name)
+        # Use default.yaml if file doesn't exsit
+        if not os.path.isfile(fname):
+            rospy.logwarn("[%s] %s does not exist. Using default.yaml." %(self.node_name,fname))
+            fname = self.getFilePath("default")
 
-    def setupParam(self,param_name,default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-        return value
+        with open(fname, 'r') as in_file:
+            try:
+                yaml_dict = yaml.load(in_file)
+            except yaml.YAMLError as exc:
+                rospy.logfatal("[%s] YAML syntax error. File: %s fname. Exc: %s" %(self.node_name, fname, exc))
+                rospy.signal_shutdown()
+                return
+
+        # Set parameters using value in yaml file
+        if yaml_dict is None:
+            # Empty yaml file
+            return
+        self.omega_gain = yaml_dict.get("keyboard_steerGain")
+        print("keyboard_gain: {}".format(self.omega_gain))
+
+    def getFilePath(self, name):
+        rospack = rospkg.RosPack()
+        return rospack.get_path('rosky_base')+'/config/baseline/calibration/kinematics/' + name + ".yaml"  
+
 
     def cbCmd(self, cmd_msg):
         self.cmd = cmd_msg
@@ -44,8 +63,7 @@ class CmdMapper(object):
 
     def publishControl(self):
         car_cmd_msg = Twist2DStamped()
-        #car_cmd_msg.header.stamp = self.joy.header.stamp
-        car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
+        car_cmd_msg.v = self.cmd.linear.x
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
