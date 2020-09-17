@@ -112,12 +112,12 @@ echo $PASSWORD | sudo -S apt install -y \
 
 #======  step 5. Create the name "/dev/ydlidar" for YDLIDAR and "/dev/omnibot_car" for omnibot_car  ===============
 # install dependencies 
-echo "Setup YDLidar X4 , and it information in ~/${workspace}/catkin_ws/src/ydlidar/README.md "
+echo "Setup YDLidar X4 , and it information in ~/$main_path/catkin_ws/src/ydlidar/README.md "
 cd ~/$main_path/catkin_ws/src/ydlidar/startup
 echo $PASSWORD | sudo -S chmod 777 ./*
 echo $PASSWORD | sudo -S sh initenv.sh
 
-cd ~/$main_path/catkin_ws/src/omnibot_car/startup
+cd ~/$main_path/catkin_ws/src/ominibot_car/startup
 echo $PASSWORD | sudo -S chmod 777 ./*
 echo $PASSWORD | sudo -S sh initenv.sh
 
