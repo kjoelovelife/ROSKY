@@ -54,8 +54,6 @@ echo $PASSWORD | sudo -S usermod -aG i2c $USER
 # git and cmake should be installed
 echo $PASSWORD | sudo -S apt-get install git cmake
 
-# get workspace
-
 if [[ $kernel =~ $platform ]] ; then
     # clone the repo and submodules
     git clone https://github.com/dusty-nv/jetson-inference ./jetson-inference
@@ -72,6 +70,9 @@ if [[ $kernel =~ $platform ]] ; then
     echo $PASSWORD | sudo -S make install
     cd ~/$main_path/
     #git clone https://github.com/dusty-nv/jetbot_ros ~/$main_path/catkin_ws/src/jetbot_ros
+else    
+    echo $PASSWORD | sudo -S rm -rf ~/$main_path/jetbot_ros
+    echo $PASSWORD | sudo -S rm -rf ~/$main_path/jetbot_msgs
 fi
 #===========================================================================
 
