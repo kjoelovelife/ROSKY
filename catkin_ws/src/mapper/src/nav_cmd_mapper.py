@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 import math
-from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
+from rosky_msgs.msg import  Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 import time
@@ -13,24 +13,24 @@ from __builtin__ import True
 class CmdMapper(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.param_veh = rospy.get_param("~/param_veh", 'pimar')
-        self.pub_topic_name = "/" + self.param_veh + "/joy_mapper_node/car_cmd"
+        self.param_veh = rospy.get_param(self.node_name + "/veh", 'rosky')
+        self.pub_topic_name = self.node_name + "/" + self.param_veh + "/car_cmd"
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
         # Publications
-        self.pub_car_cmd = rospy.Publisher(self.pub_topic_name, Twist2DStamped, queue_size=1)
+        self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
 
         # Subscriptions
         self.sub_cmd_ = rospy.Subscriber("/cmd_vel", Twist, self.cbCmd, queue_size=1)
         
         # timer
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
-        self.v_gain = self.setupParam("~speed_gain", 60) #0.41
-        self.omega_gain = self.setupParam("~steer_gain", 60) #8.3
+        self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
+        self.omega_gain = self.setupParam("~steer_gain", 1.0) #8.3
 
     def cbParamTimer(self,event):
-        self.v_gain = rospy.get_param("~speed_gain", 60)
-        self.omega_gain = rospy.get_param("~steer_gain", 60)
+        self.v_gain = rospy.get_param("~speed_gain", 1.0)
+        self.omega_gain = rospy.get_param("~steer_gain", 1.0)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

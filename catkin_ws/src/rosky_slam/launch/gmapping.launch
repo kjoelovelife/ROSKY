@@ -8,54 +8,26 @@
     <arg name="use_rviz" default="false" />
 
     <!-- YDLidar -->
-    <include file="$(find ydlidar)/launch/lidar.launch" />
+    <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false">
+        <rosparam file="$(find rosky_slam)/param/gmapping_params.yaml" command="load"/>
+    </node>
 
     <!-- TF setting -->
-	<node pkg="tf" type="static_transform_publisher" name="base_footprint2base_link" args="0 0 0.06 0 0 0 /base_footprint /base_link 10"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_footprint2base_link" args="0 0 0.06 0 0 0 /base_footprint /base_link 10"/>
+
     <node pkg="tf" type="static_transform_publisher" name="base_link2laser_link" args="0.0 0 0.09 3.1415927 0 0 /base_link /laser_frame 10"/>
 
-	<!-- ODOMETRY -->
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4" args="0.0 0.0 0.15 3.1415927 0.0  0.0 /base_footprint /laser_frame 40" />
+
+    <!-- ODOMETRY -->
     <!--rf2o_Laser_Odometry-->
     <node pkg="rf2o_laser_odometry" type="rf2o_laser_odometry_node" name="rf2o_laser_odometry">
-        <param name="laser_scan_topic" value="scan"/>         topic where the lidar scans are being published -->
-        <param name="base_frame_id" value="base_footprint"/>            <!-- frame_id (tf) of the mobile robot base. A tf transform from the laser_frame to the base_frame is mandatory -->
-        <param name="odom_frame_id" value="odom" />                <!-- frame_id (tf) to publish the odometry estimations -->
-        <param name="freq" value="7.0"/>                            <!-- Execution frequency. See "Planar Odometry from a Radial Laser Scanner. A Range Flow-based Approach. ICRA'16"-->
-        <param name="init_pose_from_topic" value="" /> <!--(Odom topic) Leave empty to start at point (0,0) -->
+        <rosparam file="$(find rf2o_laser_odometry)/param/rf2o_laser_odometry_params.yaml" command="load"/>
     </node>
 
     <!-- gmapping -->
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
         <remap from="scan" to="scan"/>
-        <param name="map_update_interval" value="2.5"/>
-        <param name="maxUrange" value="16.0"/>
-        <param name="sigma" value="0.05"/>
-        <param name="kernelSize" value="1"/>
-        <param name="lstep" value="0.05"/>
-        <param name="astep" value="0.05"/>
-        <param name="iterations" value="5"/>
-        <param name="lsigma" value="0.075"/>
-        <param name="ogain" value="3.0"/>
-        <param name="lskip" value="0"/>
-        <param name="srr" value="0.1"/>
-        <param name="srt" value="0.2"/>
-        <param name="str" value="0.1"/>
-        <param name="stt" value="0.2"/>
-        <param name="linearUpdate" value="0.10"/>
-        <param name="angularUpdate" value="0.25"/>
-        <param name="temporalUpdate" value="1.0"/>
-        <param name="resampleThreshold" value="0.25"/>
-        <param name="particles" value="30"/>
-        <param name="xmin" value="-50.0"/>
-        <param name="ymin" value="-50.0"/>
-        <param name="xmax" value="50.0"/>
-        <param name="ymax" value="50.0"/>
-        <param name="delta" value="0.05"/>
-        <param name="llsamplerange" value="0.01"/>
-        <param name="llsamplestep" value="0.01"/>
-        <param name="lasamplerange" value="0.005"/>
-        <param name="lasamplestep" value="0.005"/>
-        <param name="odom_frame" value="odom"/>
-        <param name="base_frame" value="base_footprint"/>
+        <rosparam file="$(find rosky_slam)/param/gmapping_params.yaml" command="load"/>
     </node>
 </launch>
