@@ -71,8 +71,8 @@ if [[ $kernel =~ $platform ]] ; then
     cd ~/$main_path/
     #git clone https://github.com/dusty-nv/jetbot_ros ~/$main_path/catkin_ws/src/jetbot_ros
 else    
-    echo $PASSWORD | sudo -S rm -rf ~/$main_path/jetbot_ros
-    echo $PASSWORD | sudo -S rm -rf ~/$main_path/jetbot_msgs
+    echo $PASSWORD | sudo -S rm -rf ~/$main_path/catkin_ws/src/jetbot_ros
+    echo $PASSWORD | sudo -S rm -rf ~/$main_path/catkin_ws/src/jetbot_msgs
 fi
 #===========================================================================
 
