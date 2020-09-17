@@ -10,7 +10,7 @@
     </group>
 
     <!-- keyboard_mapper -->
-    <remap from="/edu/keyboard_mapper_node/cmd_vel" to="cmd_vel"/>
+    <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="cmd_vel"/>
     <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="config" value="$(arg config)"/>
