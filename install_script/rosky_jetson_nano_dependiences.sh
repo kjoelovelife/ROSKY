@@ -56,7 +56,7 @@ echo $PASSWORD | sudo -S apt-get install git cmake
 
 if [[ $kernel =~ $platform ]] ; then
     # clone the repo and submodules
-    git clone https://github.com/dusty-nv/jetson-inference ./jetson-inference
+    #git clone https://github.com/dusty-nv/jetson-inference ~/$main_path/setup/jetson-inference
     cd jetson-inference
     git submodule update --init
 
@@ -107,7 +107,10 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-image-transport \
         ros-$ros1_distro-image-publisher \
         ros-$ros1_distro-teleop-twist-keyboard \
-        ros-$ros1_distro-teb-local-planner
+        ros-$ros1_distro-teb-local-planner \
+        ros-$ros1_distro-image-transport \
+        ros-$ros1_distro-vision-msgs \
+        ros-$ros1_distro-image-publisher
         byobu
 #===========================================================================
 
