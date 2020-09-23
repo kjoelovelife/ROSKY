@@ -1,4 +1,4 @@
-
+base_local_planner: dwa_local_planner/DWAPlannerROS
 DWAPlannerROS: 
 
   acc_lim_th: 0.2 

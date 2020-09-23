@@ -48,10 +48,6 @@
         <!-- costmap layers -->    
         <rosparam file="$(find rosky_navigation)/param/local_costmap_params.yaml" command="load"/>
         <rosparam file="$(find rosky_navigation)/param/global_costmap_params.yaml" command="load"/> 
-
-        <!-- recovery behaviors -->
-        <rosparam file="$(find rosky_navigation)/param/recovery_params.yaml" command="load" />
-
         <!-- move_base params -->
         <rosparam file="$(find rosky_navigation)/param/move_base_params.yaml" command="load"/>
         <remap from="/odom" to="/rf2o_laser_odometry/odom"/>

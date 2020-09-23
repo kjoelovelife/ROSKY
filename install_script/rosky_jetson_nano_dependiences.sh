@@ -107,6 +107,7 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-image-transport \
         ros-$ros1_distro-image-publisher \
         ros-$ros1_distro-teleop-twist-keyboard \
+        ros-$ros1_distro-teb-local-planner
         byobu
 #===========================================================================
 
