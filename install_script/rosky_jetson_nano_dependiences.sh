@@ -2,7 +2,9 @@
 
 # Shell script scripts to install useful tools , such as opencv , pytorch...
 # -------------------------------------------------------------------------
-#Copyright © 2019 Wei-Chih Lin , kjoelovelife@gmail.com 
+#MIT License
+
+#Copyright (c) 2020 Lin Wei-Chih
 
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +22,7 @@
 #AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
-# -------------------------------------------------------------------------
+#SOFTWARE.--------------------------------------------------------------
 # reference
 # https://chtseng.wordpress.com/2019/05/01/nvida-jetson-nano-%E5%88%9D%E9%AB%94%E9%A9%97%EF%BC%9A%E5%AE%89%E8%A3%9D%E8%88%87%E6%B8%AC%E8%A9%A6/
 #
@@ -57,7 +58,7 @@ echo $PASSWORD | sudo -S apt-get install git cmake
 if [[ $kernel =~ $platform ]] ; then
     # clone the repo and submodules
     #git clone https://github.com/dusty-nv/jetson-inference ~/$main_path/setup/jetson-inference
-    cd jetson-inference
+    cd ~/$main_path/setup/jetson-inference
     git submodule update --init
 
     # build from source
@@ -77,7 +78,7 @@ fi
 #===========================================================================
 
 #=========step 4. install ros dependencies =================================
-# install dependencies 
+# install dependencies ros_deep	
 echo $PASSWORD | sudo -S apt install -y \
 	python-frozendict \
 	libxslt-dev \

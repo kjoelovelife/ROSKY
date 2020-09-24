@@ -1,0 +1,11 @@
+# ROSKY.gitignore
+
+catkin_ws/.catkin_workspace
+catkin_ws/build/
+catkin_ws/devel/
+catkin_ws/src/CMakeLists.txt
+catkin_ws/src/rosky_slam/map/test_20200917.pgm
+catkin_ws/src/rosky_slam/map/test_20200917.yaml
+setup/jetson-inference/python/training/
+setup/jetson-inference/tools/camera-capture/
+setup/jetson-inference/utils/
