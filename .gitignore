@@ -14,6 +14,6 @@ catkin_ws/install/
 catkin_ws/logs/
 cvbridge_build_ws/build
 cvbridge_build_ws/devel
-cvbridge_build_ws/logs
 cvbridge_build_ws/install
+cvbridge_build_ws/logs
 cvbridge_build_ws/.catkin_tools
