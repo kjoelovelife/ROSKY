@@ -1,0 +1,35 @@
+<launch>
+    <arg name="veh" default="$(env VEHICLE_NAME)" doc="Name of vehicle. ex: megaman"/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+
+    <!-- teleop_keyboard_twist -->
+    <group ns="$(arg veh)">
+        <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="keyboard" output="screen"/>
+    </group>
+
+    <!-- keyboard_mapper -->
+    <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="cmd_vel"/>
+    <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- run inverse_kinematics_node -->
+    <remap from="inverse_kinematics_node/car_cmd" to="keyboard_mapper_node/car_cmd"/>
+    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+    <include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+    </include>
+
+
+    <!-- Wheels Driver -->
+    <include file="$(find ominibot_car)/launch/wheels_ominibot_driver_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+    </include>
+
+
+</launch>

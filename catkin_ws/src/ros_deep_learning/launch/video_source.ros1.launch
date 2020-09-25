@@ -4,7 +4,8 @@
 	<arg name="input_height" default="0"/>
 	<arg name="input_codec" default="unknown"/>
 	<arg name="input_loop" default="0"/>
-        <arg name="flip" default="1"/>
+        <arg name="flip" default="0"/>
+        <arg name="fps" default="30"/>
 
 	<node pkg="ros_deep_learning" type="video_source" name="video_source" output="screen">
 		<param name="resource" value="$(arg input)"/>
@@ -12,6 +13,7 @@
 		<param name="height" value="$(arg input_height)"/>
 		<param name="loop" value="$(arg input_loop)"/>
                 <param name="flipMethod" value="$(arg flip)"/> 
+                <param name="framerate" value="$(arg fps)"/> 
 	</node>
 
 </launch>

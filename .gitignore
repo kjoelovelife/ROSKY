@@ -9,3 +9,10 @@ catkin_ws/src/rosky_slam/map/test_20200917.yaml
 setup/jetson-inference/python/training/
 setup/jetson-inference/tools/camera-capture/
 setup/jetson-inference/utils/
+catkin_ws/.catkin_tools/
+catkin_ws/install/
+catkin_ws/logs/
+cvbridge_build_ws/build
+cvbridge_build_ws/devel
+cvbridge_build_ws/logs
+cvbridge_build_ws/.catkin_tools

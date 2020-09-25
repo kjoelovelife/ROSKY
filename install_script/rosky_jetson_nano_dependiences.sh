@@ -80,6 +80,28 @@ fi
 #=========step 4. install ros dependencies =================================
 # install dependencies ros_deep	
 echo $PASSWORD | sudo -S apt install -y \
+        build-essential \
+        cmake \
+        libavcodec-dev \
+        libavformat-dev \
+        libavutil-dev \
+        libeigen3-dev \
+        libglew-dev \
+        libgtk2.0-dev \
+        libgtk-3-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libpostproc-dev \
+        libswscale-dev \
+        libtbb-dev \
+        libtiff5-dev \
+        libv4l-dev \
+        libxvidcore-dev \
+        libx264-dev \
+        libgeographic-dev \ 
+        qt5-default \
+        zlib1g-dev \
+        'pkg-config' \
 	python-frozendict \
 	libxslt-dev \
 	libxml2-dev \
@@ -88,6 +110,10 @@ echo $PASSWORD | sudo -S apt install -y \
 	python-tables \
         python-sklearn \
         python-rospkg \
+        python-catkin_tools \
+        python3-pip \
+        python3-dev \
+        python3-numpy \       
         apt-file \
         iftop \
         atop \
@@ -100,6 +126,7 @@ echo $PASSWORD | sudo -S apt install -y \
         python-sklearn \
         python-smbus \
         libmrpt-dev \
+        libopencv-dev \
         mrpt-apps \
         ros-$ros1_distro-slam-gmapping \
         ros-$ros1_distro-map-server \
@@ -111,8 +138,17 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-teb-local-planner \
         ros-$ros1_distro-image-transport \
         ros-$ros1_distro-vision-msgs \
-        ros-$ros1_distro-image-publisher
+        ros-$ros1_distro-image-publisher \
+        ros-$ros1_distro-image-transport \
+        ros-$ros1_distro-cv-bridge \
+        ros-$ros1_distro-vision-opencv \
+        ros-$ros1_distro-image-proc \
+        ros-$ros1_distro-cv-bridge \
+        ros-$ros1_distro-geographic-info \
+        ros-$ros1_distro-mavros-msgs \
         byobu
+
+echo $PASSWORD | sudo -S pip3 install rospkg catkin_pkg
 #===========================================================================
 
 #======  step 5. Create the name "/dev/ydlidar" for YDLIDAR and "/dev/omnibot_car" for omnibot_car  ===============

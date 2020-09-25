@@ -1,0 +1,11 @@
+
+cap_device: 0
+cap_width: 1280 # input
+cap_height: 720 # input
+width: 640      # output
+height: 480     # output
+fps: 60         # framerate
+flip_method: 0  # Image rotation/flipping
+capture_delay: 0 # Additional time (in seconds) that is substracted from the timestamp. Allows to compensate for capture delays.
+topic_name: "image_raw"
+camera_info_url: "file://$(find jetson_camera)/camera_info/raspicam_v2.yaml"
