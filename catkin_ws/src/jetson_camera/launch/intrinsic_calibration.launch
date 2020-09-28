@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+
+	<include file="$(find jetson_camera)/launch/jetson_camera.launch">
+	    <arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<node ns="$(arg veh)" pkg="camera_calibration" type="cameracalibrator.py" name="intrinsic_calibrator" args="--size 7x5 --square 0.031 image:=/$(arg veh)/main_camera/image_raw"/>
+</launch>

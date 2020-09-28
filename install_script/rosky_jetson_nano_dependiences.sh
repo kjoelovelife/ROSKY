@@ -146,6 +146,7 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-cv-bridge \
         ros-$ros1_distro-geographic-info \
         ros-$ros1_distro-mavros-msgs \
+        ros-$ros1_distro-gscam \
         byobu
 
 echo $PASSWORD | sudo -S pip3 install rospkg catkin_pkg

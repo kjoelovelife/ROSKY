@@ -5,7 +5,8 @@ cap_height: 720 # input
 width: 640      # output
 height: 480     # output
 fps: 60         # framerate
-flip_method: 0  # Image rotation/flipping
+flip_method: 2  # Image rotation/flipping
 capture_delay: 0 # Additional time (in seconds) that is substracted from the timestamp. Allows to compensate for capture delays.
+fram_id: "main_camera_optical"
 topic_name: "image_raw"
-camera_info_url: "file://$(find jetson_camera)/camera_info/raspicam_v2.yaml"
+#camera_info_url: "file://jetson_camera/camera_info/jetson_camera.yaml"
