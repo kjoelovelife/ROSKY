@@ -4,7 +4,7 @@ camera_matrix:
     245.9735860045318, 0.0, 0.0, 1.0]
   rows: 3
 camera_name: rosky/camera
-distortion_coefficients:
+distortion_coefficients: 
   cols: 5
   data: [-0.21331088369782186, 1.4924884004974204, -2.564516182185138, 1.6739205823109522]
   rows: 1

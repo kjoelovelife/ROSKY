@@ -11,8 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   camera_info_manager
   cv_bridge
   image_transport 
-  nodelet
   roscpp
+  rospy
   sensor_msgs
 )
 
@@ -25,7 +25,7 @@ find_package(OpenCV 4 REQUIRED)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -133,8 +133,6 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/jetson_camera.cpp)
-add_library(${PROJECT_NAME}_nodelet src/jetson_camera_nodelet.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -144,26 +142,6 @@ add_library(${PROJECT_NAME}_nodelet src/jetson_camera_nodelet.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_nodelet ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-target_link_libraries(${PROJECT_NAME}_nodelet
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-target_compile_features(${PROJECT_NAME}_node PUBLIC
-  cxx_auto_type
-)
-target_compile_features(${PROJECT_NAME}_nodelet PUBLIC
-  cxx_auto_type
-)
 
 #############
 ## Install ##
@@ -178,6 +156,10 @@ target_compile_features(${PROJECT_NAME}_nodelet PUBLIC
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
+install(PROGRAMS
+   include/csi_camera.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

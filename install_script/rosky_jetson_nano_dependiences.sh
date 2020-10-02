@@ -147,6 +147,7 @@ echo $PASSWORD | sudo -S apt install -y \
         ros-$ros1_distro-geographic-info \
         ros-$ros1_distro-mavros-msgs \
         ros-$ros1_distro-gscam \
+        ros-$ros1_distro-camera-info-manager-py \
         byobu
 
 echo $PASSWORD | sudo -S pip3 install rospkg catkin_pkg

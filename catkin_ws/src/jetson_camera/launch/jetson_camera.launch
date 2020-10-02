@@ -3,16 +3,19 @@
 
     <arg name="veh" default="$(env VEHICLE_NAME)"/>
     <arg name="camera_name" default="jetson_camera"/>
+    <arg name="mode" default="default"/>
     <!-- camera node -->
     <!-- original topic : /main_camera/image_raw and /main_camera/image_raw/compressed -->
-    <node ns="$(arg veh)" pkg="jetson_camera" type="jetson_camera_node" name="main_camera" clear_params="true" output="screen">
-        <rosparam file="$(find jetson_camera)/param/jetson_camera.yaml" command="load"/>
-            <param name="camera_info_url" value="file://$(find jetson_camera)/camera_info/$(arg camera_name).yaml"/>
+    <remap from="/$(arg veh)/main_camera/image_raw" to="/$(arg veh)/$(arg camera_name)/image_raw"/>
+    <node ns="$(arg veh)" pkg="jetson_camera" type="jetson_camera.py" name="$(arg camera_name)" clear_params="true" output="screen">       
+        <rosparam file="$(find jetson_camera)/param/jetson_camera_$(arg mode).yaml" command="load"/>
+        <param name="camera_info_url" value="file://$(find rosky_base)/config/baseline/calibration/camera_intrinsic/$(arg veh).yaml"/>
     </node>
 
     <!-- camera visualization markers -->
-    <remap from="/$(arg veh)/camera_info" to="/$(arg veh)/main_camera/camera_info"/>
-    <node ns="$(arg veh)" pkg="clover" name="main_camera_markers" type="camera_markers"  >
+    <remap from="/$(arg veh)/camera_info" to="/$(arg veh)/$(arg camera_name)/camera_info"/>
+    <remap from="/$(arg veh)/camera_markers" to="/$(arg veh)/$(arg camera_name)/camera_markers"/>
+    <node ns="$(arg veh)" pkg="clover" name="$(arg camera_name)_markers" type="camera_markers"  >
         <param name="scale" value="3.0"/>
     </node>
 </launch>
