@@ -31,6 +31,7 @@ class CameraNode(object):
         try:
             self.camera = CSICamera(device=self.device,width=self.width, height=self.height, capture_width=self.capture_width, capture_height=self.capture_height, capture_fps=self.capture_fps,capture_flip=self.capture_flip)
         except StopIteration:
+            print("Do not detect the camera.Please check your camera...  ")
             pass
 
 
@@ -109,6 +110,7 @@ class CameraNode(object):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
         self.is_shutdown=True
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
+        rospy.sleep(rospy.Duration.from_sec(1.0))
 
 
     def cbSrvSetCameraInfo(self,req):

@@ -4,14 +4,21 @@
   <arg name="config" default="baseline" doc="Specify a config."/>
   <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
   <arg name="camera_name" default="jetson_camera"/>
-
-
+  <arg name="raw" default="true"/>
   <!-- <arg name="rectify" default="false" doc="If set to true, rectify image before process."/> -->
-  <node ns="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen" clear_params="true" required="true">
+
+
+  <!-- start camera -->
+	<include file="$(find jetson_camera)/launch/jetson_camera.launch">
+	    <arg name="veh" value="$(arg veh)"/>
+        <arg name="raw" value="true"/>    
+    </include>
+
+    <node ns="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen" clear_params="true" required="true">
       <param name="~config" value="$(arg config)"/>
       <param name="~config_file_name" value="$(arg veh)"/>
       <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
-      <remap from="~cali_image" to="$(arg camera_name)/image_raw"/>
+      <remap from="~cali_image" to="$(arg camera_name)/image/raw"/>
       <remap from="~camera_info" to="$(arg camera_name)/camera_info"/>
   </node>
 

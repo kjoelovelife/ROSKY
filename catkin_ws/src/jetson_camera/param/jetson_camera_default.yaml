@@ -2,8 +2,8 @@
 capture_device: 0
 capture_width: 1280 # input
 capture_height: 720 # input
-width: 224      # output
-height: 224     # output
+width: 640      # output
+height: 480     # output
 capture_fps: 60         # framerate
 capture_flip: 2  # Image rotation/flipping
 capture_delay: 0 # Additional time (in seconds) that is substracted from the timestamp. Allows to compensate for capture delays.
