@@ -19,10 +19,8 @@ cvbridge_build_ws/install
 cvbridge_build_ws/logs
 cvbridge_build_ws/.catkin_tools
 **/.ipynb_checkpoints
-**/.pyc
 catkin_ws/src/jetson_camera/src/jetson_camera.pyc
 catkin_ws/src/jetson_camera/include/jetcam_ros/utils.pyc
 
-# wait for modified
-catkin_ws/src/jetson_camera/param/jetson_camera_detect_lane.yaml
+
 
