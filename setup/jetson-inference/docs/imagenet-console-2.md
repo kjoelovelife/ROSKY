@@ -28,7 +28,7 @@ After [building](building-repo-2.md) the project, make sure your terminal is loc
 $ cd jetson-inference/build/aarch64/bin
 ```
 
-Next, let's classify an example image with the `imagenet` program, using either the [C++](../examples/imagenet/imagenet.cpp) or [Python](../python/examples/imagenet.py) variants.  If you are using the [Docker container](aux-docker.md), it's recommended to save the classified output image to the `images/test` mounted directory.  These images will then be easily viewable from your host device in the `jetson-inference/data/images/test` directory (for more info, see [Mounted Data Volumes](aux-docker.md#mounted-data-volumes)).  
+Next, let's classify an example image with the `imagenet` program, using either the [C++](../examples/imagenet/imagenet.cpp) or [Python](../python/examples/imagenet.py) variants.  If you're using the [Docker container](aux-docker.md), it's recommended to save the classified output image to the `images/test` mounted directory.  These images will then be easily viewable from your host device in the `jetson-inference/data/images/test` directory (for more info, see [Mounted Data Volumes](aux-docker.md#mounted-data-volumes)).  
 
 ``` bash
 # C++
@@ -129,10 +129,10 @@ Here is an example of running it on a video from disk:
 $ wget https://nvidia.box.com/shared/static/tlswont1jnyu3ix2tbf7utaekpzcx4rc.mkv -O jellyfish.mkv
 
 # C++
-$ ./imagenet --network=resnet-18 jellyfish.mkv jellyfish_resnet18.mkv
+$ ./imagenet --network=resnet-18 jellyfish.mkv images/test/jellyfish_resnet18.mkv
 
 # Python
-$ ./imagenet.py --network=resnet-18 jellyfish.mkv jellyfish_resnet18.mkv
+$ ./imagenet.py --network=resnet-18 jellyfish.mkv images/test/jellyfish_resnet18.mkv
 ```
 
 <a href="https://www.youtube.com/watch?v=GhTleNPXqyU" target="_blank"><img src=https://github.com/dusty-nv/jetson-inference/raw/dev/docs/images/imagenet-jellyfish-video.jpg width="750"></a>

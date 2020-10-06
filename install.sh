@@ -30,8 +30,8 @@
 ## set parameter
 
 ### ros information ###
-ros1_distro=melodic
-ros1_install_script="ros_install_$ros1_disrto.sh"
+ros1_distro="melodic"
+ros1_install_script="ros_install_"$ros1_distro".sh"
 install_source="install_script"
 
 ### hardware ###
@@ -54,13 +54,18 @@ if [[ $kernel =~ $platform ]] ; then
     echo $PASSWORD | sudo -S nvpmodel -q
 fi
 
+## setup msg
+msg="You install :"
+msg_ros=""
+msg_rosky=""
+msg_ssh=""
+
 ## install ros
 echo -n "Do you want to install ROS automatically? (y/N): "
 read ros_install
 if [ "$ros_install" '==' "y" ] || [ "$ros_install" '==' "Y" ];
 then
     # Install ROS 1 melodic
-    ~/$main_path/$install_source/$ros1_install_script
     ros1=true
 else
     echo "Skip installing ROS"
@@ -73,10 +78,7 @@ if [ "$ROSKY_jetson_nano" '==' "y" ] || [ "$ROSKY_jetson_nano" '==' "Y" ];
 then
     echo "Please check your internet , we'll download package."
     echo "we suggest downloading all module for machine learning."
-    echo "Do not leave your seat!! Some package you need to chek...."
-    sleep 5s
     # Install jetson-inference
-    ~/$main_path/$install_source/rosky_jetson_nano_dependiences.sh
     rosky=true
 else
     echo "Skip installing ROSKY-jetson_nano dependencies"
@@ -89,25 +91,33 @@ read ssh_
 if [ "$ssh_" '==' "y" ] || [ "$ssh_" '==' "Y" ];
 then
     # setup ssh
-    ~/$main_path/$install_source/ssh_setup.sh
     ssh_setup=true
 else
     echo "Skip setup ssh."
 fi
+  
+echo "Do not leave your seat!! Some package you need to chek...."
+sleep 5s
 
-## install done
-echo "install done. You install :"
-echo ""
-
-## Show which package install
+## which package install
 if [ $ros1 == true ] ; then
-    echo "ROS , version : $ros1_distro ."
+    echo $PASSWORD | source ~/$main_path/$install_source/$ros1_install_script
+    msg_ros="ROS , version : $ros1_distro ."
 fi
 
 if [ $rosky == true ] ; then
-    echo "ROSKY dependenices."
+    echo $PASSWORD | source ~/$main_path/$install_source/rosky_jetson_nano_dependiences.sh
+    msg_rosky="ROSKY dependenices."
 fi
 
 if [ $ssh_setup == true ] ; then
-    echo "SSH."
+    echo $PASSWORD | source ~/$main_path/$install_source/ssh_setup.sh
+    msg_ssh="SSH."
 fi
+
+## install done
+echo $msg
+echo $msg_ros
+echo $msgrosky
+echo $msg_ssh
+

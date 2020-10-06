@@ -1,11 +1,11 @@
 <img src="https://github.com/dusty-nv/jetson-inference/raw/master/docs/images/deep-vision-header.jpg" width="100%">
-<p align="right"><sup><a href="../README.md#hello-ai-world">Back</a> | <a href="building-repo-2.md">Next</a> | </sup><a href="../README.md#hello-ai-world"><sup>Contents</sup></a>
+<p align="right"><sup><a href="../README.md#hello-ai-world">Back</a> | <a href="aux-docker.md">Next</a> | </sup><a href="../README.md#hello-ai-world"><sup>Contents</sup></a>
 <br/>
 <sup>System Setup</sup></p> 
 
 # Setting up Jetson with JetPack
 
-> **note**:  if your Jetson Nano has already been setup with the [SD card image](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#write) (which includes the JetPack components), or your Jetson has already been setup with JetPack, you can skip this step and continue to [`Building the Project`](building-repo-2.md)
+> **note**:  if your Jetson Nano has already been setup with the [SD card image](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit#write) (which includes the JetPack components), or your Jetson has already been setup with JetPack, you can skip this step and continue to [`Running the Docker Container`](aux-docker.md) or [`Building the Project`](building-repo-2.md)
 
 NVIDIA **[JetPack](https://developer.nvidia.com/embedded/jetpack)** is a comprehensive SDK for Jetson for both developing and deploying AI and computer vision applications.  JetPack simplifies installation of the OS and drivers and contains the following components:
 
@@ -17,9 +17,9 @@ NVIDIA **[JetPack](https://developer.nvidia.com/embedded/jetpack)** is a compreh
 - VisionWorks
 - Multimedia API's
 
-Before attempting to build the repo, make sure that your Jetson has been setup with the latest version of JetPack.
+Before attempting to use the Docker container or build the repo, make sure that your Jetson has been setup with the latest version of JetPack.
 
-### Jetson Nano
+### Jetson Nano and Jetson Xavier NX
 
 The recommended install method for the Jetson Nano Developer Kit and Jetson Xavier NX Developer Kit is to use the **[SD card images](https://developer.nvidia.com/embedded/downloads)**.  
 
@@ -32,6 +32,15 @@ Other Jetson's should be flashed by downloading the [NVIDIA SDK Manager](https:/
 <img src="https://github.com/dusty-nv/jetson-inference/raw/python/docs/images/nvsdkm.png" width="800">
 
 For more details, please refer to the **[NVIDIA SDK Manager Documentation](https://docs.nvidia.com/sdk-manager/index.html)**.
+
+### Getting the Project
+
+There are two ways to use the jetson-inference project:   
+
+* Run the pre-built [Docker Container](aux-docker.md)
+* [Build the Project from Source](building-repo-2.md)
+
+Using the container is recommended initially to get up & running as fast as possible (and the container already includes PyTorch installed), however if you are more comfortable with native development then compiling the project yourself is not complicated either.
 
 ##
 <p align="right">Next | <b><a href="building-repo-2.md">Building the Project from Source</a></b>
