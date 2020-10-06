@@ -5,14 +5,17 @@
   <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
   <arg name="camera_name" default="jetson_camera"/>
   <arg name="raw" default="true"/>
+  <arg name="camera_calibration" default="true"/>
   <!-- <arg name="rectify" default="false" doc="If set to true, rectify image before process."/> -->
 
 
   <!-- start camera -->
-	<include file="$(find jetson_camera)/launch/jetson_camera.launch">
+    <group if="$(arg camera_calibration)">
+    <include file="$(find jetson_camera)/launch/jetson_camera.launch">
 	    <arg name="veh" value="$(arg veh)"/>
-        <arg name="raw" value="true"/>    
+            <arg name="raw" value="true"/>    
     </include>
+    </group>
 
     <node ns="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen" clear_params="true" required="true">
       <param name="~config" value="$(arg config)"/>

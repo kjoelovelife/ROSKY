@@ -1,0 +1,6 @@
+<launch>
+	<arg name="veh" default="megaman"/>
+	<node ns="$(arg veh)" name="rosky_visualizer" pkg="rosky_visualizer" type="rosky_visualizer.py" output="screen">
+		<param name="~veh_name" value="$(arg veh)"/>
+	</node>
+</launch>
