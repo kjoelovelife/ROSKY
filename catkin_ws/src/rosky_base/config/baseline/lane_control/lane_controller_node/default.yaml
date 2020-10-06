@@ -1,8 +1,10 @@
 #lane_control/lane_controller_node
 #v_bar_old 0.45
-v_bar: 0.3864
+v_bar: 0.1
+#steer_gain_old 1
+steer_gain: 1.0
 # k_d_old: -12
-k_d: -10.30
+k_d: -5.30
 # k_theta_old: -6.0
 k_theta: -5.15
 theta_thres: 0.523

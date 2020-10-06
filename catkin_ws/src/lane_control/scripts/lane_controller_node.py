@@ -35,11 +35,13 @@ class lane_controller(object):
 
     def setGains(self):
         v_bar = 0.5 # nominal speed, 0.5m/s
+        steer_gain = 1
         k_theta = -2.0
         k_d = - (k_theta ** 2) / ( 4.0 * v_bar)
         theta_thres = math.pi / 6
         d_thres = math.fabs(k_theta / k_d) * theta_thres
         d_offset = 0
+
 
         self.v_bar = self.setupParameter("~v_bar",v_bar) # Linear velocity
         self.k_d = self.setupParameter("~k_d",k_theta) # P gain for theta
@@ -47,6 +49,7 @@ class lane_controller(object):
         self.d_thres = self.setupParameter("~d_thres",theta_thres) # Cap for error in d
         self.theta_thres = self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
         self.d_offset = self.setupParameter("~d_offset",d_offset) # a configurable offset from the lane position
+        self.steer_gain = self.setupParameter("~steer_gain",steer_gain) # a configurable offset from the lane position 
 
     def getGains_event(self, event):
         v_bar = rospy.get_param("~v_bar")
@@ -56,20 +59,22 @@ class lane_controller(object):
         theta_thres = rospy.get_param("~theta_thres")
         theta_thres = rospy.get_param("~theta_thres")
         d_offset = rospy.get_param("~d_offset")
+        steer_gain = rospy.get_param("~steer_gain")
 
-        params_old = (self.v_bar,self.k_d,self.k_theta,self.d_thres,self.theta_thres, self.d_offset)
-        params_new = (v_bar,k_d,k_theta,d_thres,theta_thres, d_offset)
+        params_old = (self.v_bar,self.k_d,self.k_theta,self.d_thres,self.theta_thres, self.d_offset,self.steer_gain)
+        params_new = (v_bar,k_d,k_theta,d_thres,theta_thres, d_offset,steer_gain)
 
         if params_old != params_new:
             rospy.loginfo("[%s] Gains changed." %(self.node_name))
-            rospy.loginfo("old gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f" %(params_old))
-            rospy.loginfo("new gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f" %(params_new))
+            rospy.loginfo("old gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f , steer_gain %f" %(params_old))
+            rospy.loginfo("new gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f , steer_gain %f" %(params_new))
             self.v_bar = v_bar
             self.k_d = k_d
             self.k_theta = k_theta
             self.d_thres = d_thres
             self.theta_thres = theta_thres
             self.d_offset = d_offset
+            self.steer_gain = steer_gain
 
     
     def custom_shutdown(self):
@@ -113,7 +118,7 @@ class lane_controller(object):
         
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
-        car_control_msg.omega =  self.k_d * cross_track_err + self.k_theta * heading_err #*self.steer_gain #Right stick H-axis. Right is negative
+        car_control_msg.omega =  self.k_d * cross_track_err + self.k_theta * heading_err *self.steer_gain #Right stick H-axis. Right is negative
         
         # controller mapping issue
         # car_control_msg.steering = -car_control_msg.steering
