@@ -98,22 +98,22 @@ echo $PASSWORD | sudo -S apt install -y \
         libv4l-dev \
         libxvidcore-dev \
         libx264-dev \
-        libgeographic-dev \ 
+        libgeographic-dev \
         qt5-default \
         zlib1g-dev \
         'pkg-config' \
 	python-frozendict \
-	libxslt-dev \
+	libxslt1-dev \
 	libxml2-dev \
 	python-lxml \
 	python-bs4 \
 	python-tables \
         python-sklearn \
         python-rospkg \
-        python-catkin_tools \
+        python-catkin-tools \
         python3-pip \
         python3-dev \
-        python3-numpy \       
+        python3-numpy \
         apt-file \
         iftop \
         atop \
