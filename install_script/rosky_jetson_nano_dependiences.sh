@@ -57,7 +57,7 @@ echo $PASSWORD | sudo -S apt-get install git cmake
 
 if [[ $kernel =~ $platform ]] ; then
     # clone the repo and submodules
-    #git clone https://github.com/dusty-nv/jetson-inference ~/$main_path/setup/jetson-inference
+    git clone https://github.com/dusty-nv/jetson-inference ~/$main_path/setup/jetson-inference
     cd ~/$main_path/setup/jetson-inference
     git submodule update --init
 
