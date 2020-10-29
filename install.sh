@@ -118,6 +118,6 @@ fi
 ## install done
 echo $msg
 echo $msg_ros
-echo $msgrosky
+echo $msg_rosky
 echo $msg_ssh
 

@@ -33,7 +33,7 @@ echo $PASSWORD | sudo -S apt-get install -y python-rosinstall \
 ##  configure variable about ROS in ~/.bashrc
 echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
-
+echo $PASSWORD | sudo chown -R $USER ~/.ros
 echo "ROS $ros1_distro installed successfully." 
 
 #==============================================================================
