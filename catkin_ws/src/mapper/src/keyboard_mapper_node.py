@@ -53,8 +53,12 @@ class keyboardMapper(object):
         # setup parameter for inverse_kinematics_node.py use
         if self.cmd.linear.x != 0 and self.cmd.linear.x != self.v_gain_default : 
             self.keyboard_gain = rospy.set_param("~keyboard_gain", car_cmd_msg.v)
+        else:
+            self.keyboard_gain = rospy.set_param("~keyboard_gain",self.v_gain_default )
         if self.cmd.angular.z != 0 and self.cmd.angular.z != self.omega_gain_default : 
             self.keyboard_steerGain = rospy.set_param("~keyboard_steerGain", car_cmd_msg.omega)
+        else:
+            self.keyboard_steerGain = rospy.set_param("~keyboard_steerGain", self.omega_gain_default)
 
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 

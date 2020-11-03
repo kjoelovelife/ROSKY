@@ -1,12 +1,13 @@
 #!/usr/bin/env python
-import rospy
+import rospy , rospkg
 import numpy as np
-import math
+import math , yaml , os
 from rosky_msgs.msg import  Twist2DStamped, LanePose
 
 class lane_controller(object):
     def __init__(self):
         self.node_name = rospy.get_name()
+        self.veh_name = self.node_name.split("/")[1]
         self.lane_reading = None
 
         self.pub_counter = 0
@@ -26,6 +27,38 @@ class lane_controller(object):
         # timer
         self.gains_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.getGains_event)
         rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
+
+        # get rosky teleop_keyboardGain
+        self.keyboard_gain = self.readParamFromFile_keyboard_gain()
+
+    def readParamFromFile_keyboard_gain(self):
+        # Check file existence
+        fname = self.getFilePath(self.veh_name)
+        # Use default.yaml if file doesn't exsit
+        if not os.path.isfile(fname):
+            rospy.logwarn("[%s] %s does not exist. Using default.yaml." %(self.node_name,fname))
+            fname = self.getFilePath("default")
+
+        with open(fname, 'r') as in_file:
+            try:
+                yaml_dict = yaml.load(in_file)
+            except yaml.YAMLError as exc:
+                rospy.logfatal("[%s] YAML syntax error. File: %s fname. Exc: %s" %(self.node_name, fname, exc))
+                rospy.signal_shutdown()
+                return
+
+        # Set parameters using value in yaml file
+        if yaml_dict is None:
+            # Empty yaml file
+            return
+        for param_name in ["keyboard_gain"]:
+            self.param_value = yaml_dict.get(param_name)
+        return self.param_value
+
+    def getFilePath(self, name):
+        rospack = rospkg.RosPack()
+        return rospack.get_path('rosky_base')+'/config/baseline/calibration/kinematics/' + name + ".yaml" 
+
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -49,7 +82,7 @@ class lane_controller(object):
         self.d_thres = self.setupParameter("~d_thres",theta_thres) # Cap for error in d
         self.theta_thres = self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
         self.d_offset = self.setupParameter("~d_offset",d_offset) # a configurable offset from the lane position
-        self.steer_gain = self.setupParameter("~steer_gain",steer_gain) # a configurable offset from the lane position 
+        self.steer_gain = self.setupParameter("~steer_gain",steer_gain) # a multiple for car_control_cmd omega
 
     def getGains_event(self, event):
         v_bar = rospy.get_param("~v_bar")
@@ -114,7 +147,7 @@ class lane_controller(object):
 
         car_control_msg = Twist2DStamped()
         car_control_msg.header = lane_pose_msg.header
-        car_control_msg.v = self.v_bar #*self.speed_gain #Left stick V-axis. Up is positive
+        car_control_msg.v = self.v_bar * self.keyboard_gain #Left stick V-axis. Up is positive
         
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
