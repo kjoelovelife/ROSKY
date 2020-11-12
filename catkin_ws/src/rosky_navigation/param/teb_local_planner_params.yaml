@@ -34,8 +34,8 @@ TebLocalPlannerROS:
     vertices: [[-0.105, -0.085], [-0.105, 0.085], [0.105, 0.085], [0.105, -0.085]]
 
   # Goal tolerance
-  xy_goal_tolerance: 0.25                  # Allowed final euclidean distance to the goal position
-  yaw_goal_tolerance: 1.5                  # Allowed final orientation error to the goal orientation
+  xy_goal_tolerance: 0.25                  # Allowed final euclidean distance to the goal position in meters
+  yaw_goal_tolerance: 1.5                  # Allowed final orientation error to the goal orientation in radians
   free_goal_vel: false                     # Allow the robot's velocity to be nonzero for planning purposes (the robot can arrive at the goal with max speed)
 
   # Obstacles
