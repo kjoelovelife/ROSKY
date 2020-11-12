@@ -49,8 +49,11 @@ class CmdMapper(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        self.omega_gain = yaml_dict.get("keyboard_steerGain")
-        print("keyboard_gain: {}".format(self.omega_gain))
+        for param_name in ["keyboard_gain" , "keyboard_steerGain"]:
+            if param_name == "keyboard_steerGain" :
+                self.omega_gain = yaml_dict.get("keyboard_steerGain")
+            if param_name == "keyboard_gain" :
+                self.speed_gain = yaml_dict.get("keyboard_gain")
 
     def getFilePath(self, name):
         rospack = rospkg.RosPack()
@@ -63,7 +66,8 @@ class CmdMapper(object):
 
     def publishControl(self):
         car_cmd_msg = Twist2DStamped()
-        car_cmd_msg.v = self.cmd.linear.x
+        cmd_gain = 10
+        car_cmd_msg.v = self.cmd.linear.x * cmd_gain * self.speed_gain
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 

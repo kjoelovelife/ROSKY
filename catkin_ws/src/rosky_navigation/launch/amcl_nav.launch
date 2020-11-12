@@ -8,6 +8,7 @@
     <arg name="map" default="test0623.yaml" doc="Specify a param file. ex:megaman."/>
     <arg name="use_rviz" default="false" />
     <arg name="local_planner" default="dwa" doc="Local planner can be either dwa or teb"/>
+    <arg name="omnibotcar" default="false" doc="connect omnibotcar to move ROSKY or not"/>
 
     <!-- Map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find rosky_slam)/map/$(arg map)"/>
@@ -54,7 +55,7 @@
     </node>
 
    <!-- launch nav_control.launch -->
-   <include file="$(find rosky_navigation)/launch/nav_control.launch">
+   <include if="$(arg omnibotcar)" file="$(find rosky_navigation)/launch/nav_control.launch">
        <arg name="veh" value="$(arg veh)"/>
    </include>
 </launch>
