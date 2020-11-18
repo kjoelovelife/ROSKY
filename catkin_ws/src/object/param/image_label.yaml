@@ -1,3 +1,5 @@
-test1: 2
-test2: 1
+blocked: 0
+free: 0
+test1: 0
+test2: 0
 test3: 0
