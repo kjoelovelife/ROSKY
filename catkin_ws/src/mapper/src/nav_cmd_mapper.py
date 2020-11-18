@@ -29,6 +29,9 @@ class CmdMapper(object):
         # set steerGain
         self.readParamFromFile()
 
+        # timer
+        self.gains_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.getGains_event)
+
     def readParamFromFile(self):
         # Check file existence
         fname = self.getFilePath(self.veh_name)
@@ -70,6 +73,21 @@ class CmdMapper(object):
         car_cmd_msg.v = self.cmd.linear.x * cmd_gain * self.speed_gain
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)                                     
+
+    def getGains_event(self, event):
+        param_name = "/" + self.veh_name + "/inverse_kinematics_node/"
+        speed_gain = rospy.get_param( param_name + "keyboard_gain" ,self.speed_gain )
+        omega_gain = rospy.get_param( param_name + "keyboard_steerGain" ,self.speed_gain )
+
+        params_old = (self.speed_gain , self.omega_gain)
+        params_new = (speed_gain , omega_gain)
+
+        if params_old != params_new:
+            rospy.loginfo("[%s] Gains changed." %(self.node_name))
+            rospy.loginfo(" old speed_gain : {} , omega_gain : {} ".format(params_old))
+            rospy.loginfo(" new speed_gain : {} , omega_gain : {} ".format(params_new))
+            self.speed_gain = speed_gain
+            self.omega_gain = omega_gain
 
 if __name__ == "__main__":
     rospy.init_node("cmd_mapper",anonymous=False)

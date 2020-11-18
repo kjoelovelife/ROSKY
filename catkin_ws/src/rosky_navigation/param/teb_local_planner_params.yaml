@@ -18,13 +18,13 @@ TebLocalPlannerROS:
   publish_feedback: false                  # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
 
   # Robot
-  max_vel_x: 1.0                        # Maximum translational velocity of the robot
-  max_vel_x_backwards: 0.6                 # Maximum translational velocity of the robot for driving backwards
+  max_vel_x: 0.15                           # Maximum translational velocity of the robot
+  max_vel_x_backwards: 0.1                 # Maximum translational velocity of the robot for driving backwards
   max_vel_y: 0.0                           # Maximum strafing velocity of the robot (should be zero for non-holonomic robots!)
-  max_vel_theta: 0.5                       # Maximum angular velocity of the robot
-  acc_lim_x: 1.0                           # Maximum translational acceleration of the robot
+  max_vel_theta: 0.8                      # Maximum angular velocity of the robot
+  acc_lim_x: 0.035                           # Maximum translational acceleration of the robot
   acc_lim_y: 0.0                           # Maximum strafing acceleration of the robot
-  acc_lim_theta: 0.1                       # Maximum angular acceleration of the robot
+  acc_lim_theta: 0.3                      # Maximum angular acceleration of the robot
   min_turning_radius: 0.0                  # Minimum turning radius of a carlike robot (diff-drive robot: zero)
   wheelbase: 1.0                           # The distance between the drive shaft and steering axle (only required for a carlike robot with 'cmd_angle_instead_rotvel' enabled); The value might be negative for back-wheeled robots!
   cmd_angle_instead_rotvel: false          # Substitute the rotational velocity in the commanded velocity message by the corresponding steering angle (check 'axles_distance')
@@ -39,7 +39,7 @@ TebLocalPlannerROS:
   free_goal_vel: false                     # Allow the robot's velocity to be nonzero for planning purposes (the robot can arrive at the goal with max speed)
 
   # Obstacles
-  min_obstacle_dist: 0.15                  # Minimum desired separation from obstacles
+  min_obstacle_dist: 0.05                  # Minimum desired separation from obstacles
   inflation_dist: 0.05                      # Buffer zone around obstacles with non-zero penalty costs (should be larger than min_obstacle_dist in order to take effect)
   dynamic_obstacle_inflation_dist: 0.05     # Buffer zone around predicted locations of dynamic obstacles with non-zero penalty costs (should be larger than min_obstacle_dist in order to take effect)
   include_dynamic_obstacles: true         # Specify whether the movement of dynamic obstacles should be predicted by a constant velocity model (this also changes the homotopy class search). If false, all obstacles are considered to be static.
