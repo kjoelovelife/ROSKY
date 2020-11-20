@@ -62,6 +62,7 @@ add_service_files(
    FILES
    save_action.srv
    select_label.srv
+   picture_interval.srv
    #Service2.srv
  )
 

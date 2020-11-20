@@ -110,7 +110,7 @@ class CameraNode(object):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
         self.is_shutdown=True
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
-        rospy.sleep(rospy.Duration.from_sec(1.0))
+        rospy.sleep(1.0)
 
 
     def cbSrvSetCameraInfo(self,req):

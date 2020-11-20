@@ -14,27 +14,47 @@ class srv_client_save_image_action(object):
 
     def __init__(self):
         
+        # node information
+        self.node_name = rospy.get_name()
+        self.veh_name = self.node_name.split("/")[1]
+
         # wait for service start
-        self.start = rospy.wait_for_service("/rosky/save_image/save_image_action")
-        self.start = rospy.wait_for_service("/rosky/save_image/select_label")
+        self.start = rospy.wait_for_service(self.veh_name +"/save_image/save_image_action")
+        self.start = rospy.wait_for_service(self.veh_name +"/save_image/select_label") 
 
         # set service client
-        self.save_image_action = rospy.ServiceProxy("/rosky/save_image/save_image_action",save_action)
-        self.select_label      = rospy.ServiceProxy("/rosky/save_image/select_label",select_label)
+        self.save_image_action = rospy.ServiceProxy(self.veh_name + "/save_image/save_image_action",save_action)
+        self.select_label = rospy.ServiceProxy(self.veh_name + "/save_image/select_label",save_action)
+       
+        # ros parameter
+        self.label = rospy.get_param(self.veh_name + " /save_image/label","default")
 
+        # local parameter 
+        self.picture = False
+
+        # Done information
+        rospy.loginfo("Service Start!You can click [p] to save picture.")
+        rospy.loginfo("Don't forget check out the label now!")
+        rospy.loginfo("Now your label is [{}]".format(self.label))
+       
         # timer
-        self.timer = rospy.Timer(rospy.Duration.from_sec(0.1),self.timer)  
+        self.timer = rospy.Timer(rospy.Duration.from_sec(1),self.cb_timer)
 
-    def call_srv_save_image_action(self):    
+    def call_srv_save_image_action(self,picture):    
         try :
-            send_signal = self.save_image_action(True)
-            print("Capture!")
-            rospy.sleep(1)
-            send_signal = self.save_image_action(False)
-            print("Stop!")
-            rospy.sleep(1)
+            if picture == True :
+                print("Capture!")
+            else:
+                print("Stop!")
+            send_signal = self.save_image_action(picture)
         except rospy.ServiceException as e :
             print("Service call failed".format(e))
+
+    def cb_timer(self,event):
+        _label = rospy.get_param(self.veh_name +"/save_image/label","default")
+        if _label != self.label:
+            self.label = _label
+            rospy.loginfo("Now your label is [{}]".format(self.label))
 
     def call_srv_select_label(self,label="default"):    
         try :         
@@ -45,7 +65,7 @@ class srv_client_save_image_action(object):
             
     def getKey(self):
         tty.setraw(sys.stdin.fileno())
-        rlist, _, _ = select.select([sys.stdin], [], [], 0.1) 
+        rlist, _, _ = select.select([sys.stdin], [], [], None) 
         if rlist:
             key = sys.stdin.read(1)
         else:
@@ -53,24 +73,34 @@ class srv_client_save_image_action(object):
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
         return key
 
-    def timer(self,event):
-        key = self.getKey()
-        if key == 'p' or key == 'P':
-            self.call = self.call_srv_save_image_action()
-        else:
-            if key == '\x03':
-                self.on_shutdown()
-
     def on_shutdown(self): 
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-        self.is_shutdown=True
-        rospy.sleep(rospy.Duration.from_sec(1.0))
+        print("shutdown...!")
+        rospy.is_shutdown=True
+
+
+    def setup_parameter(self, param_name, default_value):
+        value = rospy.get_param(param_name, default_value)
+        # Write to parameter server for transparency
+        rospy.set_param(param_name, value)
+        rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
+        return value
 
 if __name__ == "__main__" :
     settings = termios.tcgetattr(sys.stdin)
     rospy.init_node("srv_client_save_image",anonymous=False)
     srv_call_save_image_action = srv_client_save_image_action()
-    rospy.on_shutdown(srv_call_save_image_action.on_shutdown)
-    rospy.spin()
+
+    while(1):
+        key = srv_call_save_image_action.getKey()
+        if key == 'p' or key == 'P':
+            srv_call_save_image_action.picture = not srv_call_save_image_action.picture
+            call = srv_call_save_image_action.call_srv_save_image_action(srv_call_save_image_action.picture)
+        else:
+            if key == '\x03':
+                rospy.on_shutdown(srv_call_save_image_action.on_shutdown)
+                break
+
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     
     
