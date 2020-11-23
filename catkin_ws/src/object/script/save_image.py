@@ -24,8 +24,7 @@ class Save_Image_Node():
         self.veh_name = self.node_name.split("/")[1]
         rospy.loginfo("{}  Initializing......".format(self.node_name))
 
-        # setup param
-        self.picture_interval = self.setup_parameter("~picture_interval",0.5)
+        # set local param
         self.save_action_status = False
         self.yaml_dict = {}
 
@@ -36,6 +35,10 @@ class Save_Image_Node():
         rospy.loginfo("If your label is wrong, please change the label.")
         self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
         
+        # setup ros param
+        self.picture_interval = self.setup_parameter("~picture_interval",0.5)
+        if self.label in self.yaml_dict :
+            self.label_image_count = self.setup_parameter("~label_image_count",self.yaml_dict[self.label]) 
 
         # Prepare ros services
         self.srv_save_image = rospy.Service("~save_image_action",save_action, self.cb_srv_save_image)
@@ -75,7 +78,15 @@ class Save_Image_Node():
             rospy.loginfo("Save action Start!!")
         else:
             self.save_action_status = False
-            rospy.loginfo("Save action Stop!!")
+            _read = self.read_param_from_file()
+            if self.label in self.yaml_dict :
+                self.label_image_count = self.yaml_dict[self.label]
+                set_param = rospy.set_param("~label_image_count",self.label_image_count) 
+                print ""
+                rospy.loginfo("Save action Stop!!")
+                rospy.loginfo("The label(folder) and image you have :")
+                rospy.loginfo(self.yaml_dict)
+
         return save_actionResponse()
 
     def cb_srv_select_label(self, request):

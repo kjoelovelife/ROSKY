@@ -8,7 +8,7 @@
     <arg name="output_not" value="log"/>
 
     <!-- save image service client -->
-    <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" clear_params="true" output="screen"/>
+    <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" clear_params="true" output="screen" required="true"/>
 
     <!-- keyboard_mapper -->
     <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="/$(arg veh)/$(arg node_name)/cmd_vel"/>

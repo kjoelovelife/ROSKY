@@ -23,6 +23,7 @@ class srv_client_save_image_action(object):
         self.pub_car_cmd = rospy.Publisher("~cmd_vel", Twist, queue_size=1)
 
         # wait for service start
+        rospy.loginfo("wait for service.Please launch [save_image.launch] in [object] ")
         self.start = rospy.wait_for_service("/" + self.veh_name +"/save_image/save_image_action")
         self.start = rospy.wait_for_service("/" + self.veh_name +"/save_image/select_label") 
 
@@ -53,9 +54,11 @@ class srv_client_save_image_action(object):
     def call_srv_save_image_action(self,picture):    
         try :
             if picture == True :
-                print("Capture!")
+                rospy.loginfo("Capturing picture now!")
             else:
-                print("Stop!")
+                image_count = rospy.get_param("/" +self.veh_name + "/save_image/label_image_count","didn't get!")
+                rospy.loginfo("Stop capturing!")                
+                rospy.loginfo("The [ {} ] images you have : {}".format(self.label,image_count))
             send_signal = self.save_image_action(picture)
         except rospy.ServiceException as e :
             print("Service call failed".format(e))
@@ -159,8 +162,9 @@ class srv_client_save_image_action(object):
             _all_label[index] = self.all_label[index]       
         label_index = int(input("\nPlease select you label(just type number).\n {} : ".format(_all_label)))
         if label_index in _all_label.keys():
-            print("You select [ {} ]".format( _all_label[index] ))
-            send_signal = self.select_label(_all_label[label_index])
+            self.label = _all_label[label_index]
+            print("You select [ {} ]".format( self.label ))
+            send_signal = self.select_label(self.label)
         else:
             print("You select non-existent label index. Please click [ space ] try again.\n")
           
