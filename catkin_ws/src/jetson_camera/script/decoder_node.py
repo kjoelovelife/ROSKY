@@ -56,7 +56,11 @@ class DecoderNode(object):
         # rospy.loginfo("[%s] Took %f sec to conver to Image."%(self.node_name,time_2 - time_1))
         # rospy.loginfo("[%s] Took %f sec to publish."%(self.node_name,time_3 - time_2))
 
+    def onShutdown(self):
+        rospy.sleep(1.0)
+
 if __name__ == '__main__': 
     rospy.init_node('decoder_low_freq',anonymous=False)
     node = DecoderNode()
+    rospy.on_shutdown(node.onShutdown)
     rospy.spin()

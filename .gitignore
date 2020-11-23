@@ -22,6 +22,9 @@ cvbridge_build_ws/.catkin_tools
 **/.pyc
 catkin_ws/src/jetson_camera/src/jetson_camera.pyc
 catkin_ws/src/jetson_camera/include/jetcam_ros/utils.pyc
-
-
-
+catkin_ws/src/anti_instagram/include/anti_instagram/*.pyc
+catkin_ws/src/jetson_camera/include/jetcam_ros/*.pyc
+catkin_ws/src/ominibot_car/include/ominibot_car/*.pyc
+catkin_ws/src/rosky_slam/map/*.pgm
+catkin_ws/src/rosky_slam/map/*.yaml
+catkin_ws/src/object/image/*/*.jpg

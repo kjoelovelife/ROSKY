@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
+  geometry_msgs
   std_msgs
 )
 
@@ -77,6 +78,7 @@ add_service_files(
 generate_messages(
    DEPENDENCIES
    sensor_msgs
+   geometry_msgs
    std_msgs
  )
 

@@ -203,7 +203,11 @@ class InverseKinematicsNode(object):
         rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
         return value
 
+    def on_shutdown(self): 
+        rospy.is_shutdown=True
+
 if __name__ == '__main__':
     rospy.init_node('inverse_kinematics_node', anonymous=False)
     inverse_kinematics_node = InverseKinematicsNode()
+    rospy.on_shutdown(inverse_kinematics_node.on_shutdown)
     rospy.spin()

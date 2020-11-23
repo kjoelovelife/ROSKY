@@ -11,7 +11,11 @@ from object.srv import save_action, save_actionResponse, select_label, select_la
 
 
 class Save_Image_Node():
-
+ 
+    ####
+    # param : label, picture_interval
+    # service : save_image_action, select_label, picture_interval
+    ####  
     def __init__(self):
         
         # node information
@@ -26,8 +30,8 @@ class Save_Image_Node():
         self.yaml_dict = {}
 
         # read label
-        self.read_param_from_file()
         self.label = self.setup_parameter("~label","default")
+        self.read_param_from_file()
         rospy.loginfo("Your image label : {} ".format(self.label))
         rospy.loginfo("If your label is wrong, please change the label.")
         self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
@@ -49,7 +53,8 @@ class Save_Image_Node():
         self.save_image_timer = rospy.Timer(rospy.Duration.from_sec(self.picture_interval),self.cb_save_image_timer)
       
         # done information
-        rospy.loginfo("You can start collecting your data!")
+        rospy.loginfo("Remember checkout the image size(width=224,height=224).")
+        rospy.loginfo("You can use service with [srv_client_save_image.py] to start collecting your data!()")
         rospy.loginfo("The label(folder) and image you have :")
         rospy.loginfo(self.yaml_dict)
 
@@ -67,8 +72,10 @@ class Save_Image_Node():
     def cb_srv_save_image(self, request):
         if request.value == True:
             self.save_action_status = True
+            rospy.loginfo("Save action Start!!")
         else:
             self.save_action_status = False
+            rospy.loginfo("Save action Stop!!")
         return save_actionResponse()
 
     def cb_srv_select_label(self, request):
@@ -76,7 +83,7 @@ class Save_Image_Node():
             rospy.set_param("~label",request.value)
             self.label = request.value
             self.path = self.getFilePath(self.label)
-            rospy.loginfo("You select the label : [{}]".format(self.path))
+            rospy.loginfo("You select the label : [{}]".format(self.label))
             rospy.loginfo("Now your image will save in [{}]".format(self.path))
         else:
            rospy.loginfo("You don't have the label(folder) [{}] .".format(request.value))
@@ -115,6 +122,12 @@ class Save_Image_Node():
                     rospy.loginfo("Please checkout folder [image] and label in [/param/image_label.yaml]. They are different.")
                     rospy.loginfo("save_image.py will shutdown. Please shutdown the launch file after it(jetson_camera.py still runnung).")
                     sys.exit()
+                elif self.label not in self.yaml_dict.keys() :
+                    rospy.loginfo("Your /rosky/save_image/label [{}] is wrong.".format(self.label))
+                    rospy.loginfo("You can only type {}".format(self.yaml_dict.keys()))
+                    sys.exit()                         
+                else:
+                    pass
             except yaml.YAMLError as exc:
                 print(" YAML syntax  error. File: {}".format(fname))
         if self.yaml_dict != None: 
