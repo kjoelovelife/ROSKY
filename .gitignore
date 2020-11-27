@@ -28,3 +28,4 @@ catkin_ws/src/ominibot_car/include/ominibot_car/*.pyc
 catkin_ws/src/rosky_slam/map/*.pgm
 catkin_ws/src/rosky_slam/map/*.yaml
 catkin_ws/src/object/image/*/*.jpg
+

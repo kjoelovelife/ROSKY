@@ -1,3 +1,0 @@
-save_image
-line 75 
-set_param = rospy.set_param("~label_image_count",self.label_image_count)  -> can not work

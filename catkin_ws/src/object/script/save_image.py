@@ -129,11 +129,12 @@ class Save_Image_Node():
         with open(fname, 'r') as in_file:
             try:
                 self.yaml_dict = yaml.load(in_file)
-                if folder != self.yaml_dict.keys() :
-                    rospy.loginfo("Please checkout folder [image] and label in [/param/image_label.yaml]. They are different.")
-                    rospy.loginfo("save_image.py will shutdown. Please shutdown the launch file after it(jetson_camera.py still runnung).")
-                    sys.exit()
-                elif self.label not in self.yaml_dict.keys() :
+                for key in list(self.yaml_dict.keys()):
+                    if key not in folder:
+                        rospy.loginfo("Please checkout folder [image] and label in [/param/image_label.yaml]. They are different.")
+                        rospy.loginfo("save_image.py will shutdown. Please shutdown the launch file after it(jetson_camera.py still runnung).")
+                        sys.exit()
+                if self.label not in self.yaml_dict.keys() :
                     rospy.loginfo("Your /rosky/save_image/label [{}] is wrong.".format(self.label))
                     rospy.loginfo("You can only type {}".format(self.yaml_dict.keys()))
                     sys.exit()                         

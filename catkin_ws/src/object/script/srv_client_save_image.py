@@ -49,17 +49,22 @@ class srv_client_save_image_action(object):
         rospy.logwarn("Now your label is [{}]".format(self.label))
        
         # timer
-        self.timer = rospy.Timer(rospy.Duration.from_sec(1),self.cb_timer)
+        try:
+            self.timer = rospy.Timer(rospy.Duration.from_sec(1),self.cb_timer)
+        except:
+            _on_shutdown = self.on_shutdown() 
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+            _exit = sys.exit()    
 
     def call_srv_save_image_action(self,picture):    
         try :
             if picture == True :
                 rospy.loginfo("Capturing picture now!")
             else:
-                image_count = rospy.get_param("/" +self.veh_name + "/save_image/label_image_count","didn't get!")
-                rospy.loginfo("Stop capturing!")                
-                rospy.loginfo("The [ {} ] images you have : {}".format(self.label,image_count))
+                rospy.loginfo("Stop capturing!")       
             send_signal = self.save_image_action(picture)
+            image_count = rospy.get_param("/" +self.veh_name + "/save_image/label_image_count","didn't get!")         
+            rospy.loginfo("The [ {} ] images you have : {}".format(self.label,image_count))
         except rospy.ServiceException as e :
             print("Service call failed".format(e))
 
@@ -204,7 +209,7 @@ if __name__ == "__main__" :
         's':(0,0,0,0),
         'S':(0,0,0,0)
     }
-
+    rospy.spin()
     while(1):
         key = srv_call_save_image_action.getKey()
         if key == 'p' or key == 'P':
