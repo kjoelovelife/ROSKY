@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy , time
 from rosky_msgs.msg import WheelsCmdStamped, BoolStamped
-from ominibot_car.ominibot_car_driver import ominibot_car #DaguWheelsDriver
+from ominibot_car.ominibot_car_com import Ominibot_Car #DaguWheelsDriver
 
 class WheelsDriverNode(object):
     def __init__(self):
@@ -10,33 +10,14 @@ class WheelsDriverNode(object):
         self.estop=False
         self.board_name = rospy.get_param( rospy.get_name() + "/board_name","ominibot_car")
         self.port = "/dev/" + self.board_name
-        self.baud = 115200
+        self.baud = rospy.get_param( rospy.get_name() + "/baud", 115200)
+        self.cmd_vel_magnification = rospy.get_param( rospy.get_name() + "/cmd_vel_magnification", 10000)
+        self.motor_mode = rospy.get_param( rospy.get_name() + "/motor_mode", 3)
+        
 
         # Setup publishers
-        self.driver = ominibot_car(self.port,self.baud)
-        self.driver.connect()
-       
-        # set system node  ===============================
-        # vehicle       (Bit0)  : 0 -> omnibot   ; 1 -> Mecanum ; 2 --> encoder , angle param and no imu(1C) ; 3 --> encoder , no angle parameter and no imu(1D) ( Ominibot V0.7 ) ; 
-        #                         4 -->  no encoder , angle param , and no imu(1D) ; 5 --> no encoder , no angle parameter , and no imu(1D)
-        # imu           (Bit3)  : 0 -> not to do , 1 -> do it
-        # imu_axis      (Bit4)  : 0 -> not to do , 1 -> do it
-        # return_encoder(Bit6)  : 0 -> not to do , 1 -> do it
-        # command       (Bit7)  : 0 -> control   , 1 -> APP
-        # motor_direct  (Bit8)  : 0 -> normal    , 1 -> reverse
-        # encoder_direct(Bit9)  : 0 -> normal    , 1 -> reverse
-        # turn_direct   (Bit10) : 0 -> normal    , 1 -> reverse
-        # imu_reverse   (Bit11) : 0 -> normal    , 1 -> reverse    
-        #================================================
-   
-        for i in range(2):
-            self.driver.set_system_mode(vehicle=3,imu=0,
-                                        imu_axis=0,return_encoder=0,
-                                        command=0,motor_direct=0,
-                                        encoder_direct=0,turn_direct=0,
-                                        imu_reverse=0) # use Ominibot V0.6
-            time.sleep(0.3)
-
+        self.driver = Ominibot_Car(self.port,self.baud)
+  
         #add publisher for wheels command wih execution time
         self.msg_wheels_cmd = WheelsCmdStamped()
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, queue_size=1)
@@ -54,9 +35,9 @@ class WheelsDriverNode(object):
 
     def cbWheelsCmd(self,msg):
         if self.estop:
-            self.driver.TT_motor_knightcar(left=0.0,right=0.0)
+            self.driver.rosky_diff_drive(left=0,right=0, mode=self.motor_mode)
             return
-        self.driver.TT_motor_knightcar(left=msg.vel_left,right=msg.vel_right)
+        self.driver.rosky_diff_drive(left=round(msg.vel_left * self.cmd_vel_magnification) ,right=round(msg.vel_right * self.cmd_vel_magnification) , mode=self.motor_mode)
         # Put the wheel commands in a message and publish
         self.msg_wheels_cmd.header = msg.header
         # Record the time the command was given to the wheels_driver
@@ -73,7 +54,7 @@ class WheelsDriverNode(object):
             rospy.loginfo("[%s] Emergency Stop Released")
 
     def on_shutdown(self):
-        self.driver.TT_motor_knightcar(left=0.0,right=0.0)
+        self.driver.rosky_diff_drive(left=400,right=400, mode=0x03)
         rospy.loginfo("[%s] Shutting down."%(rospy.get_name()))
 
 if __name__ == '__main__':

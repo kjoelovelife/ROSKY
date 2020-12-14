@@ -1,9 +1,9 @@
 baseline: 0.1
-calibration_time: 2020-11-17-18-31-18
+calibration_time: 2020-12-14-10-41-28
 gain: 1.0
 k: 27.0
-keyboard_gain: 0.4
-keyboard_steerGain: 12
+keyboard_gain: 1.9079941248903363
+keyboard_steerGain: 34.49147191187973
 limit: 1.0
 radius: 0.0318
 trim: 0.0

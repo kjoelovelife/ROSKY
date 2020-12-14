@@ -1,8 +1,10 @@
 <launch>
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
     <arg name="output" default="screen"/>
-    <param name="$(arg veh)/board_name" value="ominibot_car"/>
-    <node ns="$(arg veh)" pkg="ominibot_car" type="wheels_ominibot_driver_node.py" name="wheels_driver_node" output="$(arg output)" clear_params="true" required="true"/>
+
+    <node ns="$(arg veh)" pkg="ominibot_car" type="wheels_ominibot_driver_node.py" name="wheels_driver_node" output="$(arg output)" clear_params="true" required="true">
+        <rosparam command="load" file="$(find ominibot_car)/param/ominibot_car_configure.yaml"/>
+    </node>
     
     <!-- Subscriptions -->
     <!-- "~wheels_cmd": rosky_msgs/WheelsCmd. Command for the wheels -->

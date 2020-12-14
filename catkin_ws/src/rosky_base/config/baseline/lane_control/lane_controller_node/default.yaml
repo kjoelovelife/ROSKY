@@ -2,12 +2,12 @@
 #v_bar_old 0.45
 v_bar: 0.5
 #steer_gain_old 1
-steer_gain: 1.0
+steer_gain: 0.7
 # k_d_old: -12
-k_d: -5.30
+k_d: -30.30
 # k_theta_old: -6.0
-k_theta: -5.15
+k_theta: -6.15
 theta_thres: 0.523
-d_thres: 0.2615
-d_offset: 0.1
+d_thres: 0.025
+d_offset: 0.0
 
