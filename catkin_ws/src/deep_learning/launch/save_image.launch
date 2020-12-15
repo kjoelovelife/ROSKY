@@ -3,7 +3,7 @@
 
     <arg name="veh" default="$(env VEHICLE_NAME)"/>
     <arg name="node_name" default="save_image"/>
-    <arg name="pkg_name" default="object"/>
+    <arg name="pkg_name" default="deep_learning"/>
     <arg name="raw" value="true"/>
     <arg name="mode" value="object"/>
     <arg name="picture_interval" default="0.5"/>

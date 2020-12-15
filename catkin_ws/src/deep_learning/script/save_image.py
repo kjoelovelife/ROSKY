@@ -6,19 +6,18 @@ import rospy, rospkg, threading
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
 from uuid import uuid1
-from object.srv import save_action, save_actionResponse, select_label, select_labelResponse, picture_interval, picture_intervalResponse
-
+from deep_learning.srv import save_action, save_actionResponse, select_label, select_labelResponse, picture_interval, picture_intervalResponse
+from jetcam_ros.utils import bgr8_to_jpeg
 
 
 class Save_Image_Node():
- 
     ####
     # param : label, picture_interval
     # service : save_image_action, select_label, picture_interval
     ####  
     def __init__(self):
-        
         # node information
+        self.folder = 'deep_learning'
         rospy.sleep(2)
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
@@ -49,7 +48,7 @@ class Save_Image_Node():
         self.bridge = CvBridge()
 
         # directory for image save
-        #self.path = os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)) # ~/ROSKY/catkin_ws/src/object , use system setting
+        #self.path = os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)) # ~/ROSKY/catkin_ws/src/self.folder , use system setting
         self.path = self.getFilePath(self.label)
 
         # timer
@@ -63,7 +62,7 @@ class Save_Image_Node():
 
     def getFilePath(self , name):
         rospack = rospkg.RosPack()
-        return rospack.get_path('object') + "/image/" + name   
+        return rospack.get_path(self.folder) + "/image/" + name   
 
     def convert_image_to_cv2(self,img_msg):
         try:
@@ -82,7 +81,7 @@ class Save_Image_Node():
             if self.label in self.yaml_dict :
                 self.label_image_count = self.yaml_dict[self.label]
                 set_param = rospy.set_param("~label_image_count",self.label_image_count) 
-                print ""
+                print("")
                 rospy.loginfo("Save action Stop!!")
                 rospy.loginfo("The label(folder) and image you have :")
                 rospy.loginfo(self.yaml_dict)
@@ -98,7 +97,7 @@ class Save_Image_Node():
             rospy.loginfo("Now your image will save in [{}]".format(self.path))
         else:
            rospy.loginfo("You don't have the label(folder) [{}] .".format(request.value))
-           rospy.loginfo("Please use  {}  to make the label(floder) for saving data ".format(rospkg.RosPack().get_path('object') + "/script/mkdir.py"))
+           rospy.loginfo("Please use  {}  to make the label(floder) for saving data ".format(rospkg.RosPack().get_path(self.folder) + "/script/mkdir.py"))
         return select_labelResponse()   
 
     def cb_srv_picture_interval(self, request):
@@ -108,11 +107,13 @@ class Save_Image_Node():
 
     def cb_save_image_timer(self,event):
         if self.save_action_status == True:
-            self.save_img(self.cv2_img)
+            self.jpeg_img = bgr8_to_jpeg(self.cv2_img)
+            self.save_img(self.jpeg_img)
 
     def save_img(self,img):
         img_path = os.path.join(self.path, str(uuid1())+ '.jpg')
-        cv2.imwrite(img_path,img)
+        with open(img_path, 'wb') as f:
+            f.write(img)
         rospy.loginfo("save image in {} ".format(self.path))
 
 
@@ -124,8 +125,8 @@ class Save_Image_Node():
         rospy.is_shutdown=True
 
     def read_param_from_file(self):
-        fname = rospkg.RosPack().get_path('object') + "/param/image_label.yaml"
-        folder = os.listdir(rospkg.RosPack().get_path('object')+"/image")
+        fname = rospkg.RosPack().get_path(self.folder) + "/param/image_label.yaml"
+        folder = os.listdir(rospkg.RosPack().get_path(self.folder)+"/image")
         with open(fname, 'r') as in_file:
             try:
                 self.yaml_dict = yaml.load(in_file)
@@ -151,10 +152,10 @@ class Save_Image_Node():
                             image_count += 1  
                 self.yaml_dict[label_name] = image_count
         else:
-            rospy.loginfo("Please use  {}  to make the floder for saving data ".format(rospkg.RosPack().get_path('object') + "/script/mkdir.py"))
+            rospy.loginfo("Please use  {}  to make the floder for saving data ".format(rospkg.RosPack().get_path(self.folder) + "/script/mkdir.py"))
 
     def write_to_file(self):
-        fname = rospkg.RosPack().get_path('object') + "/param/image_label.yaml"
+        fname = rospkg.RosPack().get_path(self.folder) + "/param/image_label.yaml"
         self.read_param_from_file()
         with open(fname, 'w') as outfile:
             outfile.write(yaml.dump(self.yaml_dict, default_flow_style=False))
