@@ -45,12 +45,12 @@ class Train_Model_Node(object):
         # initial model
         self.train_save_model_name  = self.compare_model_name(self.train_save_model_name)
         self.recording(model_name=self.train_save_model_name, train_time=12.1, accuracy=4.0, labels=self.yaml_dict)
-        #_data = self.rule_for_datasets(batch_size=self.loader_batch_size, shuffle=self.loader_shuffle, num_workers=self.loader_num_workers)
-        #_model = self.neural_network(model=self.param_model, param_pretrained=True, kind_of_classifier=self.kind_of_classifier)
-        #_cuda = self.cuda(cuda=self.use_cuda) 
+        _data = self.rule_for_datasets(batch_size=self.loader_batch_size, shuffle=self.loader_shuffle, num_workers=self.loader_num_workers)
+        _model = self.neural_network(model=self.param_model, param_pretrained=True, kind_of_classifier=self.kind_of_classifier)
+        _cuda = self.cuda(cuda=self.use_cuda) 
 
         # train model
-        #self.train(epochs=self.train_epochs, best_model_path=self.train_save_model_name, learning_rate=self.train_lr, momentum=self.train_momentum)
+        self.train(epochs=self.train_epochs, best_model_path=self.train_save_model_name, learning_rate=self.train_lr, momentum=self.train_momentum)
 
 
     def rule_for_datasets(self, batch_size=8, shuffle=True, num_workers=0):

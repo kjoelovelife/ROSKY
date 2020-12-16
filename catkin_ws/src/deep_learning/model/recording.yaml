@@ -1,0 +1,13 @@
+best:
+  accuracy: 4.0
+  labels:
+    blocked: 145
+    free: 126
+  train_time: 12.1
+
+best:
+  accuracy: 1.0
+  labels:
+    blocked: 145
+    free: 126
+  train_time: 163.49
