@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os, sys, argparse, errno, yaml, time, datetime
 import cv2, numpy 
@@ -44,10 +44,9 @@ class Train_Model_Node(object):
         
         # initial model
         self.train_save_model_name  = self.compare_model_name(self.train_save_model_name)
-        self.recording(model_name=self.train_save_model_name, train_time=12.1, accuracy=4.0, labels=self.yaml_dict)
         _data = self.rule_for_datasets(batch_size=self.loader_batch_size, shuffle=self.loader_shuffle, num_workers=self.loader_num_workers)
         _model = self.neural_network(model=self.param_model, param_pretrained=True, kind_of_classifier=self.kind_of_classifier)
-        _cuda = self.cuda(cuda=self.use_cuda) 
+        _cuda = self.cuda(use=self.use_cuda) 
 
         # train model
         self.train(epochs=self.train_epochs, best_model_path=self.train_save_model_name, learning_rate=self.train_lr, momentum=self.train_momentum)
@@ -119,8 +118,8 @@ class Train_Model_Node(object):
         else:
             rospy.loginfo("Your classifier is wrong. Please check out image label!")
 
-    def cuda(self,cuda=False):
-        if cuda == True:
+    def cuda(self,use=False):
+        if use == True:
             rospy.loginfo("Using cuda! Need some time to start...")
             self.device = torch.device('cuda')
             start_time = rospy.get_time()
@@ -165,7 +164,7 @@ class Train_Model_Node(object):
         interval = rospy.get_time() - start_time
         rospy.loginfo("Done! Use {:.2f} seconds to train model.".format(interval))
         self.recording(model_name=best_model_path, train_time=round(interval, 2), accuracy=self.best_accuracy, labels=self.yaml_dict)
-        rospy.loginfo("Please check out you model in [{}]".format(rospkg.RosPack().get_path(self.package) + '/model/'))
+        rospy.loginfo("Please check out you model and recording in [{}]".format(rospkg.RosPack().get_path(self.package) + '/model/'))
 
     def getFilePath(self,name ,folder="image"):
         rospack = rospkg.RosPack()
@@ -218,6 +217,7 @@ class Train_Model_Node(object):
         time_format = '%Y-%m-%d-%H-%M-%S'
         now = datetime.datetime.now().strftime(time_format)
         pre_recording_yaml = {}
+        model_name = model_name + ".pth"
         with open(fname, 'r') as in_file:
             try:
                 pre_recording_yaml = yaml.load(in_file)
@@ -225,9 +225,22 @@ class Train_Model_Node(object):
                 print(" YAML syntax  error. File: {}".format(fname))
         recording_now = {
             model_name: {
-                "train_time": train_time,
-                "accuracy"  : accuracy,
+                "build_time": now,
                 "labels"    : labels,
+                "loader"    : {
+                    "batch_size":self.loader_batch_size, 
+                    "shuffle":self.loader_shuffle, 
+                    "num_workers":self.loader_num_workers,             
+                },
+                "train"     : {
+                    "use_cuda":self.use_cuda,
+                    "model":self.param_model,
+                    "epochs":self.train_epochs,
+                    "learning_rate":self.train_lr,
+                    "momentum":self.train_momentum,
+                    "train_time": train_time,
+                    "accuracy"  : accuracy,
+                },
             }
         }
         with open(fname, 'w') as outfile:

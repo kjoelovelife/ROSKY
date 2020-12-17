@@ -32,6 +32,8 @@ class Save_Image_Node():
         self.read_param_from_file()
         rospy.loginfo("Your image label : {} ".format(self.label))
         rospy.loginfo("If your label is wrong, please change the label.")
+
+        # configure subscriber
         self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
         
         # setup ros param

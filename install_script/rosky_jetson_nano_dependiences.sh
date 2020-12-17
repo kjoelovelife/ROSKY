@@ -71,6 +71,10 @@ if [[ $kernel =~ $platform ]] ; then
     echo $PASSWORD | sudo -S make install
     cd ~/$main_path/
     #git clone https://github.com/dusty-nv/jetbot_ros ~/$main_path/catkin_ws/src/jetbot_ros
+   
+    # install pytorch with python2
+    cd ~/$main_path/install_script
+    source ~/$main_path/install_script/jetpack44_python2_pytoch.sh 
 else    
     echo $PASSWORD | sudo -S rm -rf ~/$main_path/catkin_ws/src/jetbot_ros
     echo $PASSWORD | sudo -S rm -rf ~/$main_path/catkin_ws/src/jetbot_msgs

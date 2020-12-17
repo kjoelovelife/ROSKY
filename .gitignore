@@ -29,4 +29,6 @@ catkin_ws/src/rosky_slam/map/*.pgm
 catkin_ws/src/rosky_slam/map/*.yaml
 catkin_ws/src/deep_learning/image/*/*.jpg
 catkin_ws/src/deep_learning/model/*.pth
+catkin_ws/src/deep_learning/model/recording.yaml
+catkin_ws/src/jetson_camera/include/jetcam_ros/__pycache__/
 
