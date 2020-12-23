@@ -4,7 +4,7 @@
 # Copyright (c) 2020, iCShop, Inc.
 # All rights reserved.
 #
-# Developer : Lin Wei-Chih , kjoelovelife@gmail.com , on 2020-12-11
+# Developer : Lin Wei-Chih , kjoelovelife@gmail.com , on 2020-12-22
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ from serial import Serial, SerialException
 from functools import reduce
 
 class Ominibot_Car(object):
-    def __init__(self,port="ominibot_car", baud=115200, timeout=None):
+    def __init__(self,port="ominibot_car", baud=115200, timeout=None, py_version=3):
         ## setup connected parameter
         self.version = self.__version__()
         self.param = {
@@ -67,6 +67,7 @@ class Ominibot_Car(object):
             raise
             return
         
+        ###### auto return value ######
         self.imu  = {"accel":[0, 0, 0] , "gyro":[0, 0, 0]}
         self.imu_bfr  = {"accel":[0, 0, 0] , "gyro":[0, 0, 0]} 
         self.odom = [0, 0, 0, 0]
@@ -79,11 +80,88 @@ class Ominibot_Car(object):
         self.last_imu_seq = 0
         self.last_odom_seq = 0
         self.last_battery_seq = 0
-        self.system_mode = [0, 0, 0, 0]
-        self.motor_voltage = [0, 500]
-        self.cutoff_voltage = [32767, 32767]
-        self.read_motor_voltage()
-        self.read_cutoff_voltage()
+
+        ###### read value ######
+        self.system_value = {
+            "speed_limit"    : [0, 0, 0, 0],
+            "location_limit" : [0, 0, 0, 0],
+            "location_kp"    : [0, 0, 0, 0],
+            "location_ki"    : [0, 0, 0, 0],
+            "location_kd"    : [0, 0, 0, 0],
+            "speed_kp"       : [0, 0, 0, 0],
+            "speed_ki"       : [0, 0, 0, 0],
+            "gyro_compensate": [0, 0, 0, 0],
+            "system_mode"    : [0, 0, 0, 0],
+            "gyro_correct"   : [0, 0, 0, 0],
+            "motor_voltage"  : [0, 500],
+            "battery_voltage" : [32767, 32767], 
+            "gyro_turn_angle": [0, 0, 0, 0],
+        }
+        if py_version == 3:
+            self.respond = {
+                "head": 0x23,
+                "auto_head": 0xFF,
+                "speed_limit": 0x01,
+                "location_limit": 0x02,
+                "location_kp": 0x03,
+                "location_ki": 0x04,
+                "location_kd": 0x05,
+                "speed_kp": 0x06,
+                "speed_ki": 0x07,
+                "gyro_compensate": 0x08,
+                "system_mode": 0x09,
+                "gyro_correct": 0x0A,
+                "motor_voltage": 0x0B,
+                "battery_voltage": 0x0C,
+                "gyro_turn_angle": 0x20,
+                "auto_gyro": 0xFA,
+                "auto_encoder": 0xFB,
+                "auto_battery": 0xFC,
+            }
+        elif py_version == 2:
+            self.respond = {
+                "head": '\x23',
+                "auto_head":'\xFF',
+                "speed_limit": '\x01',
+                "location_limit": '\x02',
+                "location_kp": '\x03',
+                "location_ki": '\x04',
+                "location_kd": '\x05',
+                "speed_kp": '\x06',
+                "speed_ki": '\x07',
+                "gyro_compensate": '\x08',
+                "system_mode": '\x09',
+                "gyro_correct": '\x0A',
+                "motor_voltage": '\x0B',
+                "battery_voltage": '\x0C',
+                "gyro_turn_angle": '\x20',
+                "auto_gyro": '\xFA',
+                "auto_encoder": '\xFB',
+                "auto_battery": '\xFC',
+            }    
+        else:
+            print("Please check out your python version. Default use python3.")
+            self.respond = {
+                "head": 0x23,
+                "auto_head": 0xFF,
+                "speed_limit": 0x01,
+                "location_limit": 0x02,
+                "location_kp": 0x03,
+                "location_ki": 0x04,
+                "location_kd": 0x05,
+                "speed_kp": 0x06,
+                "speed_ki": 0x07,
+                "gyro_compensate": 0x08,
+                "system_mode": 0x09,
+                "gyro_correct": 0x0A,
+                "motor_voltage": 0x0B,
+                "battery_voltage": 0x0C,
+                "gyro_turn_angle": 0x20,
+                "auto_gyro": 0xFA,
+                "auto_encoder": 0xFB,
+                "auto_battery": 0xFC,
+            }
+
 
     def connect(self):
         if self._serialOK == False:
@@ -108,8 +186,8 @@ class Ominibot_Car(object):
                 self.error_flag = True
                 break
 
-            #====== imu data packet ======#
-            if reading[0] == 0xFF and reading[1] == 0xFA :
+            #====== imu data packet (python3) ======#
+            if reading[0] == self.respond["auto_head"] and reading[1] == self.respond["auto_gyro"] :
                 #ser_in = self.serial.read(13)
                 try:
                     ser_in = self.serial.read(13)
@@ -123,7 +201,7 @@ class Ominibot_Car(object):
                 #print(to_hex(b'\x03\xac23\n'))
 
             #====== encoder data packet ======#
-            elif reading[0] == 0xFF and reading[1] == 0xFB:
+            elif reading[0] == self.respond["auto_head"] and reading[1] == self.respond["auto_encoder"]:
                 #ser_in = self.serial.read(9)
                 try:
                     ser_in = self.serial.read(9)
@@ -134,7 +212,7 @@ class Ominibot_Car(object):
                 self._is_synced = True
             
             #====== battery data packet ======#
-            elif reading[0] == 0xFF and reading[1] == 0xFC:
+            elif reading[0] == self.respond["auto_head"] and reading[1] == self.respond["auto_battery"]:
                 #ser_in = self.serial.read(5)
                 try:
                     ser_in = self.serial.read(5)
@@ -235,22 +313,32 @@ class Ominibot_Car(object):
         self.battery = self.battery_bfr
         self._battery_new_data = True
 
+    ###### read data 1byte decode ######
+    def read_data_decode_1byte(self, param_name, data, size):
+        for number in range(size):
+            self.system_value[param_name][number] = struct.unpack('B', data[ number :(number + 1) ])[0]
+        return self.system_value[param_name]
+
+    ###### read data 2byte decode ######
+    def read_data_decode_2byte(self, param_name, data, size):
+        for number in range(int(size/2)):
+            self.system_value[param_name][number] = struct.unpack('>H', data[ int((number * 2)) : int(math.pow(2, number+1)) ])[0]
+        return self.system_value[param_name]
+
     ###### read system mode decode ######
     def system_mode_decode(self, data, size):
-        self.system_mode[0] = struct.unpack('B', data[0:1])[0]
-        self.system_mode[1] = struct.unpack('B', data[1:2])[0]
-        self.system_mode[2] = struct.unpack('B', data[2:3])[0]
-        self.system_mode[3] = struct.unpack('B', data[3:4])[0]
+        for number in range(size):
+            self.system_value["system_mode"][number] = struct.unpack('B', data[ number :(number + 1) ])[0] 
 
     ###### read motor voltage decode ######
     def motor_voltage_decode(self, data, size):
-        self.motor_voltage[0] = struct.unpack('>H', data[0:2])[0]
-        self.motor_voltage[1] = struct.unpack('>H', data[2:4])[0]
+        self.system_value["motor_voltage"][0] = struct.unpack('>H', data[0:2])[0]
+        self.system_value["motor_voltage"][1] = struct.unpack('>H', data[2:4])[0]
 
     ###### read motor voltage decode ######
     def cutoff_voltage_decode(self, data, size):
-        self.cutoff_voltage[0] = struct.unpack('>H', data[0:2])[0]
-        self.cutoff_voltage[1] = struct.unpack('>H', data[2:4])[0]
+        self.system_value["cutoff_voltage"][0] = struct.unpack('>H', data[0:2])[0]
+        self.system_value["cutoff_voltage"][1] = struct.unpack('>H', data[2:4])[0]
 
     ######## Module communication from outside ######
     def serialOK(self):
@@ -287,15 +375,6 @@ class Ominibot_Car(object):
             return {"seq":self.battery_seq, "battery":self.battery}
         else:
             None
-    
-    def get_system_mode(self):
-        return self.system_mode
-
-    def get_motor_voltage(self):
-        return self.motor_voltage
-
-    def get_cutoff_voltage(self):
-        return self.cutoff_voltage
 
     def stop_thread(self):
         self.t_stop.set()
@@ -309,38 +388,42 @@ class Ominibot_Car(object):
     def information(self):
         print("Omnibot car Version: {}.".format(self.__version__()))
         print("Mecanum wheel configure: left_front: motor 1, left_back: motor 4, right_front: motor 2, right_back: motor 4")
+        print("Omnibot wheel configure: right_front: motor 3, left_front: motor 2, back: motor 1")
+        print("ROSKY wheel configure: according to the Ominibot car information.")
 
     ## coordinate: ROS transformer
-    def omnibot(self, Vx=0.0, Vy=0.0, Vz=0.0):
+    def omnibot(self, information=False, debug=False, platform="omnibot", Vx=0.0, Vy=0.0, Vz=0.0):
         # set direction
         function = {
             "Vx": lambda V: 0 if V >=0 else math.pow(2,2),
-            "Vy": lambda V: 0 if V >=0 else math.pow(2,2),
-            "Vz": lambda V: 0 if V >=0 else math.pow(2,2),
+            "Vy": lambda V: 0 if V >=0 else math.pow(2,1),
+            "Vz": lambda V: 0 if V >=0 else math.pow(2,0),
         } 
         direction = [
             function["Vx"](Vx),
             function["Vy"](Vy),
-            function["Vz"](Vz)
+            function["Vz"](Vz),
         ]       
-        direction = reduce(lambda add_x, add_y: add_x + add_y, direction) 
-        Vx = round(self.clamp( abs(Vx), 0, 65536 ))
-        Vy = round(self.clamp( abs(Vy), 0, 65536 ))
-        Vz = round(self.clamp( abs(Vz), 0, 65536 ))            
+        direction = int(reduce(lambda add_x, add_y: add_x + add_y, direction)) 
+        Vx = int(round(self.clamp( abs(Vx), 0, 65536 )))
+        Vy = int(round(self.clamp( abs(Vy), 0, 65536 )))
+        Vz = int(round(self.clamp( abs(Vz), 0, 65536 )))           
         cmd = bytearray(b'\xFF\xFE\x01')
         cmd += struct.pack('>h', Vx) # 2-bytes , velocity for x axis 
         cmd += struct.pack('>h', Vy) # 2-bytes , velocity for y axis 
         cmd += struct.pack('>h', Vz)  # 2-bytes , velocity for z axis       
         # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
-        cmd += struct.pack('>b',direction) 
+        cmd += struct.pack('>b',direction)
+        if debug == True :
+            print("send signal about {}: {} ".format(platform, binascii.hexlify(cmd)))
         if self._serialOK == True:       
             self.serial.write(cmd)
             time.sleep(self.param["send_interval"])
     
     def mecanum(self, Vx=0.0, Vy=0.0, Vz=0.0):
-        self.omnibot(Vx,Vy,Vz)
+        self.omnibot(platform="mecanum", Vx=Vx, Vy=Vy, Vz=Vz)
 
-    def individual_wheel(self, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03):
+    def individual_wheel(self, information=False, debug=False, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03):
         ## mode : 0x02 -> with encoder, 0x03 -> without encoder 
         ## setting up reverse , left motors are normal direction, right motors are reverse direction 
         function = {
@@ -378,12 +461,13 @@ class Ominibot_Car(object):
         cmd += struct.pack('>h',speed["v3"])  # 2-bytes
         cmd += struct.pack('>h',speed["v4"])   # 2-bytes     
         cmd += struct.pack('>b',direction) # 1-bytes 
-        #print(binascii.hexlify(speed)) # debug
+        if debug == True :
+            print("send signal about individual_wheel: {} ".format(binascii.hexlify(cmd)))
         if self._serialOK == True:       
             self.serial.write(cmd)
             time.sleep(self.param["send_interval"])
 
-    def rosky_diff_drive(self, left=0.0, right=0.0, mode=0x02):
+    def rosky_diff_drive(self, left=0.0, right=0.0, alpha=-1, mode=0x02, information=False, debug=False):
         # mode : 0x02 -> with encoderm 0x03 -> without encoder
         # V1 : rf, V2 : lf, V3 : rb, V4 : lb
         speed_limit = {
@@ -392,17 +476,16 @@ class Ominibot_Car(object):
             "fricition":0,
         }
         magnification = 1
-        alpha = -1
-        _left = left if mode == 0x03 else left * alpha
-        _right = right if mode == 0x03 else right * alpha
+        left = left if mode == 0x03 else left * alpha
+        right = right if mode == 0x03 else right * alpha
         ## setting up reverse , left motors are normal direction, right motors are reverse direction 
         function = {
             "right": lambda V: math.pow(2,0) + math.pow(2,2)  if V < 0 else 0,
             "left" : lambda V: 0 if V < 0 else math.pow(2,1) + math.pow(2,3),
         }
         direction = [
-            function["right"](_right),
-            function["left"](_left)
+            function["right"](right),
+            function["left"](left)
         ]
         direction = int(reduce(lambda add_x, add_y: add_x + add_y, direction))
         ## setting up wheel velocity
@@ -415,13 +498,149 @@ class Ominibot_Car(object):
         cmd += struct.pack('>h',right)  # 2-bytes
         cmd += struct.pack('>h',left)   # 2-bytes     
         cmd += struct.pack('>b',direction) # 1-bytes 
-        #print(binascii.hexlify(speed)) # debug
+        if debug == True :
+            print("send signal about rosky_diff_drive: {} ".format(binascii.hexlify(cmd)))
         if self._serialOK == True:       
             self.serial.write(cmd)
             time.sleep(self.param["send_interval"])
 
+    def clamp(self,value=0.0, _min=0.0, _max=0.0):
+        return max(min(_max, value), _min) 
+
+    def set_mode_A(self, param_name, number=50, information=False, debug=False):
+        item = {
+            "load_setup": 0x01,
+            "initialize": 0x02,
+            "write_setting": 0x03,
+            "gyro_compensate_off": 0x04,
+            "gyro_compensate_on": 0x05,
+            "gyro_compensate_restart": 0x06,
+        }
+        if param_name in item:
+            Tx8 = item.get(param_name)
+        else:
+            print("Please check out your param name in\n {}".format(list(item.keys())))  
+            return  
+        # send signal      Tx0 Tx1 Tx2 Tx3 Tx4 Tx5 Tx6 Tx7
+        cmd = bytearray(b'\xFF\xFE\x80\x80\x00\x80\x00\x00')
+        cmd.append(Tx8)
+        cmd.append(0x00)
+        if debug == True :
+            print("send signal about {}: {} ".format(param_name, binascii.hexlify(cmd)))    
+        if self._serialOK == True:   
+            for index in range(number):    
+                self.serial.write(cmd)
+                time.sleep(self.param["send_interval"])
+        return
+
+    def load_setup(self, number=50, information=False, debug=False):
+        self.set_mode_A(param_name="load_setup", number=number, information=information, debug=debug)
+
+    def initialize(self, number=50, information=False, debug=False):
+        self.set_mode_A(param_name="initialize", number=number, information=information, debug=debug)
+
+    def write_setting(self, number=50 ,information=False, debug=False):
+        self.set_mode_A(param_name="write_setting", number=number, information=information, debug=debug)
+
+    def gyro_compensate(self, switch="off", number=50, information=False, debug=False):
+        param_name = ""
+        if switch == "off":
+            param_name = "gyro_compensate_off"
+        elif switch == "on":
+            param_name = "gyro_compensate_on"
+        elif switch == "restart":
+            param_name = "gyro_compensate_restart"         
+        else:
+            print("Error. Please restart your code and ominibot car.")
+            self.error_flag = True
+        self.set_mode_A(param_name=param_name, number=number, information=information, debug=debug)
+
+    def set_mode_B(self, param_name, value_1=0, value_2=0, number=50, information=False, debug=False):
+        item = {
+            "speed_limit": 0x01,
+            "location_limit": 0x02,
+            "location_kp": 0x03,
+            "location_ki": 0x04,
+            "location_kd": 0x05,
+            "speed_kp": 0x06,
+            "speed_ki": 0x07,
+            "gyro_compensate": 0x08,
+            "system_mode": 0x09,
+            "gyro_correct": 0x0A,
+            "motor_voltage": 0x0B,
+            "battery_voltage": 0x0C,
+        }
+        item_value_byte_2 = ["speed_limit", "location_limit", "gyro_correct","motor_voltage"]
+        item_value_byte_4 = ["location_kp","location_ki","location_kd","speed_kp","speed_ki","gyro_compensate","system_mode","location_kp"]
+        item_value_2      = ["battery_voltage"]
+        if param_name in item:
+            Tx4 = item.get(param_name)
+        else:
+            print("Please check out your param name in\n {}".format(list(item.keys())))  
+            return  
+        # send signal      Tx0 Tx1 Tx2 Tx3
+        cmd = bytearray(b'\xFF\xFE\x80\x80')
+        cmd.append(Tx4)
+        if param_name in item_value_byte_2:
+            cmd.append(0x00) # Tx5
+            cmd.append(0x00) # Tx6
+            cmd += struct.pack('>H',int(value_1))  # Tx7, Tx8
+        elif param_name in item_value_byte_4:
+            cmd += struct.pack('>I',int(value_1))  # Tx5, Tx6, Tx7, Tx8
+        elif param_name in item_value_2:
+            cmd += struct.pack('>H',int(value_1))  # Tx5, Tx6
+            cmd += struct.pack('>H',int(value_2))  # Tx7, Tx8
+        else:
+            print("Error")
+        cmd.append(0x00) # Tx9
+        if debug == True :
+            print("send signal about {}: {} ".format(param_name, binascii.hexlify(cmd)))    
+        if self._serialOK == True:  
+            print("Setting {}...".format(param_name)) 
+            for index in range(number):    
+                self.serial.write(cmd)
+                time.sleep(self.param["send_interval"])
+            if information == True:
+                self.read_data(param_name=param_name, information=True)
+        return
+    
+    def set_speed_limit(self, speed, information=False, debug=False):
+        self.set_mode_B(param_name="speed_limit", value_1=int(speed), information=information, debug=debug)
+
+    def set_location_limit(self, location, information=False, debug=False):
+        self.set_mode_B(param_name="location_limit", value_1=int(location), information=information, debug=debug)
+    
+    def set_location_PID(self, controller, gain, information=False, debug=False):
+        _controller = ["kp","ki","kd"]
+        if controller in _controller:
+            if controller == "kp":
+                param_name = "location_kp"
+            elif controller == "ki":
+                param_name = "location_ki"
+            elif controller == "kd":
+                param_name = "location_kd"
+            else:
+                print("Error! Please check out your controller, just can type: {}.".format(_controller))
+                return
+        self.set_mode_B(param_name=param_name, value_1=int(gain), information=information, debug=debug)
+
+    def set_speed_PI(self, controller, gain, information=False, debug=False):
+        _controller = ["kp","ki"]
+        if controller in _controller:
+            if controller == "kp":
+                param_name = "speed_kp"
+            elif controller == "ki":
+                param_name = "speed_ki"
+            else:
+                print("Error! Please check out your controller, just can type: {}.".format(_controller))
+                return
+        self.set_mode_B(param_name=param_name, value_1=int(gain), information=information, debug=debug)    
+
+    def set_gyro_compensate_param(self, value, information=False, debug=False):
+        self.set_mode_B(param_name="gyro_compensate", value_1=int(value), information=information, debug=debug)      
+
     #================ set system node ===============
-    # vehicle       (Bit0)  : 0 -> omnibot, 1->Mecanum, 2->individual with encoder, 3->individual without encoder  
+    # vehicle       (Bit0)  : 0 -> omnibot, 1-> Mecanum, 2-> individual with encoder, 3-> individual without encoder  
     # imu           (Bit3)  : 0 -> not to do , 1 -> do it
     # imu_axis      (Bit4)  : 0 -> not to do , 1 -> do it
     # motor_direct  (Bit8)  : 0 -> normal    , 1 -> reverse
@@ -429,7 +648,7 @@ class Ominibot_Car(object):
     # turn_direct   (Bit10) : 0 -> normal    , 1 -> reverse
     # imu_reverse   (Bit11) : 0 -> normal    , 1 -> reverse    
     #================================================
-    def set_system_mode(self, platform=None,vehicle=0, imu=0, imu_axis=0, motor_direct=0, encoder_direct=0,turn_direct=0, imu_direct=0): 
+    def set_system_mode(self, information=False, debug=False, platform=None,vehicle=0, imu=0, imu_axis=0, motor_direct=0, encoder_direct=0,turn_direct=0, imu_direct=0): 
         _platform = {
                 "omnibot":0,
                 "mecanum":1,
@@ -439,7 +658,8 @@ class Ominibot_Car(object):
             vehicle = _platform.get( platform , 0 )
         else:
             if platform == None:
-                pass
+                print("Please choose platform: {} ".format(list(_platform)))
+                return
             else:
                 print("We don't have platform [{}]. Please choose platform below: ".format(platform))
                 print(list(_platform.keys()))
@@ -464,18 +684,61 @@ class Ominibot_Car(object):
         ]
         mode = int(reduce(lambda add_x, add_y: add_x + add_y, mode))
         cmd = bytearray(b'\xFF\xFE\x80\x80\x09\x00\x00') # Tx[0]~Tx[6]
-        cmd += struct.pack('>h',mode)                    # Tx[7] ,Tx[8]
+        cmd += struct.pack('>h', mode)                   # Tx[7] ,Tx[8]
         cmd.append(0x00)                                 # Tx[9]
-        print("Omniboard write setting!")
+        if debug == True :
+            print("send signal about set system mode: {} ".format(binascii.hexlify(cmd)))
         if self._serialOK == True:        
             self.serial.write(cmd)
             time.sleep(0.01)
-            print("Your platform now setting : {} ".format(platform))
-            ## debug
-            #print("Send to omniboardV12 : {} ".format(binascii.hexlify(cmd)))
+            if information == True:
+                print("Your platform now setting: {} ".format(platform))   
+        return 
 
-    def read_system_mode(self):
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x19\x00\x00\x00\x00\x00') 
+    def set_gyro_correct(self, value, information=False, debug=False):
+        self.set_mode_B(param_name="gyro_correct", value_1=int(value), information=information, debug=debug)
+                
+    def set_motor_voltage(self, voltage=5, information=False, debug=False):
+        voltage = int(voltage * 100)
+        self.set_mode_B(param_name="motor_voltage", value_1=voltage, information=information, debug=debug) 
+
+
+    def set_battery_voltage(self, full=12.6, cut=11.1, information=False, debug=False):
+        full = int(full * 100)
+        cut = int(cut * 100) 
+        self.set_mode_B(param_name="battery_voltage", value_1=full, value_2=cut, information=information, debug=debug)
+
+    def read_data(self, param_name, information=False, debug=False):
+        if param_name in self.system_value:
+            if not param_name == "head" or param_name == "auto_head":
+                Tx4 = {
+                    "speed_limit": 0x11,
+                    "location_limit": 0x12,
+                    "location_kp": 0x13,
+                    "location_ki": 0x14,
+                    "location_kd": 0x15,
+                    "speed_kp": 0x16,
+                    "speed_ki": 0x17,
+                    "gyro_compensate": 0x18,
+                    "system_mode": 0x19,
+                    "gyro_correct": 0x1A,
+                    "motor_voltage": 0x1B,
+                    "battery_voltage": 0x1C,
+                    "gyro_turn_angle": 0x20,
+                }.get(param_name, 0)
+            else:
+                print("Please check out your param name in\n {}".format(list(self.system_value.keys())))  
+                return 
+        else:
+            print("Please check out your param name in\n {}".format(list(self.system_value.keys())))  
+            return  
+        # send signal      Tx0 Tx1 Tx2 Tx3 
+        cmd = bytearray(b'\xFF\xFE\x80\x80') 
+        cmd.append(Tx4)    # Tx4
+        for index in range(5,10,1): # Tx5 ~ Tx9
+            cmd.append(0x00)
+        if debug == True :
+            print("send signal about {}: {} ".format(param_name, binascii.hexlify(cmd)))
         if self._serialOK == True:  
             start = time.time()
             interval = time.time() - start
@@ -484,145 +747,92 @@ class Ominibot_Car(object):
                 try:
                     self.serial.write(cmd)
                     reading = self.serial.read(2)
-                    time.sleep(0.01)
-                    if reading[0] == '\x23' and reading[1] == '\x09':
+                    if reading[0] == self.respond["head"] and reading[1] == self.respond[param_name]:
                         _read = True
                         break
                     else:
                         interval = time.time() - start
+                    time.sleep(0.01)
                 except Exception:
                     self.error_flag = True
                     break
-            try:
-                ser_in = self.serial.read(4)
-            except Exception as error:
-                self.error_flag = True
             if _read == True:
-                self.system_mode_decode(ser_in,4)
-                system_mode = self.get_system_mode()  
-                print("system mode: {}".format(system_mode[3:4])) 
-            else:
-                print("Warn! Can not get systemode. please disconnect and try again.")      
-
-
-
-    def clamp(self,value=0.0, _min=0.0, _max=0.0):
-        return max(min(_max, value), _min) 
-
-    def load_setup(self):
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x00\x80\x00\x00\x01\x00')
-        if self._serialOK == True:       
-            self.serial.write(cmd)
-
-    def write_setting(self):
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x00\x80\x00\x00\x03\x00')
-        if self._serialOK == True:
-            seconds = 5
-            print("Writting now..., please wait {} seconds".format(seconds))
-            self.serial.write(cmd)
-            time.sleep(seconds)
-            print("Done.")
-    
-    def set_motor_voltage(self,voltage=5):
-        _voltage = int(voltage * 100) 
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x0B\x00\x00')
-        cmd += struct.pack('>h',_voltage)  # 2-bytes
-        cmd.append(0x00)
-        if self._serialOK == True:
-            for number in range(200):
-                self.serial.write(cmd)
-                time.sleep(0.01)
-        self.read_motor_voltage(mode="setup")
-
-    def set_cutoff_voltage(self, cut=11.1, full=12.6):
-        full_voltage = int(full * 100)
-        cutoff_voltage = int(cut * 100) 
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x0C')
-        cmd += struct.pack('>H',full_voltage)  # 2-bytes
-        cmd += struct.pack('>H',cutoff_voltage)  # 2-bytes
-        cmd.append(0x00)
-        print("Waitting for setting cutoff voltage...")
-        if self._serialOK == True:
-            for number in range(200):
-                self.serial.write(cmd)
-                time.sleep(0.01)
-        self.read_cutoff_voltage(mode="setup")
-    
-    def read_motor_voltage(self, mode="initial"):
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x1B\x00\x00\x00\x00\x00') 
-        if self._serialOK == True:  
-            start = time.time()
-            interval = time.time() - start
-            _read = False
-            while(interval < self.param["interrupt_time"]):
                 try:
-                    self.serial.write(cmd)
-                    reading = self.serial.read(2)
-                    if reading[0] == 0x23 and reading[1] == 0x0B:
-                        _read = True
-                        break
-                    else:
-                        interval = time.time() - start
-                    time.sleep(0.01)
-                except Exception:
+                    ser_in = self.serial.read(4)
+                except Exception as error:
                     self.error_flag = True
-                    break
-            try:
-                ser_in = self.serial.read(4)
-            except Exception as error:
-                self.error_flag = True
-            if _read == True:
-                self.motor_voltage_decode(ser_in,4)
-                motor_voltage = self.get_motor_voltage()
-                print("motor voltage : {}".format(motor_voltage[1])) 
+                if  param_name == "motor_voltage" or param_name == "battery_voltage":
+                    data_decode = self.read_data_decode_2byte(param_name, ser_in, 4)
+                else:
+                    data_decode = self.read_data_decode_1byte(param_name, ser_in, 4)
+                if information == True:
+                    print("{}: {}".format(param_name, data_decode)) 
+                else:
+                    return data_decode
             else:
-                if mode == "setup" or mode == "read":
-                    print("Warn! Can not get motor_voltage. please disconnect and try again.") 
+                print("Warn! Can not get {}. Please disconnect and try again.".format(param_name))
+        return
 
-    def read_cutoff_voltage(self, mode="initial"):
-        cmd = bytearray(b'\xFF\xFE\x80\x80\x1C\x00\x00\x00\x00\x00') 
-        if self._serialOK == True:  
-            start = time.time()
-            interval = time.time() - start
-            _read = False
-            while(interval < self.param["interrupt_time"]):
-                try:
-                    self.serial.write(cmd)
-                    reading = self.serial.read(2)
-                    if reading[0] == 0x23 and reading[1] == 0x0C:
-                        _read = True
-                        break
-                    else:
-                        interval = time.time() - start
-                    time.sleep(0.01)
-                except Exception:
-                    self.error_flag = True
-                    break
-            try:
-                ser_in = self.serial.read(4)
-            except Exception as error:
-                self.error_flag = True
-            if _read == True:
-                self.cutoff_voltage_decode(ser_in,4)
-                cutoff_voltage = self.get_cutoff_voltage()  
-                print("full voltage  : {} \ncutoff voltage: {}".format(cutoff_voltage[0],cutoff_voltage[1])) 
-            else:
-                if mode == "setup" or mode == "read":
-                    print("Warn! Can not get cutoff voltage. please disconnect and try again.") 
+    def read_speed_limit(self, information=False, debug=False):
+        self.read_data(param_name="speed_limit", information=information, debug=debug)
 
-    def __version__(self):
-        return "V0.08"
+    def read_location_limit(self, information=False, debug=False):
+        self.read_data(param_name="location_limit", information=information, debug=debug)
+
+    def read_location_kp(self, information=False, debug=False):
+        self.read_data(param_name="location_kp", information=information, debug=debug)
+
+    def read_location_ki(self, information=False, debug=False):
+        self.read_data(param_name="location_ki", information=information, debug=debug)
+
+    def read_location_kd(self, information=False, debug=False):
+        self.read_data(param_name="location_kd", information=information, debug=debug)
+
+    def read_speed_kp(self, information=False, debug=False):
+        self.read_data(param_name="speed_kp", information=information, debug=debug)
+
+    def read_speed_ki(self, information=False, debug=False):
+        self.read_data(param_name="speed_ki", information=information, debug=debug)
+
+    def read_gyro_compensate(self, information=False, debug=False):
+        self.read_data(param_name="gyro_compensate", information=information, debug=debug)
+
+    def read_system_mode(self, information=False, debug=False):
+        self.read_data(param_name="system_mode", information=information, debug=debug)
+
+    def read_gyro_correct(self, information=False, debug=False):
+        self.read_data(param_name="gyro_correct", information=information, debug=debug)
+
+    def read_motor_voltage(self, information=False, debug=False):
+        self.read_data(param_name="motor_voltage", information=information, debug=debug)
+
+    def read_battery_voltage(self, information=False, debug=False):
+        self.read_data(param_name="battery_voltage", information=information, debug=debug) 
+   
+    def __version__(self, information=False):
+        if information == True:
+            print("Firmware date       : 2020.12.10.")
+            print("Firmware version    : V0.08.")
+            print("Firmware system item: {}.".format(list(self.system_value.keys())))
+            print("Driver developer    : Wei-Chih Lin, github: https://github.com/kjoelovelife")
+            print("More information    : https://github.com/CIRCUSPi/OminiBotHV")
+            return
+        else:
+            return "V0.08"
 
 if __name__ == '__main__':
     #### test code ####
     _port = "/dev/ominibot_car"
     _baud = 115200
-    motor_driver  = Ominibot_Car(_port,_baud)
+    ominibot  = Ominibot_Car(_port,_baud, py_version=3)
+    #ominibot.__version__(information=True)
+    ominibot.set_battery_voltage(cut=11.1, information=True)
+    #ominibot.read_battery_voltage(information=True)
     #motor_driver.set_cutoff_voltage(11.1)
     #motor_driver.set_motor_voltage(7.4)
-    #motor_driver.write_setting()
+    #ominibot.gyro_compensate(switch="off", information=True, debug=True)
 
-    ###### auto read information example ######
+    ###### auto read information example and control motor ######
     '''
     try:
         thread = threading.Thread(target=motor_driver.serial_thread)
@@ -635,14 +845,14 @@ if __name__ == '__main__':
     end   = time.time()
     interval = end - start
     while(interval<3):
-        motor_driver.individual_wheel(v1=30,v2=30,v3=20,v4=3003,mode=0x03)
+        #motor_driver.individual_wheel(v1=6000,v2=6000,v3=6000,v4=6000,mode=0x03)
         battery = motor_driver.get_battery_data()
         imu     = motor_driver.get_imu_data()
         odom    = motor_driver.get_odom_data()
-        serial_ok = motor_driver.serialOK()
         print(battery)
         print(imu)
         print(odom)
+        motor_driver.rosky_diff_drive(left=40,right=40, mode=0x02)
         time.sleep(1)
         end = time.time()
         interval = end - start
@@ -650,14 +860,18 @@ if __name__ == '__main__':
     '''
 
     ###### motor control example ######
+    '''
+    for number in range(3):
+        ominibot.set_system_mode(platform="mecanum")
     start = time.time()
     end   = time.time()
     interval = end - start
-    time.sleep(2)
-    while(interval< 5):
+    while(interval< 20):
         # left: left side, right: right side
         # mode=0x02: with encode, mode=0x03: without encode
-        motor_driver.rosky_diff_drive(left=400,right=-400, mode=0x02) 
+        # ominibot.mecanum(-30,0,0) 
+        ominibot.individual_wheel(3000,0,0,3000)
         end = time.time()
         interval = end - start
-    motor_driver.rosky_diff_drive(left=0.0,right=0.0)
+    '''
+
