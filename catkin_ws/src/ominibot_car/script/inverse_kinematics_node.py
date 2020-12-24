@@ -29,8 +29,6 @@ class InverseKinematicsNode(object):
         self.radius = self.setup_parameter("~radius", 0.075)
         self.k = self.setup_parameter("~k", 27.0)
         self.limit = self.setup_parameter("~limit", 1.0)
-        self.keyboard_gain = self.setup_parameter("~keyboard_gain", abs(rospy.get_param("/" + self.veh_name + "/keyboard_mapper_node/keyboard_gain",1.0)))
-        self.keyboard_steerGain = self.setup_parameter("~keyboard_steerGain", abs(rospy.get_param("/" + self.veh_name + "/keyboard_mapper_node/keyboard_steerGain",1.0)))
         self.limit_max = 1.0
         self.limit_min = 0.0
 
@@ -42,8 +40,6 @@ class InverseKinematicsNode(object):
         self.srv_set_k = rospy.Service("~set_k", SetValue, self.cbSrvSetK)
         self.srv_set_limit = rospy.Service("~set_limit", SetValue, self.cbSrvSetLimit)
         self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration)
-        self.srv_set_keyboard_gain = rospy.Service("~set_keyboard_gain", SetValue, self.cbSrvSetKeyboard_gain)
-        self.srv_set_keyboard_steerGain = rospy.Service("~set_keyboard_steerGain", SetValue, self.cbSrvSetKeyboard_steerGain)
 
         # Setup the publisher and subscriber
         self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.car_cmd_callback)
@@ -71,7 +67,7 @@ class InverseKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain", "trim", "baseline", "k", "radius", "limit" , "keyboard_gain" , "keyboard_steerGain"]:
+        for param_name in ["gain", "trim", "baseline", "k", "radius", "limit"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~"+param_name, param_value)
@@ -85,8 +81,6 @@ class InverseKinematicsNode(object):
 
     def saveCalibration(self):
         # Write to yaml
-        self.keyboard_gain = abs(rospy.get_param("/" + self.veh_name + "/keyboard_mapper_node/keyboard_gain",1.0))
-        self.keyboard_steerGain = abs(rospy.get_param("/" + self.veh_name + "/keyboard_mapper_node/keyboard_steerGain",1.0))
         data = {
             "calibration_time": time.strftime("%Y-%m-%d-%H-%M-%S"),
             "gain": self.gain,
@@ -95,8 +89,6 @@ class InverseKinematicsNode(object):
             "radius": self.radius,
             "k": self.k,
             "limit": self.limit,
-            "keyboard_gain" : self.keyboard_gain,
-            "keyboard_steerGain" : self.keyboard_steerGain,
         }
 
         # Write to file
@@ -141,16 +133,6 @@ class InverseKinematicsNode(object):
         self.printValues()
         return SetValueResponse()
 
-    def cbSrvSetKeyboard_gain(self, req):
-        self.keyboard_gain = req.value
-        self.printValues()
-        return SetValueResponse()
-
-    def cbSrvSetKeyboard_steerGain(self, req):
-        self.keyboard_steerGain = req.value
-        self.printValues()
-        return SetValueResponse()
-
     def setLimit(self, value):
         if value > self.limit_max:
             rospy.logwarn("[%s] limit (%s) larger than max at %s" % (self.node_name, value, self.limit_max))
@@ -165,7 +147,7 @@ class InverseKinematicsNode(object):
 
 
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s limit: %s keyboard_gain: %s keyboard_steerGain: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k, self.limit,self.keyboard_gain,self.keyboard_steerGain))
+        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s limit: %s " % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k, self.limit))
 
     def car_cmd_callback(self, msg_car_cmd):
         # assuming same motor constants k for both motors
@@ -173,8 +155,8 @@ class InverseKinematicsNode(object):
         k_l = self.k
 
         # adjusting k by gain and trim
-        k_r_inv = ( (self.gain * self.keyboard_gain) + self.trim) / k_r
-        k_l_inv = ( (self.gain * self.keyboard_gain) - self.trim) / k_l
+        k_r_inv = ( self.gain + self.trim) / k_r
+        k_l_inv = ( self.gain - self.trim) / k_l
         
         omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius

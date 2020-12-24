@@ -14,8 +14,6 @@
     <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="cmd_vel"/>
     <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
     <!-- run inverse_kinematics_node -->

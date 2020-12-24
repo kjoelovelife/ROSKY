@@ -4,8 +4,12 @@
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 
-    <!-- run nav_cmd_mapper_node -->
-    <node ns="$(arg veh)" pkg="mapper" type="nav_cmd_mapper.py" name="nav_cmd_mapper" output="screen" clear_params="true" required="true"/>
+    <!-- run keyboard_mapper_node and rename topic to nav_cmd_mapper -->
+    <remap from="/$(arg veh)/nav_cmd_mapper/cmd_vel" to="/cmd_vel"/>
+    <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
+	    <arg name="node_name" value="nav_cmd_mapper"/>	
+        <arg name="veh" value="$(arg veh)"/>
+    </include>
 
     <!-- run inverse_kinematics_node -->
     <remap from="inverse_kinematics_node/car_cmd" to="nav_cmd_mapper/car_cmd"/>

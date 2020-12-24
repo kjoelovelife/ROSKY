@@ -18,7 +18,7 @@ TebLocalPlannerROS:
   publish_feedback: false                  # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
 
   # Robot
-  max_vel_x: 0.15                           # Maximum translational velocity of the robot
+  max_vel_x: 1.0                           # Maximum translational velocity of the robot
   max_vel_x_backwards: 0.1                 # Maximum translational velocity of the robot for driving backwards
   max_vel_y: 0.0                           # Maximum strafing velocity of the robot (should be zero for non-holonomic robots!)
   max_vel_theta: 0.8                      # Maximum angular velocity of the robot

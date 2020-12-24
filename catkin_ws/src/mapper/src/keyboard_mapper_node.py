@@ -13,7 +13,8 @@ from __builtin__ import True
 class keyboardMapper(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.param_veh = rospy.get_param(self.node_name + "/veh", 'rosky')
+        self.veh_name = self.node_name.split("/")[1]
+        print(self.veh_name)
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
         # Publications
@@ -26,10 +27,6 @@ class keyboardMapper(object):
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
         self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
         self.omega_gain = self.setupParam("~steer_gain", 1.0) #8.3
-        self.keyboard_gain = self.setupParam("~keyboard_gain", 1.0)
-        self.keyboard_steerGain = self.setupParam("~keyboard_steerGain", 1.0)
-        self.v_gain_default = 0.5
-        self.omega_gain_default = 1.0
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
@@ -50,18 +47,6 @@ class keyboardMapper(object):
         #car_cmd_msg.header.stamp = self.joy.header.stamp 
         car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
         car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
-        # setup parameter for inverse_kinematics_node.py use
-        if self.cmd.linear.x != 0 :
-            if self.cmd.linear.x != self.v_gain_default : 
-                self.keyboard_gain = rospy.set_param("~keyboard_gain", car_cmd_msg.v)
-            else:
-               self.keyboard_gain = rospy.set_param("~keyboard_gain",self.v_gain_default )
-        if self.cmd.angular.z != 0 :
-            if self.cmd.angular.z != self.omega_gain_default : 
-                self.keyboard_steerGain = rospy.set_param("~keyboard_steerGain", car_cmd_msg.omega)
-            else:
-                self.keyboard_steerGain = rospy.set_param("~keyboard_steerGain", self.omega_gain_default)
-
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
 if __name__ == "__main__":

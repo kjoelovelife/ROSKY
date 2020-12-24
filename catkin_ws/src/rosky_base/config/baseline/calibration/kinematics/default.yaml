@@ -4,6 +4,4 @@ gain: 1.0
 k: 27.0
 limit: 1.0
 radius: 0.0318
-keyboard_gain: 1.0
-keyboard_steerGain: 1.0
 trim: 0.0
