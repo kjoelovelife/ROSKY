@@ -648,7 +648,7 @@ class Ominibot_Car(object):
     # turn_direct   (Bit10) : 0 -> normal    , 1 -> reverse
     # imu_reverse   (Bit11) : 0 -> normal    , 1 -> reverse    
     #================================================
-    def set_system_mode(self, information=False, debug=False, platform=None,vehicle=0, imu=0, imu_axis=0, motor_direct=0, encoder_direct=0,turn_direct=0, imu_direct=0): 
+    def set_system_mode(self, information=False, debug=False, platform=None, vehicle=0, imu_correct=False, imu_axis_correct=False, motor_reverse=False, encoder_reverse=False, turn_reverse=False, imu_reverse=False): 
         _platform = {
                 "omnibot":0,
                 "mecanum":1,
@@ -666,21 +666,21 @@ class Ominibot_Car(object):
                 return
         calculate={
             "vehicle"       : lambda setting : setting,
-            "imu"           : lambda setting : 0 if setting == 0 else math.pow(2,3),
-            "imu_axis"      : lambda setting : 0 if setting == 0 else math.pow(2,4),
-            "motor_direct"  : lambda setting : 0 if setting == 0 else math.pow(2,8),
-            "encoder_direct": lambda setting : 0 if setting == 0 else math.pow(2,9),
-            "turn_direct"   : lambda setting : 0 if setting == 0 else math.pow(2,10),
-            "imu_direct"    : lambda setting : 0 if setting == 0 else math.pow(2,11),
+            "imu"           : lambda setting : 0 if setting == False else math.pow(2,3),
+            "imu_axis"      : lambda setting : 0 if setting == False else math.pow(2,4),
+            "motor_direct"  : lambda setting : 0 if setting == False else math.pow(2,8),
+            "encoder_direct": lambda setting : 0 if setting == False else math.pow(2,9),
+            "turn_direct"   : lambda setting : 0 if setting == False else math.pow(2,10),
+            "imu_direct"    : lambda setting : 0 if setting == False else math.pow(2,11),
         }  
         mode = [
             calculate["vehicle"](vehicle),
-            calculate["imu"](imu),
-            calculate["imu_axis"](imu_axis),
-            calculate["motor_direct"](motor_direct),
-            calculate["encoder_direct"](encoder_direct),
-            calculate["turn_direct"](turn_direct),
-            calculate["imu_direct"](imu_direct),
+            calculate["imu"](imu_correct),
+            calculate["imu_axis"](imu_axis_correct),
+            calculate["motor_direct"](motor_reverse),
+            calculate["encoder_direct"](encoder_reverse),
+            calculate["turn_direct"](turn_reverse),
+            calculate["imu_direct"](imu_reverse),
         ]
         mode = int(reduce(lambda add_x, add_y: add_x + add_y, mode))
         cmd = bytearray(b'\xFF\xFE\x80\x80\x09\x00\x00') # Tx[0]~Tx[6]
