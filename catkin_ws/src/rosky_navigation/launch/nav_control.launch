@@ -9,6 +9,7 @@
     <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
 	    <arg name="node_name" value="nav_cmd_mapper"/>	
         <arg name="veh" value="$(arg veh)"/>
+        <arg name="navigation" value="true"/>
     </include>
 
     <!-- run inverse_kinematics_node -->

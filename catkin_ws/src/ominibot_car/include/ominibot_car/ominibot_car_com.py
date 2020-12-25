@@ -388,16 +388,16 @@ class Ominibot_Car(object):
     def information(self):
         print("Omnibot car Version: {}.".format(self.__version__()))
         print("Mecanum wheel configure: left_front: motor 1, left_back: motor 4, right_front: motor 2, right_back: motor 4")
-        print("Omnibot wheel configure: right_front: motor 3, left_front: motor 2, back: motor 1")
+        print("Omnibot wheel configure: right_front: motor 2, left_front: motor 3, back: motor 1")
         print("ROSKY wheel configure: according to the Ominibot car information.")
 
     ## coordinate: ROS transformer
-    def omnibot(self, information=False, debug=False, platform="omnibot", Vx=0.0, Vy=0.0, Vz=0.0):
+    def omnibot(self, Vx=0.0, Vy=0.0, Vz=0.0, information=False, debug=False, platform="omnibot"):
         # set direction
         function = {
-            "Vx": lambda V: 0 if V >=0 else math.pow(2,2),
-            "Vy": lambda V: 0 if V >=0 else math.pow(2,1),
-            "Vz": lambda V: 0 if V >=0 else math.pow(2,0),
+            "Vx": lambda V: 0 if V >= 0 else math.pow(2,2),
+            "Vy": lambda V: 0 if V >= 0 else math.pow(2,1),
+            "Vz": lambda V: 0 if V <  0 else math.pow(2,0),
         } 
         direction = [
             function["Vx"](Vx),
@@ -421,9 +421,9 @@ class Ominibot_Car(object):
             time.sleep(self.param["send_interval"])
     
     def mecanum(self, Vx=0.0, Vy=0.0, Vz=0.0):
-        self.omnibot(platform="mecanum", Vx=Vx, Vy=Vy, Vz=Vz)
+        self.omnibot(Vx=Vx, Vy=Vy, Vz=Vz, platform="mecanum")
 
-    def individual_wheel(self, information=False, debug=False, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03):
+    def individual_wheel(self, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03,  information=False, debug=False):
         ## mode : 0x02 -> with encoder, 0x03 -> without encoder 
         ## setting up reverse , left motors are normal direction, right motors are reverse direction 
         function = {
@@ -688,9 +688,10 @@ class Ominibot_Car(object):
         cmd.append(0x00)                                 # Tx[9]
         if debug == True :
             print("send signal about set system mode: {} ".format(binascii.hexlify(cmd)))
-        if self._serialOK == True:        
-            self.serial.write(cmd)
-            time.sleep(0.01)
+        if self._serialOK == True: 
+            for index in range(5):       
+                self.serial.write(cmd)
+                time.sleep(0.01)
             if information == True:
                 print("Your platform now setting: {} ".format(platform))   
         return 
@@ -825,8 +826,9 @@ if __name__ == '__main__':
     _port = "/dev/ominibot_car"
     _baud = 115200
     ominibot  = Ominibot_Car(_port,_baud, py_version=3)
+    #ominibot.set_system_mode(platform="omnibot")
     #ominibot.__version__(information=True)
-    ominibot.set_battery_voltage(cut=11.1, information=True)
+    #ominibot.set_battery_voltage(cut=11.1, information=True)
     #ominibot.read_battery_voltage(information=True)
     #motor_driver.set_cutoff_voltage(11.1)
     #motor_driver.set_motor_voltage(7.4)
@@ -845,7 +847,6 @@ if __name__ == '__main__':
     end   = time.time()
     interval = end - start
     while(interval<3):
-        #motor_driver.individual_wheel(v1=6000,v2=6000,v3=6000,v4=6000,mode=0x03)
         battery = motor_driver.get_battery_data()
         imu     = motor_driver.get_imu_data()
         odom    = motor_driver.get_odom_data()
@@ -860,18 +861,18 @@ if __name__ == '__main__':
     '''
 
     ###### motor control example ######
-    '''
-    for number in range(3):
-        ominibot.set_system_mode(platform="mecanum")
+
+    ominibot.set_system_mode(platform="omnibot")
     start = time.time()
     end   = time.time()
     interval = end - start
-    while(interval< 20):
+    while(interval< 10):
         # left: left side, right: right side
         # mode=0x02: with encode, mode=0x03: without encode
         # ominibot.mecanum(-30,0,0) 
-        ominibot.individual_wheel(3000,0,0,3000)
+        #ominibot.individual_wheel(30,0,0)
+        ominibot.omnibot(-30, 0, 0)
         end = time.time()
         interval = end - start
-    '''
+
 

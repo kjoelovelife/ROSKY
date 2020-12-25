@@ -25,8 +25,14 @@ class keyboardMapper(object):
         
         # timer
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
+
+        # ros parameter 
+        self.navigation = self.setupParam("~navigation", False)
         self.v_gain = self.setupParam("~speed_gain", 1.0) #0.41
         self.omega_gain = self.setupParam("~steer_gain", 1.0) #8.3
+
+        # local parameter
+        self.navigation_gain = self.setupParam("~navigation_gain", 10.0) if self.navigation == True else 1
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
@@ -45,8 +51,8 @@ class keyboardMapper(object):
     def publishControl(self):
         car_cmd_msg = Twist2DStamped()
         #car_cmd_msg.header.stamp = self.joy.header.stamp 
-        car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
-        car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
+        car_cmd_msg.v = self.cmd.linear.x * self.v_gain * self.navigation_gain #Left stick V-axis. Up is positive
+        car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain * self.navigation_gain
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
 if __name__ == "__main__":

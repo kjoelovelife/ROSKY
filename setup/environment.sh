@@ -26,7 +26,7 @@ echo "Setting up PYTHONPATH."
 export PYTHONPATH=~/$main_path/$work_space:$PYTHONPATH
 
 ## setup cv_bridge with python3 and opencv4
-source ~/$main_path/$cvbridge_path/install/setup.bash --extend
+#source ~/$main_path/$cvbridge_path/install/setup.bash --extend
 
 ## setup ros hostname and source setup.bash 
 echo "Setup ROS_HOSTNAME. Now your ip adress : $current_ip "

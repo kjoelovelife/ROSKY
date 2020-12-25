@@ -11,8 +11,10 @@ class WheelsDriverNode(object):
         self.board_name = rospy.get_param( rospy.get_name() + "/board_name","ominibot_car")
         self.port = "/dev/" + self.board_name
         self.baud = rospy.get_param( rospy.get_name() + "/baud", 115200)
-        self.cmd_vel_magnification = rospy.get_param( rospy.get_name() + "/cmd_vel_magnification", 10000)
-        self.motor_mode = rospy.get_param( rospy.get_name() + "/motor_mode", 3)
+        self.cmd_vel_magnification = rospy.get_param( rospy.get_name() + "/cmd_vel_magnification", 100)
+        self.motor_encoder = rospy.get_param( rospy.get_name() + "/motor_encoder", False)
+        self.motor_mode = 0x02 if self.motor_encoder == True else 0x03 
+        self.cmd_vel_magnification = 100 if self.motor_encoder == True else 10000
         
 
         # Setup publishers

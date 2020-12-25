@@ -1,12 +1,5 @@
 
 board_name: ominibot_car
 baud: 115200
-
-#### notice ####
-#motor_mode = 2 -> with encoder     , cmd_vel_magnification = 100
-#motor_mode = 3 -> withuout encoder , cmd_vel_magnification = 10000
-################
-
-motor_mode: 3
-cmd_vel_magnification: 10000
+motor_encoder: false
 

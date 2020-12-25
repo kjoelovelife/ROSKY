@@ -11,7 +11,6 @@ python3-config --includes
 catkin build
 source ~/$main_path/$cvbridge_path/install/setup.bash --extend
 
-
 cd ~/$main_path/$work_space
 catkin_make #--cmake-args \
             #-DPYTHON_EXECUTABLE=/usr/bin/python3 \

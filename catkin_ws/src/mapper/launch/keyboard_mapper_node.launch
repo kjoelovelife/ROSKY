@@ -4,10 +4,11 @@
 	<arg name="type_name" default="keyboard_mapper_node"/>	
 	<arg name="veh" default="$(env VEHICLE_NAME)" doc="Name of vehicle. ex: megaman"/>
     <arg name="output" default="screen"/>
-
+	<arg name="navigation" default="false"/>
 	<!-- Run on vehicle -->
 	<node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg type_name).py" name="$(arg node_name)" output="$(arg output)" clear_params="true" required="true">
-        <rosparam command="load" file="$(find rosky_base)/config/baseline/keyboard_mapper/mapper_node/$(arg veh).yaml"/> 
+        <rosparam command="load" file="$(find rosky_base)/config/baseline/keyboard_mapper/$(arg type_name)/$(arg veh).yaml"/> 
+        <param name="navigation" type="bool" value="$(arg navigation)"/>
 	</node>	
 
 	<!-- Subscribe Topics -->

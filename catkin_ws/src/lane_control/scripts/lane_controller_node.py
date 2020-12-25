@@ -28,38 +28,6 @@ class lane_controller(object):
         self.gains_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.getGains_event)
         rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
 
-        # get rosky teleop_keyboardGain
-        self.keyboard_gain = self.readParamFromFile_keyboard_gain()
-
-    def readParamFromFile_keyboard_gain(self):
-        # Check file existence
-        fname = self.getFilePath(self.veh_name)
-        # Use default.yaml if file doesn't exsit
-        if not os.path.isfile(fname):
-            rospy.logwarn("[%s] %s does not exist. Using default.yaml." %(self.node_name,fname))
-            fname = self.getFilePath("default")
-
-        with open(fname, 'r') as in_file:
-            try:
-                yaml_dict = yaml.load(in_file)
-            except yaml.YAMLError as exc:
-                rospy.logfatal("[%s] YAML syntax error. File: %s fname. Exc: %s" %(self.node_name, fname, exc))
-                rospy.signal_shutdown()
-                return
-
-        # Set parameters using value in yaml file
-        if yaml_dict is None:
-            # Empty yaml file
-            return
-        for param_name in ["keyboard_gain"]:
-            self.param_value = yaml_dict.get(param_name)
-        return self.param_value
-
-    def getFilePath(self, name):
-        rospack = rospkg.RosPack()
-        return rospack.get_path('rosky_base')+'/config/baseline/calibration/kinematics/' + name + ".yaml" 
-
-
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
@@ -147,7 +115,7 @@ class lane_controller(object):
 
         car_control_msg = Twist2DStamped()
         car_control_msg.header = lane_pose_msg.header
-        car_control_msg.v = self.v_bar * self.keyboard_gain #Left stick V-axis. Up is positive
+        car_control_msg.v = self.v_bar #*self.speed_gain #Left stick V-axis. Up is positive
         
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
