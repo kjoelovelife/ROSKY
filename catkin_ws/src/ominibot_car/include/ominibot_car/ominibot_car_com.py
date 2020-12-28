@@ -49,6 +49,7 @@ class Ominibot_Car(object):
              "encoder_freq": 25,
              "battery_freq": 1 ,
              "interrupt_time": 1.5,
+             "motor_correct": (0, 0, 0, 0),
         }
         self._serialOK = False
         self._is_synced = False
@@ -385,19 +386,27 @@ class Ominibot_Car(object):
                     self._serialOK = False
             self.serial.close()
 
+    ############### motor control ##################
+
     def information(self):
         print("Omnibot car Version: {}.".format(self.__version__()))
         print("Mecanum wheel configure: left_front: motor 1, left_back: motor 4, right_front: motor 2, right_back: motor 4")
         print("Omnibot wheel configure: right_front: motor 2, left_front: motor 3, back: motor 1")
         print("ROSKY wheel configure: according to the Ominibot car information.")
 
+    def motor_correct(self, v1=0, v2=0, v3=0, v4=0, information=False, debug=False):
+        self.param["motor_correct"] = (v1, v2 ,v3 ,v4)
+        if information == True :
+            print("Your motor correct: {}".format(self.param["motor_correct"]))
+
+    
     ## coordinate: ROS transformer
     def omnibot(self, Vx=0.0, Vy=0.0, Vz=0.0, information=False, debug=False, platform="omnibot"):
         # set direction
         function = {
             "Vx": lambda V: 0 if V >= 0 else math.pow(2,2),
             "Vy": lambda V: 0 if V >= 0 else math.pow(2,1),
-            "Vz": lambda V: 0 if V <  0 else math.pow(2,0),
+            "Vz": lambda V: 0 if V < 0 else math.pow(2,0),
         } 
         direction = [
             function["Vx"](Vx),
@@ -406,8 +415,8 @@ class Ominibot_Car(object):
         ]       
         direction = int(reduce(lambda add_x, add_y: add_x + add_y, direction)) 
         Vx = int(round(self.clamp( abs(Vx), 0, 65536 )))
-        Vy = int(round(self.clamp( abs(Vy), 0, 65536 )))
-        Vz = int(round(self.clamp( abs(Vz), 0, 65536 )))           
+        Vy = int(round(self.clamp( abs(Vx), 0, 65536 )))
+        Vz = int(round(self.clamp( abs(Vx), 0, 65536 )))           
         cmd = bytearray(b'\xFF\xFE\x01')
         cmd += struct.pack('>h', Vx) # 2-bytes , velocity for x axis 
         cmd += struct.pack('>h', Vy) # 2-bytes , velocity for y axis 
@@ -448,10 +457,10 @@ class Ominibot_Car(object):
         else:
             print("Mode error! Please chechout your setting(just 0x02 or 0x03).")
         speed = {
-            "v1":int(round(self.clamp(abs(v1), speed_min, speed_max))),
-            "v2":int(round(self.clamp(abs(v2), speed_min, speed_max))),
-            "v3":int(round(self.clamp(abs(v3), speed_min, speed_max))),
-            "v4":int(round(self.clamp(abs(v4), speed_min, speed_max))),
+            "v1":int(round(self.clamp(abs(v1) + self.param["motor_correct"][0], speed_min, speed_max))),
+            "v2":int(round(self.clamp(abs(v2) + self.param["motor_correct"][1], speed_min, speed_max))),
+            "v3":int(round(self.clamp(abs(v3) + self.param["motor_correct"][2], speed_min, speed_max))),
+            "v4":int(round(self.clamp(abs(v4) + self.param["motor_correct"][3], speed_min, speed_max))),
         }
         ## setting up wheel velocity
         cmd = bytearray(b'\xFF\xFE')
@@ -467,15 +476,13 @@ class Ominibot_Car(object):
             self.serial.write(cmd)
             time.sleep(self.param["send_interval"])
 
-    def rosky_diff_drive(self, left=0.0, right=0.0, alpha=-1, mode=0x02, information=False, debug=False):
+    def rosky_diff_drive(self, left=0.0, right=0.0, alpha=-1, mode=0x02, magnification=1, information=False, debug=False):
         # mode : 0x02 -> with encoderm 0x03 -> without encoder
         # V1 : rf, V2 : lf, V3 : rb, V4 : lb
         speed_limit = {
             "max": 100 if mode == 0x02 else 10000,
             "min":0,
-            "fricition":0,
         }
-        magnification = 1
         left = left if mode == 0x03 else left * alpha
         right = right if mode == 0x03 else right * alpha
         ## setting up reverse , left motors are normal direction, right motors are reverse direction 
@@ -489,14 +496,18 @@ class Ominibot_Car(object):
         ]
         direction = int(reduce(lambda add_x, add_y: add_x + add_y, direction))
         ## setting up wheel velocity
-        left  = int(round(self.clamp(abs( (left  * magnification) + speed_limit["fricition"]), speed_limit["min"], speed_limit["max"])))
-        right = int(round(self.clamp(abs( (right * magnification) + speed_limit["fricition"]), speed_limit["min"], speed_limit["max"])))
+        speed = {
+            "v1": int(round(self.clamp(abs( (right * magnification)) + self.param["motor_correct"][0], speed_limit["min"], speed_limit["max"]))),
+            "v2": int(round(self.clamp(abs( (left  * magnification)) + self.param["motor_correct"][1], speed_limit["min"], speed_limit["max"]))),
+            "v3": int(round(self.clamp(abs( (right * magnification)) + self.param["motor_correct"][2], speed_limit["min"], speed_limit["max"]))),
+            "v4": int(round(self.clamp(abs( (left  * magnification)) + self.param["motor_correct"][3], speed_limit["min"], speed_limit["max"]))),
+        }
         cmd = bytearray(b'\xFF\xFE')
         cmd.append(mode)
-        cmd += struct.pack('>h',right)  # 2-bytes
-        cmd += struct.pack('>h',left)   # 2-bytes
-        cmd += struct.pack('>h',right)  # 2-bytes
-        cmd += struct.pack('>h',left)   # 2-bytes     
+        cmd += struct.pack('>h',speed["v1"])   # 2-bytes
+        cmd += struct.pack('>h',speed["v2"])   # 2-bytes
+        cmd += struct.pack('>h',speed["v3"])   # 2-bytes
+        cmd += struct.pack('>h',speed["v4"])   # 2-bytes     
         cmd += struct.pack('>b',direction) # 1-bytes 
         if debug == True :
             print("send signal about rosky_diff_drive: {} ".format(binascii.hexlify(cmd)))
@@ -862,7 +873,7 @@ if __name__ == '__main__':
 
     ###### motor control example ######
 
-    ominibot.set_system_mode(platform="omnibot")
+    #ominibot.set_system_mode(platform="omnibot")
     start = time.time()
     end   = time.time()
     interval = end - start
@@ -871,7 +882,8 @@ if __name__ == '__main__':
         # mode=0x02: with encode, mode=0x03: without encode
         # ominibot.mecanum(-30,0,0) 
         #ominibot.individual_wheel(30,0,0)
-        ominibot.omnibot(-30, 0, 0)
+        ominibot.motor_correct(2000, 2000, 3000, 3000)
+        ominibot.rosky_diff_drive(500, 500, mode=0x03)
         end = time.time()
         interval = end - start
 
