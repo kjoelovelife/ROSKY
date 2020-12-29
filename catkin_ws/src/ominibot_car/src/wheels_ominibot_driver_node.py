@@ -8,19 +8,24 @@ class WheelsDriverNode(object):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.estop=False
-        self.board_name = rospy.get_param( rospy.get_name() + "/board_name","ominibot_car")
+        self.board_name = self.setupParam( "~board_name","ominibot_car")
         self.port = "/dev/" + self.board_name
-        self.baud = rospy.get_param( rospy.get_name() + "/baud", 115200)
-        self.cmd_vel_magnification = rospy.get_param( rospy.get_name() + "/cmd_vel_magnification", 100)
-        self.motor_encoder = rospy.get_param( rospy.get_name() + "/motor_encoder", False)
+        self.baud = self.setupParam( "~baud", 115200)
+        self.motor_encoder = self.setupParam( "~motor_encoder", False)
+        self.motor_correct = self.setupParam( "~motor_correct", [0, 0 ,0 ,0])
         self.motor_mode = 0x02 if self.motor_encoder == True else 0x03 
         self.cmd_vel_magnification = 100 if self.motor_encoder == True else 10000
-        
+        print(self.cmd_vel_magnification)
+
+        # Setup ominibot car 
+        self.driver = Ominibot_Car(self.port,self.baud)
+        self.driver.motor_correct(self.motor_correct[0], self.motor_correct[1], self.motor_correct[2], self.motor_correct[3])
+
+        # timer
+        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
 
         # Setup publishers
-        self.driver = Ominibot_Car(self.port,self.baud)
-  
-        #add publisher for wheels command wih execution time
+        # add publisher for wheels command wih execution time
         self.msg_wheels_cmd = WheelsCmdStamped()
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, queue_size=1)
 
@@ -28,6 +33,18 @@ class WheelsDriverNode(object):
         self.control_constant = 1.0
         self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
         self.sub_e_stop = rospy.Subscriber("~emergency_stop", BoolStamped, self.cbEStop, queue_size=1)
+ 
+    def cbParamTimer(self, event):
+        tmp_motor_encoder = rospy.get_param("~motor_encoder", False)
+        tmp_motor_correct = rospy.get_param("~motor_correct", [0, 0 ,0 ,0])
+        if not tmp_motor_correct == self.motor_correct:
+            self.motor_correct = tmp_motor_correct
+            self.driver.motor_correct(self.motor_correct[0], self.motor_correct[1], self.motor_correct[2], self.motor_correct[3])
+            rospy.loginfo("[%s] ~motor_correct = %s \n" %(self.node_name, self.motor_correct))
+        if not tmp_motor_encoder == self.motor_encoder:
+            self.motor_encoder = tmp_motor_encoder
+            self.motor_mode = 0x02 if self.motor_encoder == True else 0x03 
+            self.cmd_vel_magnification = 100 if self.motor_encoder == True else 10000
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

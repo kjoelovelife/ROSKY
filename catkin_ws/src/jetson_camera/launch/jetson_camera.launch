@@ -40,7 +40,6 @@
         <include file="$(find jetson_camera)/launch/cam_info_reader_node.launch"> 
             <arg name="veh" value="$(arg veh)"/>
             <arg name="config" value="$(arg config)"/>
-            <arg name="param_file_name" value="$(arg veh)"/> 
             <arg name="pub_freq" value="60"/>
         </include>
         
@@ -50,7 +49,6 @@
              <include file="$(find jetson_camera)/launch/cam_info_reader_node.launch">
                  <arg name="veh" value="$(arg veh)"/>
                  <arg name="config" value="$(arg config)"/>
-                 <arg name="param_file_name" value="$(arg veh)"/>
                  <arg name="node_name" value="raw_cam_info_reader_node" />
                  <arg name="image_type" value="raw" />
              </include>                

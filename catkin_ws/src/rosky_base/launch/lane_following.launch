@@ -3,8 +3,8 @@
 	<!-- start basic args -->
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<arg name="config" default="baseline" />
-        <arg name="verbose" default="true" />
-        <arg name="camera_name" default="jetson_camera"/>
+    <arg name="verbose" default="true" />
+    <arg name="camera_name" default="jetson_camera"/>
 
 
 	<arg name="param_file_name" default="default" />
@@ -31,10 +31,10 @@
 
 	<!-- start switch args -->
 	<arg name="camera" default="true"/>
-        <arg name="camera_calibration" default="false"/>
+    <arg name="camera_calibration" default="false"/>
 	<arg name="/camera/raw" default="false"/>
 	<arg name="wheels" default="true"/>
-        <arg name="fsm" default="true"/>
+    <arg name="fsm" default="true"/>
 	<arg name="lane_following" default="true"/>
 	<arg name="/lane_following/line_detection" default="true"/>
 	<arg name="/lane_following/ground_projection" default="true"/>
@@ -55,7 +55,7 @@
 		<include  file="$(find jetson_camera)/launch/jetson_camera.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
-                        <arg name="raw" value="$(arg /camera/raw)"/>
+            <arg name="raw" value="$(arg /camera/raw)"/>
 		</include>
         </group>
 	<!-- End Camera -->

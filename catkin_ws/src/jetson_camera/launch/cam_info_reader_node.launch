@@ -1,15 +1,14 @@
 <launch>
-	<arg name="veh"/>
+	<arg name="veh" default="default"/>
 	<arg name="config" default="baseline"/>
-	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
 	<arg name="pkg_name" value="jetson_camera"/>
 	<arg name="node_name" default="cam_info_reader_node"/>
 	<arg name="image_type" default="compressed" />
-    <arg name="cali_file_name" default="$(arg veh)" />
+    <arg name="cali_file_name" default="default" />
     <arg name="pub_freq" default="1"/>
 
 	<node ns="$(arg veh)" pkg="jetson_camera" type="cam_info_reader_node.py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
-		<rosparam command="load" file="$(find jetson_camera)/camera_info/cam_info_reader_node/$(arg param_file_name).yaml"/>
+		<rosparam command="load" file="$(find jetson_camera)/camera_info/cam_info_reader_node/$(arg veh).yaml"/>
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<param name="~config" value="$(arg config)"/>
 		<param name="~cali_file_name" value="$(arg cali_file_name)"/>
