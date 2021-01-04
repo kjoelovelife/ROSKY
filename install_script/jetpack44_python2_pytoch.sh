@@ -31,15 +31,19 @@ if [[ `id -u` -eq 0 ]] ; then
     exit 1 ;
 fi
 
-sudo apt install python-pip python-pil
+echo -n "Please enter your password: "
+read -s PASSWORD
+echo ""
+
+echo $PASSWORD | sudo -S apt install python-pip python-pil
 #sudo pip3 install --upgrade numpy
 download='https://doc-0k-24-docs.googleusercontent.com/docs/securesc/ubv6ihq9jk1tbbsiisbf29lqq8h7qa74/jam82obup0g6dhmbs052aagq66tg8ad9/1608186600000/01933900165054958065/05089611368947298974Z/1M7BeIHXcaMJKqyhVwlpeasn_3OpEDjkA?e=download&nonce=p8hfno5imjnvs&user=05089611368947298974Z&hash=c8v65ftpjrucbr5mhoc5nn92ei2khqlf'
 
 wget -O torch-1.4.0-cp27-cp27mu-linux_aarch64.whl https://nvidia.box.com/shared/static/yhlmaie35hu8jv2xzvtxsh0rrpcu97yj.whl
-sudo pip2 install torch-1.4.0-cp27-cp27mu-linux_aarch64.whl
-sudo pip2 install torchvision
+echo $PASSWORD | sudo -S pip2 install torch-1.4.0-cp27-cp27mu-linux_aarch64.whl
+echo $PASSWORD | sudo -S pip2 install torchvision
 
 # None of this should be needed. Next time you think you need it, let me know and we figure it out. -AC
 # sudo pip install --upgrade pip setuptools wheel
 
-https://drive.google.com/file/d/1M7BeIHXcaMJKqyhVwlpeasn_3OpEDjkA/view?usp=sharing
+#https://drive.google.com/file/d/1M7BeIHXcaMJKqyhVwlpeasn_3OpEDjkA/view?usp=sharing

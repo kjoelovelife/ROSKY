@@ -37,20 +37,23 @@ fi
 # echo "#!/bin/bash sudo ifconfig eth0 down \n sleep 3 \n sudo ifconfig eth0 192.168.0.1 netmask 255.255.255.0 up" >> /etc/rc.local
 ################################
 
+echo -n "Please enter your password: "
+read -s PASSWORD
+echo ""
 
-sudo apt-get install -y vim
-sudo apt-get install -y gedit
-sudo apt-get install -y 'ssh'
+echo $PASSWORD | sudo -S apt-get install -y vim
+echo $PASSWORD | sudo -S apt-get install -y gedit
+echo $PASSWORD | sudo -S apt-get install -y 'ssh'
 
 mkdir ~/.ssh
-sudo chmod 0700 ~/.ssh 
+echo $PASSWORD | sudo -S chmod 0700 ~/.ssh 
 echo "HostKeyAlgorithms ssh-rsa" >> ~/.ssh/config
 
 ssh-keygen -P "" -h -f $HOME/.ssh/$USER@$HOSTNAME
 
 echo "IdentityFile ~/.ssh/$USER@$HOSTNAME" >> ~/.ssh/config
 
-sudo service ssh restart
+echo $PASSWORD | sudo -S service ssh restart
 
 # None of this should be needed. Next time you think you need it, let me know and we figure it out. -AC
 # sudo pip install --upgrade pip setuptools wheel

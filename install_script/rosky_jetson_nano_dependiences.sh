@@ -28,9 +28,12 @@
 #
 # -------------------------------------------------------------------------
 
+## read password
+echo -n "Please enter your password: "
+read -s PASSWORD
+echo ""
 
 ## set parameter
-
 ### ros information ###
 ros1_distro=melodic
 install_source="install_scripts"
@@ -43,7 +46,7 @@ shell=`echo $SHELL | awk -F '/' '{print $NF}'`
 
 #=========step 1. setup python and python3 =========#
 echo $PASSWORD | sudo -S apt-get install python-pip
-echo $PASSWORD | sudo -S apt-get install python3-pip
+echo $PASSWORD | sudo -S python3-pip
 #====================================================
 
 #=========step 2. Grant your user access to the i2c bus =======================
