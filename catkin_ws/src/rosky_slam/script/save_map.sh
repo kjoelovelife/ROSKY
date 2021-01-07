@@ -3,11 +3,11 @@ echo "Use map_server to save map..."
 path="/home/$USER/ROSKY/catkin_ws/src/rosky_slam/map"
 map_name="map_"$(date "+%Y%m%d_%H%M%S")
 if [ $# -gt 0 ]; then
-	# provided a hostname, use it as ROS_MASTER_URI
-	map_name=$1
-        echo "your map name is $map_name."
+    # provided a hostname, use it as map name
+    map_name=$1
+    echo "your map name is $map_name."
 else
-	echo "No map name provided. Using $map_name."
+    echo "No map name provided. Using $map_name."
 fi
 rosrun map_server map_saver -f "$path/$map_name"
 
