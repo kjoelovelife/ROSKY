@@ -17,5 +17,5 @@ if test -e $path/$map_name".yaml" && test -e $path/$map_name".pgm"; then
     #echo "map name: $map_name"
     #echo "folder  : $path"
 else
-    echo "Failed! Please check your folder path is correct."
+    echo "Failed! Please check your folder path is correct or there has a map can save on ROS."
 fi
