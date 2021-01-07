@@ -55,7 +55,7 @@
     </node>
 
    <!-- launch nav_control.launch -->
-   <include if="$(arg omnibotcar)" file="$(find rosky_navigation)/launch/nav_control.launch">
+   <include if="$(arg ominibotcar)" file="$(find rosky_navigation)/launch/nav_control.launch">
        <arg name="veh" value="$(arg veh)"/>
    </include>
 </launch>
