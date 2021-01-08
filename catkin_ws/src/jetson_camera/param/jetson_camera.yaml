@@ -1,7 +1,7 @@
 
 capture_device: 0
-capture_width: 224 # input
-capture_height: 224 # input
+capture_width: 1280 # input
+capture_height: 720 # input
 width: 224      # output
 height: 224     # output
 capture_fps: 60         # framerate

@@ -6,7 +6,7 @@
     <!-- start camera -->
 	<include file="$(find jetson_camera)/launch/jetson_camera.launch">
 	    <arg name="veh" value="$(arg veh)"/>
-            <arg name="raw" value="true"/>    
+            <arg name="raw" value="true"/>  
     </include>
 
     <!-- start intrinsic -->

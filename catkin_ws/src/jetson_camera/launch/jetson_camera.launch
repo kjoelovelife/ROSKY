@@ -3,7 +3,6 @@
 
     <arg name="veh" default="$(env VEHICLE_NAME)"/>
     <arg name="camera_name" default="jetson_camera"/>
-    <arg name="mode" default="default"/>
     <arg name="pkg_name" value="jetson_camera"/>
     <arg name="config" default="baseline"/>
     <arg name="cam_info" default="true" doc="If set to true, use cam_info_reader_node to pusblish CameraInfo."/>
@@ -16,7 +15,7 @@
     <group if="$(arg live)">
         <!-- original topic : $(arg camera_name)/image_raw/compressed -->
         <node ns="$(arg veh)" pkg="jetson_camera" type="jetson_camera.py" name="$(arg camera_name)" clear_params="true" output="screen">
-            <rosparam file="$(find jetson_camera)/param/jetson_camera_$(arg mode).yaml" command="load"/>
+            <rosparam file="$(find jetson_camera)/param/jetson_camera.yaml" command="load"/>
         </node>
     </group>
 
