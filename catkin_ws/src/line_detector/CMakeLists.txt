@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rosky_msgs # Every duckietown packages should use this.
   cv_bridge
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -86,10 +87,10 @@ catkin_python_setup()
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
+#generate_dynamic_reconfigure_options(
+    #cfg/rosky_line_filiter.cfg
 #   cfg/DynReconf2.cfg
-# )
+#)
 
 ###################################
 ## catkin specific configuration ##
