@@ -2,10 +2,11 @@
 
 path_kinematics="ROSKY/catkin_ws/src/rosky_base/config/baseline/calibration/kinematics"
 path_keyboard_mapper_node="ROSKY/catkin_ws/src/rosky_base/config/baseline/keyboard_mapper/keyboard_mapper_node"
-path_camera_intrinsic="ROSKY/catkin_ws/src/rosky_base/config/baseline//calibration/camera_intrinsic"
-path_camera_extrinsic="ROSKY/catkin_ws/src/rosky_base/config/baseline//calibration/camera_extrinsic"
+path_camera_intrinsic="ROSKY/catkin_ws/src/rosky_base/config/baseline/calibration/camera_intrinsic"
+path_camera_extrinsic="ROSKY/catkin_ws/src/rosky_base/config/baseline/calibration/camera_extrinsic"
 path_camera_info="ROSKY/catkin_ws/src/jetson_camera/camera_info/cam_info_reader_node"
 path_decoder_node="ROSKY/catkin_ws/src/jetson_camera/camera_info/decoder_node"
+path_line_detector="ROSKY/catkin_ws/src/rosky_base/config/baseline/line_detector/line_detector_node"
 default="default.yaml"
 
 echo "Setting up parameter files with project ROSKY... "
@@ -112,6 +113,22 @@ if test -e ~/$path_decoder_node/$file_name".yaml"; then
 else
     cp ~/$path_decoder_node/$default ~/$path_decoder_node/$file_name".yaml"
     echo "Add param decoder_node with name \"$file_name\""
+fi
+
+echo ""
+echo "Setup parameter line_detector"
+if test -e ~/$path_line_detector/$file_name".yaml"; then
+    echo -n "You already have the parameter about line_detector, do you want to reset it? (y/N): "
+    read reset
+    if [[ "$reset" == "y" ]] || [[ "$reset" == "Y" ]]; then
+        cp ~/$path_line_detector/$default ~/$path_line_detector/$file_name".yaml"
+        echo "Reset param line_detector."
+    else
+        echo "Skip set param line_detector."
+    fi
+else
+    cp ~/$path_line_detector/$default ~/$path_line_detector/$file_name".yaml"
+    echo "Add param line_detector with name \"$file_name\""
 fi
 echo ""
 echo "Finish setting up."

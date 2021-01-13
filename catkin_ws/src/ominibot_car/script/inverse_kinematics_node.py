@@ -2,7 +2,7 @@
 import rospy
 from rosky_msgs.msg import WheelsCmdStamped, Twist2DStamped
 from rosky_msgs.srv import SetValueRequest, SetValueResponse, SetValue
-from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
+from std_srvs.srv import EmptyRequest, EmptyResponse, Empty, SetBool
 from numpy import *
 import rospkg
 import yaml

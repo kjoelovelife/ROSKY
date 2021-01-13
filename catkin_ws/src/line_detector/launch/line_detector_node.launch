@@ -6,6 +6,7 @@
     <arg name="pkg_name" value="line_detector"/>
     <arg name="node_name" default="line_detector_node"/>  
     <arg name="verbose" default="false" />
+    <arg name="hsv_reconfigure" default="false" />
 
     <group ns="$(arg veh)">        
         <!-- run remote -->
@@ -13,6 +14,13 @@
             <rosparam command="load" file="$(find rosky_base)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
             <param name="verbose" value="$(arg verbose)"/>
         </node>
+
+        <!-- hsv reconfigure -->
+        <group if="$(arg hsv_reconfigure)">
+		    <node name="hsv_reconfigure" pkg="$(arg pkg_name)" type="hsv_reconfigure.py" output="screen"/>      
+		</group>  
+		    <!-- End hsv reconfigure -->
+
     </group>
 
     <!-- Publications -->

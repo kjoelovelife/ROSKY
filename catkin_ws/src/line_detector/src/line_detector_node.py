@@ -21,6 +21,8 @@ class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "LineDetectorNode"
 
+        # get rosparam 
+        self.c = rospy.get_param('~detector')
         # Thread lock 
         self.thread_lock = threading.Lock()
        
@@ -77,9 +79,14 @@ class LineDetectorNode(object):
         
 #         if str(self.detector_config) != str(c):
             self.loginfo('new detector config: %s' % str(c))
-
             self.detector = instantiate(c[0], c[1])
-#             self.detector_config = c
+            print("self.detector: {}".format(self.detector))
+#               self.detector_config = c
+        else:
+            if not (temp_c == self.c):
+                self.detector = instantiate(temp_c[0], temp_c[1])
+                self.c = rospy.get_param('~detector')   
+
 
         if self.verbose and self.pub_edge is None:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)

@@ -36,6 +36,7 @@
 	<arg name="wheels" default="true"/>
     <arg name="fsm" default="true"/>
 	<arg name="lane_following" default="true"/>
+	<arg name="hsv_reconfigure" default="false"/>
 	<arg name="/lane_following/line_detection" default="true"/>
 	<arg name="/lane_following/ground_projection" default="true"/>
 	<arg name="/lane_following/lane_filter" default="true"/>
@@ -80,7 +81,6 @@
 
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
-
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="$(arg camera_name)/image/compressed"/>
@@ -91,6 +91,7 @@
 				<!-- NOTE: "line_detector_param_file_name" as special case -->
 				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
+				<arg name="hsv_reconfigure" value="$(arg hsv_reconfigure)"/>
 			</include>	
 		</group>
                 <!-- End Line Detector -->
