@@ -18,7 +18,6 @@
         <!-- hsv reconfigure -->
         <group if="$(arg hsv_reconfigure)">
 		    <node name="hsv_reconfigure" pkg="$(arg pkg_name)" type="hsv_reconfigure.py" output="screen"/>
-            <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure"/> 
 		</group>  
 		    <!-- End hsv reconfigure -->
 
