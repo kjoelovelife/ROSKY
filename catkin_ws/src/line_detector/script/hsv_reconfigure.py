@@ -3,7 +3,7 @@ import os, sys, yaml
 import rospy, rospkg
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from dynamic_reconfigure.server import Server
-from opencv_apps.cfg import rosky_line_filiterConfig
+from rosky_msgs.cfg import Line_Detector_ParamConfig
 
 class HSV_RECONFIGURE(object):
     def __init__(self):
@@ -16,7 +16,7 @@ class HSV_RECONFIGURE(object):
         self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration) 
 
         # start rqt_reconfig
-        self.reconfigure = Server(rosky_line_filiterConfig, self.rqt_callback)
+        self.reconfigure = Server(Line_Detector_ParamConfig, self.rqt_callback)
 
     def readParamFromFile(self):
         # Check file existence
@@ -42,7 +42,7 @@ class HSV_RECONFIGURE(object):
         return rospack.get_path('rosky_base')+'/config/baseline/line_detector/line_detector_node/' + name + ".yaml"  
 
     def cbSrvSaveCalibration(self, req):
-        file_name = self.getFilePath("rosky01") # self.veh_name
+        file_name = self.getFilePath(self.veh_name) # self.veh_name
         with open(file_name, 'w') as outfile:
             outfile.write(yaml.dump(self.yaml_dict, default_flow_style=False))
         # Printout

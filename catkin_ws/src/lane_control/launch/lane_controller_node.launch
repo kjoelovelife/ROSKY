@@ -6,9 +6,15 @@
 	<arg name="node_name" default="lane_controller_node" doc="name of the node"/>
 
 	    <!-- Remote -->
+
+		<!-- param reconfigure -->
+        <node ns="$(arg veh)" name="lane_controller_reconfigure" pkg="$(arg pkg_name)" type="lane_controller_reconfigure.py" output="screen" required="true"/>
 	    <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
-	        <rosparam command="load" file="$(find rosky_base)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+	        <!--<rosparam command="load" file="$(find rosky_base)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>-->
 	    </node>
+
+
+
 
 	<!-- Publication -->
 	<!-- ~wheels_control: duckietown_msgs/WheelsCmd. Wheels command for duckiebot. -->

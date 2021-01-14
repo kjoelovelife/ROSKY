@@ -8,6 +8,7 @@ class lane_controller(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
+        self.reconfigure_name = "lane_controller_reconfigure"
         self.lane_reading = None
 
         self.pub_counter = 0
@@ -44,23 +45,22 @@ class lane_controller(object):
         d_offset = 0
 
 
-        self.v_bar = self.setupParameter("~v_bar",v_bar) # Linear velocity
-        self.k_d = self.setupParameter("~k_d",k_theta) # P gain for theta
-        self.k_theta = self.setupParameter("~k_theta",k_d) # P gain for d
-        self.d_thres = self.setupParameter("~d_thres",theta_thres) # Cap for error in d
-        self.theta_thres = self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
-        self.d_offset = self.setupParameter("~d_offset",d_offset) # a configurable offset from the lane position
-        self.steer_gain = self.setupParameter("~steer_gain",steer_gain) # a multiple for car_control_cmd omega
+        self.v_bar = v_bar # self.setupParameter("~v_bar",v_bar) # Linear velocity
+        self.k_d = k_d # self.setupParameter("~k_d",k_theta) # P gain for theta
+        self.k_theta = k_theta # self.setupParameter("~k_theta",k_d) # P gain for d
+        self.d_thres = d_thres # self.setupParameter("~d_thres",theta_thres) # Cap for error in d
+        self.theta_thres = theta_thres # self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
+        self.d_offset = d_offset # self.setupParameter("~d_offset",d_offset) # a configurable offset from the lane position
+        self.steer_gain = steer_gain # self.setupParameter("~steer_gain",steer_gain) # a multiple for car_control_cmd omega
 
     def getGains_event(self, event):
-        v_bar = rospy.get_param("~v_bar")
-        k_d = rospy.get_param("~k_d")
-        k_theta = rospy.get_param("~k_theta")
-        d_thres = rospy.get_param("~d_thres")
-        theta_thres = rospy.get_param("~theta_thres")
-        theta_thres = rospy.get_param("~theta_thres")
-        d_offset = rospy.get_param("~d_offset")
-        steer_gain = rospy.get_param("~steer_gain")
+        v_bar = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/v_bar", self.v_bar)
+        k_d = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/k_d", self.k_d)
+        k_theta = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/k_theta", self.k_theta)
+        d_thres = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/d_thres", self.d_thres)
+        theta_thres = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/theta_thres", self.theta_thres)
+        d_offset = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/d_offset", self.d_offset)
+        steer_gain = rospy.get_param("/" + self.veh_name + "/" + self.reconfigure_name + "/steer_gain", self.steer_gain)
 
         params_old = (self.v_bar,self.k_d,self.k_theta,self.d_thres,self.theta_thres, self.d_offset,self.steer_gain)
         params_new = (v_bar,k_d,k_theta,d_thres,theta_thres, d_offset,steer_gain)

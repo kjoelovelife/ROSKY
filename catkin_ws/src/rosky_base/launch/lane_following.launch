@@ -15,7 +15,8 @@
 	<arg name="map_name" default="duckietown_map"/>
 	<arg name="anti_instagram" default="true"/>
 	<arg name="loc" default="-1"/>
-	<arg name="line_detector_param_file_name" default="universal"/>
+	<arg name="line_detector_param_file_name" default="default"/>
+	<arg name="lane_controller_param_file_name" default="$(arg line_detector_param_file_name)"/>
 	<arg name="intersectionType" />
 	<!-- end basic args -->
  
@@ -131,7 +132,7 @@
 			<include file="$(find lane_control)/launch/lane_controller_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>        
+				<arg name="param_file_name" value="$(arg lane_controller_param_file_name)"/>        
 			</include>
 		</group>
 	</group>

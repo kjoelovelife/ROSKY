@@ -7,6 +7,7 @@ path_camera_extrinsic="ROSKY/catkin_ws/src/rosky_base/config/baseline/calibratio
 path_camera_info="ROSKY/catkin_ws/src/jetson_camera/camera_info/cam_info_reader_node"
 path_decoder_node="ROSKY/catkin_ws/src/jetson_camera/camera_info/decoder_node"
 path_line_detector="ROSKY/catkin_ws/src/rosky_base/config/baseline/line_detector/line_detector_node"
+path_lane_controller="ROSKY/catkin_ws/src/rosky_base/config/baseline/lane_control/lane_controller_node"
 default="default.yaml"
 
 echo "Setting up parameter files with project ROSKY... "
@@ -129,6 +130,22 @@ if test -e ~/$path_line_detector/$file_name".yaml"; then
 else
     cp ~/$path_line_detector/$default ~/$path_line_detector/$file_name".yaml"
     echo "Add param line_detector with name \"$file_name\""
+fi
+
+echo ""
+echo "Setup parameter lane_controller"
+if test -e ~/$path_lane_controller/$file_name".yaml"; then
+    echo -n "You already have the parameter about lane_controller, do you want to reset it? (y/N): "
+    read reset
+    if [[ "$reset" == "y" ]] || [[ "$reset" == "Y" ]]; then
+        cp ~/$path_lane_controller/$default ~/$path_lane_controller/$file_name".yaml"
+        echo "Reset param lane_controller."
+    else
+        echo "Skip set param lane_controller."
+    fi
+else
+    cp ~/$path_lane_controller/$default ~/$path_lane_controller/$file_name".yaml"
+    echo "Add param lane_controller with name \"$file_name\""
 fi
 echo ""
 echo "Finish setting up."
