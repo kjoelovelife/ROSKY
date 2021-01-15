@@ -3,7 +3,7 @@
 
     <arg name="veh" default="$(env VEHICLE_NAME)"/>
     <arg name="node_name" default="inference_model"/>
-    <arg name="pkg_name" default="deep_learning"/>
+    <arg name="pkg_name" default="img_recognition"/>
     <arg name="raw" value="true"/>
     <arg name="mode" value="object"/>
 

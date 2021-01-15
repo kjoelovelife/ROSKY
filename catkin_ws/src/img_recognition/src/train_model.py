@@ -19,7 +19,7 @@ class Train_Model_Node(object):
     ####  
 
     def __init__(self):
-        self.package = "deep_learning"
+        self.package = "img_recognition"
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
         rospy.loginfo("{}  Initializing train_model.py......".format(self.node_name))
@@ -129,7 +129,7 @@ class Train_Model_Node(object):
         else:
             rospy.loginfo("Do not use cuda!")
     
-    def train(self,epochs: int=30, best_model_path: str="best_model", learning_rate: float=0.001, momentum: float=0.9):
+    def train(self,epochs=30, best_model_path="best_model", learning_rate=0.001, momentum=0.9):
         self.NUM_EPOCHS = epochs
         self.BEST_MODEL_PATH = rospkg.RosPack().get_path(self.package) + '/model/' + best_model_path + '.pth'
         self.best_accuracy = 0.0
@@ -173,8 +173,10 @@ class Train_Model_Node(object):
     def on_shutdown(self): 
         rospy.loginfo("{} Close.".format(self.node_name))
         rospy.loginfo("{} shutdown.".format(self.node_name))
+        #rospy.logwarn("Now you can press [ctrl] + [c] ro close the launch file.")
         rospy.sleep(1)
         rospy.is_shutdown=True
+        sys.exit(00)
 
     def read_param_from_file(self):
         fname = rospkg.RosPack().get_path(self.package) + "/param/image_label.yaml"
@@ -186,7 +188,7 @@ class Train_Model_Node(object):
                     if key not in folder :
                         rospy.loginfo("Please checkout folder [image] and label in [/param/image_label.yaml]. They are different.")
                         rospy.loginfo("train_model.py will shutdown.")
-                        sys.exit()
+                        self.on_shutdown()
                 self.kind_of_classifier = len(list(self.yaml_dict.keys()))
             except yaml.YAMLError as exc:
                 print(" YAML syntax  error. File: {}".format(fname))
@@ -198,8 +200,15 @@ class Train_Model_Node(object):
                         if image.endswith('jpg') or image.endswith('jpeg') :
                             image_count += 1  
                 self.yaml_dict[label_name] = image_count
+
+            for keys in self.yaml_dict:
+                if self.yaml_dict[keys] == 0:
+                    rospy.logwarn("No image in folder [{}].".format(rospkg.RosPack().get_path(self.package) + "/" + keys))
+                    rospy.logwarn("Please checkout the folder or use [rosun {} mkdir.py -rm {}] to remove folder.".format(self.package, keys))
+                    self.on_shutdown()
         else:
-            rospy.loginfo("Please use  [{}]  to make the floder for saving data ".format(rospkg.RosPack().get_path(self.package) + "/script/mkdir.py"))
+            rospy.logwarn("Please use  [{}]  to make the floder for saving data ".format(rospkg.RosPack().get_path(self.package) + "/script/mkdir.py"))
+            self.on_shutdown()
         return self.yaml_dict, self.kind_of_classifier
 
     def compare_model_name(self, model_name):

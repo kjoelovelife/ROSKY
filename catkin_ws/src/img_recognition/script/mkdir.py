@@ -7,10 +7,11 @@ import rospy
 class mkdir(object):
     
     def __init__(self):
-        self.parser = argparse.ArgumentParser(description="Make a directory in ~/ROSKY/catkin_ws/src/object/image",epilog="save your image")
-        self.parser.add_argument("--name" , "-n" , type=str,required=True,help="Please type you want the name of dirctory.")
+        self.package = "img_recognition"
+        self.parser = argparse.ArgumentParser(description="Make a folder in ~/ROSKY/catkin_ws/src/" + self.package +"/image",epilog="save your image")
+        self.parser.add_argument("--name" , "-n" , type=str,required=True,help="Please type you want the name of folder.")
         self.args = self.parser.parse_args()
-        self.path = os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)) # ~/ROSKY/catkin_ws/src/object
+        self.path = os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)) # "~/ROSKY/catkin_ws/src/" + self.package
         self.make = False
         action_1 = self.try_make(self.args.name)
         action_2 = self.read_param_from_file()
@@ -21,7 +22,7 @@ class mkdir(object):
             save_path = self.path + "/image/" + name
             os.makedirs(save_path)
             self.make = True
-            print("Done! Make a directory : {}".format(save_path))            
+            print("Done! Make a directory: {}".format(save_path))            
         except OSError as e:
             if e.errno == errno.EEXIST:
                 print("Note! Directory not created because it already exit. ")

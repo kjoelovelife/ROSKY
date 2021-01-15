@@ -17,7 +17,7 @@ class Save_Image_Node():
     ####  
     def __init__(self):
         # node information
-        self.folder = 'deep_learning'
+        self.folder = "img_recognition"
         rospy.sleep(2)
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]

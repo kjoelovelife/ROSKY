@@ -7,6 +7,6 @@ train:
   use_cuda: true
   model: "alexnet"
   save_model_name: "best"
-  epochs: 1
+  epochs: 2
   learning_rate: 0.001
   momentum: 0.09

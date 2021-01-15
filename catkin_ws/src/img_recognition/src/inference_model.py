@@ -9,17 +9,19 @@ from jetcam_ros.utils import bgr8_to_jpeg
 
 class Inference_Model_Node(object):
     def __init__(self):
-        self.package = "deep_learning"
+        self.package = "img_recognition"
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
         rospy.loginfo("{}  Initializing inference_model.py......".format(self.node_name))
 
         # set/get ros param
-        self.model_name  = rospy.get_param("~inference_model/model_pth","best.pth")
+        self.model_name  = rospy.get_param("~inference_model/model_pth","best1.pth")
         self.use_cuda  = rospy.get_param("~inference_model/use_cuda",True)
 
         # read information
         self.recording = self.read_param_from_file(file_name="recording.yaml", file_folder="model")
+
+        # check model
 
         # configure model
         self.labels = list(self.recording[self.model_name]["labels"].keys())
@@ -38,6 +40,12 @@ class Inference_Model_Node(object):
 
         # configure subscriber
         self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
+
+    def check_model(self):
+        if not self.model_name in self.recording.keys():
+            print("{} does not exist in folde [model]. Please check your model name.")
+            sys.exit(00)
+
 
     def neural_network(self, model="alexnet", param_pretrained=False, kind_of_classifier=2):
         # reference : https://pytorch.org/docs/stable/torchvision/models.html
