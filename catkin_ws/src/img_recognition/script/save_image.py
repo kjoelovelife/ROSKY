@@ -25,16 +25,15 @@ class Save_Image_Node():
 
         # set local param
         self.save_action_status = False
-        self.yaml_dict = {}
 
         # read label
         self.label = self.setup_parameter("~label","default")
-        self.read_param_from_file()
+        self.yaml_dict = self.read_param_from_file()
         rospy.loginfo("Your image label : {} ".format(self.label))
         rospy.loginfo("If your label is wrong, please change the label.")
 
         # configure subscriber
-        self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
+        self.sub_msg = rospy.Subscriber("~image/raw", Image, self.convert_image_to_cv2, queue_size=1)
         
         # setup ros param
         self.picture_interval = self.setup_parameter("~picture_interval",0.5)
@@ -60,7 +59,7 @@ class Save_Image_Node():
         rospy.loginfo("Remember checkout the image size(width=224,height=224).")
         rospy.loginfo("You can use service with [srv_client_save_image.py] to start collecting your data!()")
         rospy.loginfo("The label(folder) and image you have :")
-        rospy.loginfo(self.yaml_dict)
+        rospy.loginfo(sorted(self.yaml_dict.items(), key=lambda x:x[0]))
 
     def getFilePath(self , name):
         rospack = rospkg.RosPack()
@@ -69,7 +68,7 @@ class Save_Image_Node():
     def convert_image_to_cv2(self,img_msg):
         try:
             # Convert your ROS Image ssage to opencv2
-            self.cv2_img = self.bridge.imgmsg_to_cv2(img_msg,desired_encoding="bgr8")
+            self.cv2_img = self.bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
         except CvBridgeError as e:
             print(e) 
 
@@ -79,14 +78,14 @@ class Save_Image_Node():
             rospy.loginfo("Save action Start!!")
         else:
             self.save_action_status = False
-            _read = self.read_param_from_file()
+            self.yaml_dict = self.read_param_from_file()
             if self.label in self.yaml_dict :
                 self.label_image_count = self.yaml_dict[self.label]
                 set_param = rospy.set_param("~label_image_count",self.label_image_count) 
                 print("")
                 rospy.loginfo("Save action Stop!!")
                 rospy.loginfo("The label(folder) and image you have :")
-                rospy.loginfo(self.yaml_dict)
+                rospy.loginfo(sorted(self.yaml_dict.items(), key=lambda x:x[0]))
 
         return save_actionResponse()
 
@@ -109,8 +108,8 @@ class Save_Image_Node():
 
     def cb_save_image_timer(self,event):
         if self.save_action_status == True:
-            self.jpeg_img = bgr8_to_jpeg(self.cv2_img)
-            self.save_img(self.jpeg_img)
+            jpeg_img = bgr8_to_jpeg(self.cv2_img)
+            self.save_img(jpeg_img)
 
     def save_img(self,img):
         img_path = os.path.join(self.path, str(uuid1())+ '.jpg')
@@ -125,40 +124,46 @@ class Save_Image_Node():
         rospy.loginfo("{} shutdown.".format(self.node_name))
         rospy.sleep(1)
         rospy.is_shutdown=True
+        try:
+            sys.exit(0)
+        except:
+            rospy.loginfo("Now you can press [ctrl] + [c] to shutdwon the lauch file.")
 
     def read_param_from_file(self):
         fname = rospkg.RosPack().get_path(self.folder) + "/param/image_label.yaml"
         folder = os.listdir(rospkg.RosPack().get_path(self.folder)+"/image")
         with open(fname, 'r') as in_file:
             try:
-                self.yaml_dict = yaml.load(in_file)
-                for key in list(self.yaml_dict.keys()):
+                yaml_dict = yaml.load(in_file)
+                for key in list(yaml_dict.keys()):
                     if key not in folder:
                         rospy.loginfo("Please checkout folder [image] and label in [/param/image_label.yaml]. They are different.")
                         rospy.loginfo("save_image.py will shutdown. Please shutdown the launch file after it(jetson_camera.py still runnung).")
                         sys.exit()
-                if self.label not in self.yaml_dict.keys() :
-                    rospy.loginfo("Your /rosky/save_image/label [{}] is wrong.".format(self.label))
-                    rospy.loginfo("You can only type {}".format(self.yaml_dict.keys()))
+                if self.label not in yaml_dict.keys() :
+                    rospy.logerr("Your /rosky/save_image/label [{}] is wrong.".format(self.label))
+                    rospy.logerr("You can only type {}".format(sorted(yaml_dict)))
                     sys.exit()                         
                 else:
                     pass
             except yaml.YAMLError as exc:
                 print(" YAML syntax  error. File: {}".format(fname))
-        if self.yaml_dict != None: 
-            for label_name in self.yaml_dict:
+        if yaml_dict != None: 
+            for label_name in yaml_dict:
                 image_count = 0
                 for dir_path, dir_names, file_names in os.walk(self.getFilePath(label_name)+ "/"):                   
                     for image in file_names:
                         if image.endswith('jpg') or image.endswith('jpeg') :
                             image_count += 1  
-                self.yaml_dict[label_name] = image_count
+                yaml_dict[label_name] = image_count
+                return yaml_dict
         else:
             rospy.loginfo("Please use  {}  to make the floder for saving data ".format(rospkg.RosPack().get_path(self.folder) + "/script/mkdir.py"))
+            self.on_shutdown()
 
     def write_to_file(self):
         fname = rospkg.RosPack().get_path(self.folder) + "/param/image_label.yaml"
-        self.read_param_from_file()
+        self.yaml_dict = self.read_param_from_file()
         with open(fname, 'w') as outfile:
             outfile.write(yaml.dump(self.yaml_dict, default_flow_style=False))
 

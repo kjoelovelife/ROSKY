@@ -114,7 +114,7 @@ class Train_Model_Node(object):
                 self.model = models.mnasnet1_0(pretrained=param_pretrained)
             interval = rospy.get_time() - start_time
             rospy.loginfo("Done with loading modle! Use {:.2f} seconds.".format(interval))
-            rospy.loginfo("There are {} objects you want to recognize.".format(kind_of_classifier))
+            rospy.loginfo("There are [{}] objects you want to recognize.".format(kind_of_classifier))
         else:
             rospy.loginfo("Your classifier is wrong. Please check out image label!")
 
@@ -135,7 +135,7 @@ class Train_Model_Node(object):
         self.best_accuracy = 0.0
         optimizer = optim.SGD(self.model.parameters(), lr=learning_rate, momentum=momentum)
         start_time = rospy.get_time()
-        rospy.loginfo("Start training!")
+        rospy.loginfo("Start training! Don't stop this process... ")
         for epoch in range(self.NUM_EPOCHS):
             epoch_start = rospy.get_time()
             for images, labels in iter(self.train_loader):
@@ -160,7 +160,7 @@ class Train_Model_Node(object):
                 torch.save(self.model.state_dict(),self.BEST_MODEL_PATH)
                 self.best_accuracy = test_accuracy
             epoch_interval = rospy.get_time() - epoch_start
-            rospy.loginfo("Epoch: {}, accuracy: {} , loss: {}, time: {}.".format(epoch + 1, test_accuracy, loss, epoch_interval))
+            rospy.loginfo("Epoch: {}, accuracy: {}, loss: {}, time: {:.2f}.".format(epoch + 1, test_accuracy, loss, epoch_interval))
         interval = rospy.get_time() - start_time
         rospy.loginfo("Done! Use {:.2f} seconds to train model.".format(interval))
         self.recording(model_name=best_model_path, train_time=round(interval, 2), accuracy=self.best_accuracy, labels=self.yaml_dict)
@@ -169,14 +169,6 @@ class Train_Model_Node(object):
     def getFilePath(self,name ,folder="image"):
         rospack = rospkg.RosPack()
         return rospack.get_path(self.package) + "/" + folder + "/" + name   
-
-    def on_shutdown(self): 
-        rospy.loginfo("{} Close.".format(self.node_name))
-        rospy.loginfo("{} shutdown.".format(self.node_name))
-        #rospy.logwarn("Now you can press [ctrl] + [c] ro close the launch file.")
-        rospy.sleep(1)
-        rospy.is_shutdown=True
-        sys.exit(00)
 
     def read_param_from_file(self):
         fname = rospkg.RosPack().get_path(self.package) + "/param/image_label.yaml"
@@ -207,7 +199,7 @@ class Train_Model_Node(object):
                     rospy.logwarn("Please checkout the folder or use [rosun {} mkdir.py -rm {}] to remove folder.".format(self.package, keys))
                     self.on_shutdown()
         else:
-            rospy.logwarn("Please use  [{}]  to make the floder for saving data ".format(rospkg.RosPack().get_path(self.package) + "/script/mkdir.py"))
+            rospy.logwarn("Please use  [{}]  to make the folder for saving data ".format(rospkg.RosPack().get_path(self.package) + "/script/mkdir.py"))
             self.on_shutdown()
         return self.yaml_dict, self.kind_of_classifier
 
@@ -237,16 +229,16 @@ class Train_Model_Node(object):
                 "build_time": now,
                 "labels"    : labels,
                 "loader"    : {
-                    "batch_size":self.loader_batch_size, 
-                    "shuffle":self.loader_shuffle, 
-                    "num_workers":self.loader_num_workers,             
+                    "batch_size": self.loader_batch_size, 
+                    "shuffle": self.loader_shuffle, 
+                    "num_workers": self.loader_num_workers,             
                 },
                 "train"     : {
-                    "use_cuda":self.use_cuda,
-                    "model":self.param_model,
-                    "epochs":self.train_epochs,
-                    "learning_rate":self.train_lr,
-                    "momentum":self.train_momentum,
+                    "use_cuda": self.use_cuda,
+                    "model": self.param_model,
+                    "epochs": self.train_epochs,
+                    "learning_rate": self.train_lr,
+                    "momentum": self.train_momentum,
                     "train_time": train_time,
                     "accuracy"  : accuracy,
                 },
@@ -265,6 +257,17 @@ class Train_Model_Node(object):
         rospy.set_param(param_name, value)
         rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
         return value
+
+    def on_shutdown(self): 
+        rospy.loginfo("{} Close.".format(self.node_name))
+        rospy.loginfo("{} shutdown.".format(self.node_name))
+        #rospy.logwarn("Now you can press [ctrl] + [c] ro close the launch file.")
+        rospy.sleep(1)
+        rospy.is_shutdown=True
+        try:
+            sys.exit(0)
+        except:
+            rospy.loginfo("Now you can press [ctrl] + [c] to shutdwon the lauch file.")
 
 if __name__ == "__main__" :
     rospy.init_node("train_model",anonymous=False)

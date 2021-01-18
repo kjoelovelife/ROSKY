@@ -5,17 +5,19 @@
     <arg name="node_name" default="inference_model"/>
     <arg name="pkg_name" default="img_recognition"/>
     <arg name="raw" value="true"/>
-    <arg name="mode" value="object"/>
+    <arg name="config" default="baseline" />
 
     <!-- jetson_camera -->
     <include file="$(find jetson_camera)/launch/jetson_camera.launch">
-        <arg name="raw" value="$(arg raw)"/>
-        <arg name="mode" value="$(arg mode)"/>       
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="config" value="$(arg config)"/>
+        <arg name="raw" value="$(arg raw)"/>    
     </include>
 
-    <!-- save_image -->
+    <!-- inference model -->
     <remap from="/$(arg veh)/$(arg node_name)/image/raw" to="/$(arg veh)/jetson_camera/image/raw"/>
     <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" clear_params="true" output="screen" required="true">
+        <rosparam file="$(find img_recognition)/param/inference_model.yaml" command="load"/>
     </node>
  
 </launch>

@@ -15,39 +15,44 @@ class Inference_Model_Node(object):
         rospy.loginfo("{}  Initializing inference_model.py......".format(self.node_name))
 
         # set/get ros param
-        self.model_name  = rospy.get_param("~inference_model/model_pth","best1.pth")
-        self.use_cuda  = rospy.get_param("~inference_model/use_cuda",True)
+        self.model_name  = self.setup_parameter("~model_pth","best.pth")
+        self.use_cuda  = self.setup_parameter("~use_cuda",True)
 
         # read information
         self.recording = self.read_param_from_file(file_name="recording.yaml", file_folder="model")
 
         # check model
+        if self.check_model_exist(self.model_name):
+            #configure model
+            self.labels = sorted(list(self.recording[self.model_name]["labels"].keys()))
+            self.kind_of_classifier = len(self.labels)
+            self.model_struct = self.recording[self.model_name]["train"]["model"]
+            self.model = self.load_model(model=self.model_struct, param_pretrained=False, kind_of_classifier=self.kind_of_classifier) # configure: self.model 
+            self.cuda(use=self.use_cuda) # configure: self.device, self.model
 
-        # configure model
-        self.labels = list(self.recording[self.model_name]["labels"].keys())
-        self.kind_of_classifier = len(self.labels)
-        self.model_struct = self.recording[self.model_name]["train"]["model"]
-        #self.neural_network(model=self.model_struct, param_pretrained=False, kind_of_classifier=self.kind_of_classifier) # configure: self.model 
-        #self.cuda(use=self.use_cuda) # configure: self.device, self.model
+            # configure parameter with processing image
+            self.process_img_mean  = 255.0 * np.array([0.485, 0.456, 0.406])
+            self.process_img_stdev = 255.0 * np.array([0.229, 0.224, 0.225])
+            self.process_img_normalize = torchvision.transforms.Normalize(self.process_img_mean, self.process_img_stdev)
 
-        # configure parameter with processing image
-        self.process_img_mean  = 255.0 * np.array([0.485, 0.456, 0.406])
-        self.process_img_stdev = 255.0 * np.array([0.229, 0.224, 0.225])
-        self.process_img_normalize = torchvision.transforms.Normalize(self.process_img_mean, self.process_img_stdev)
+            # CV_bridge
+            self.bridge = CvBridge()
+   
+            
 
-        # CV_bridge
-        self.bridge = CvBridge()
+            # configure subscriber
+            self.first_sub = True
+            self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
 
-        # configure subscriber
-        self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
+    def check_model_exist(self, name):
+        if not name in self.recording.keys():
+            rospy.logwarn("[{}] does not exist in folder [model]. Please check your model_pth in [{}].".format(name,self.getFilePath(name="inference_model.yaml", folder="param") ))
+            rospy.logwarn("There are model_pth you can use below:")
+            rospy.logwarn(list(self.recording.keys()))
+            return False
+        return True
 
-    def check_model(self):
-        if not self.model_name in self.recording.keys():
-            print("{} does not exist in folde [model]. Please check your model name.")
-            sys.exit(00)
-
-
-    def neural_network(self, model="alexnet", param_pretrained=False, kind_of_classifier=2):
+    def load_model(self, model="alexnet", param_pretrained=False, kind_of_classifier=2):
         # reference : https://pytorch.org/docs/stable/torchvision/models.html
         model_list = [
                       "resnet18", "alexnet", "squeezenet", "vgg16", 
@@ -56,7 +61,7 @@ class Inference_Model_Node(object):
                      ]
 
         if model in model_list:
-            rospy.loginfo("This model use [{}]. Need some time to load model...".format(model))
+            rospy.logwarn("[{0}]] use [{1}]. Need some time to load model [{0}]...".format(self.model_name, model))
             start_time = rospy.get_time()
             if model == "resnet18":
                 self.model = torchvision.models.resnet18(pretrained=param_pretrained)
@@ -92,10 +97,12 @@ class Inference_Model_Node(object):
             model_pth = self.getFilePath(name=self.model_name, folder="model")
             self.model.load_state_dict(torch.load(model_pth))
             interval = rospy.get_time() - start_time
-            rospy.loginfo("Done with loading modle! Use {:.2f} seconds.".format(interval))
+            rospy.loginfo("Done with loading model! Use {:.2f} seconds.".format(interval))
             rospy.loginfo("There are {} objects you want to recognize.".format(kind_of_classifier))
+            return self.model
         else:
             rospy.loginfo("Your classifier is wrong. Please check out model struct!")
+            self.on_shutdown()
 
     def cuda(self,use=False):
         if use == True:
@@ -122,6 +129,15 @@ class Inference_Model_Node(object):
                 print(" YAML syntax  error. File: {}".format(fname))
         return yaml_dict
 
+    def convert_image_to_cv2(self,img_msg):
+        try:
+            # Convert your ROS Image ssage to opencv2
+            cv2_img = cv2.resize(self.bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8"), (224, 224))
+            #jpeg_img = cv2.resize(bgr8_to_jpeg(cv2_img), (224, 224))
+            self.inference(img=cv2_img, labels=self.labels)
+        except CvBridgeError as e:
+            print(e)
+
     def preprocess(self, camera_value): 
         img = camera_value
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -132,23 +148,19 @@ class Inference_Model_Node(object):
         img = img[None, ...]
         return img   
 
-    def convert_image_to_cv2(self,img_msg):
-        try:
-            # Convert your ROS Image ssage to opencv2
-            cv2_img = self.bridge.imgmsg_to_cv2(img_msg,desired_encoding="bgr8")
-            jpeg_img = bgr8_to_jpeg(cv2_img)
-            #self.inference(img=jpeg_img, labels=self.labels)
-        except CvBridgeError as e:
-            print(e)
-
     def inference(self, img, labels):
-        img_input = img
+        if self.first_sub == True:
+            rospy.loginfo("First load video. Please wait...")
+            self.first_sub = False
         img = self.preprocess(img)
         predict = self.model(img)
 
         # we apply the 'softmax' function to normalize the output vector so it sums to 1 (which makes ti a probability distribution)
         predict = torch.nn.functional.softmax(predict, dim=1)
-        print(predict.flatten())
+        confidence = {}
+        for text in self.labels:
+            confidence[text] = float(predict.flatten()[self.labels.index(text)])
+        print(confidence)
         time.sleep(0.001)
 
     def on_shutdown(self): 
@@ -156,6 +168,17 @@ class Inference_Model_Node(object):
         rospy.loginfo("{} shutdown.".format(self.node_name))
         rospy.sleep(1)
         rospy.is_shutdown=True
+        try:
+            sys.exit(0)
+        except:
+            rospy.loginfo("Now you can press [ctrl] + [c] to shutdwon the lauch file.")
+
+    def setup_parameter(self, param_name, default_value):
+        value = rospy.get_param(param_name, default_value)
+        # Write to parameter server for transparency
+        rospy.set_param(param_name, value)
+        rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
+        return value
 
 
 if __name__ == "__main__" :

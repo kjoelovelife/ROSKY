@@ -6,7 +6,7 @@ loader:
 train:
   use_cuda: true
   model: "alexnet"
-  save_model_name: "best"
-  epochs: 2
+  save_model_name: "best3"
+  epochs: 10
   learning_rate: 0.001
   momentum: 0.09
