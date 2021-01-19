@@ -45,10 +45,6 @@ class CameraNode(object):
         self.has_published = False
         self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
         self.sub_switch_high = rospy.Subscriber("~framerate_high_switch", BoolStamped, self.cbSwitchHigh, queue_size=1)
-
-        # Create service (for camera_calibration)
-        self.srv_set_camera_info = rospy.Service("~set_camera_info",SetCameraInfo,self.cbSrvSetCameraInfo)
-
         self.stream = io.BytesIO()
  
        # self.camera.exposure_mode = 'off'
@@ -58,6 +54,9 @@ class CameraNode(object):
         self.update_framerate = False
         # Setup timer
         rospy.loginfo("[%s] Initialized." %(self.node_name))
+        
+        # Create service (for camera_calibration)
+        self.srv_set_camera_info = rospy.Service("~set_camera_info",SetCameraInfo,self.cbSrvSetCameraInfo)
 
     def cbSwitchHigh(self, switch_msg):
         print(switch_msg)

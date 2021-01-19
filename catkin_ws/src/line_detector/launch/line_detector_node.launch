@@ -7,17 +7,19 @@
     <arg name="node_name" default="line_detector_node"/>  
     <arg name="verbose" default="false" />
     <arg name="hsv_reconfigure" default="false" />
+    <arg name="line_detector_node_output" default="screen"/>
+    <arg name="hsv_reconfigure_output" default="screen"/>
 
     <group ns="$(arg veh)">        
         <!-- run remote -->
-        <node name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" clear_params="true" required="true">
+        <node name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="$(arg line_detector_node_output)" clear_params="true" required="true">
             <rosparam command="load" file="$(find rosky_base)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
             <param name="verbose" value="$(arg verbose)"/>
         </node>
 
         <!-- hsv reconfigure -->
         <group if="$(arg hsv_reconfigure)">
-		    <node name="hsv_reconfigure" pkg="$(arg pkg_name)" type="hsv_reconfigure.py" output="screen"/>
+		    <node name="hsv_reconfigure" pkg="$(arg pkg_name)" type="hsv_reconfigure.py" output="$(arg hsv_reconfigure_output)"/>
 		</group>  
 		    <!-- End hsv reconfigure -->
 

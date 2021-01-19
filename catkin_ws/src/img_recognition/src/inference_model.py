@@ -5,6 +5,7 @@ import torch, torchvision, cv2
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
+from img_recognition.msg import Inference
 from jetcam_ros.utils import bgr8_to_jpeg
 
 class Inference_Model_Node(object):
@@ -12,6 +13,7 @@ class Inference_Model_Node(object):
         self.package = "img_recognition"
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
+        self.start = rospy.wait_for_message("/" + self.veh_name +"/jetson_camera/image/raw", Image)
         rospy.loginfo("{}  Initializing inference_model.py......".format(self.node_name))
 
         # set/get ros param
@@ -37,12 +39,13 @@ class Inference_Model_Node(object):
 
             # CV_bridge
             self.bridge = CvBridge()
-   
-            
-
+     
             # configure subscriber
             self.first_sub = True
-            self.sub_msg = rospy.Subscriber("~image/raw",Image,self.convert_image_to_cv2,queue_size=1)
+            self.sub_msg = rospy.Subscriber("~image/raw", Image, self.convert_image_to_cv2,queue_size=1)
+
+            # configure Publisher
+            self.pub_msg = rospy.Publisher("~inference", Inference, queue_size=1)
 
     def check_model_exist(self, name):
         if not name in self.recording.keys():
@@ -149,29 +152,38 @@ class Inference_Model_Node(object):
         return img   
 
     def inference(self, img, labels):
+        start_time = rospy.get_time()
         if self.first_sub == True:
-            rospy.loginfo("First load video. Please wait...")
-            self.first_sub = False
+            rospy.loginfo("Deploy model to gpu. Please wait...")
         img = self.preprocess(img)
         predict = self.model(img)
-
+        if self.first_sub == True:
+            interval = rospy.get_time() - start_time
+            self.inference_information(interval)
+            self.first_sub = False
         # we apply the 'softmax' function to normalize the output vector so it sums to 1 (which makes ti a probability distribution)
         predict = torch.nn.functional.softmax(predict, dim=1)
-        confidence = {}
+        local_confidence = {}
+        pub_confidence = Inference()
         for text in self.labels:
-            confidence[text] = float(predict.flatten()[self.labels.index(text)])
-        print(confidence)
+            local_confidence[text] = float(predict.flatten()[self.labels.index(text)])
+        pub_confidence.labels = local_confidence.keys()
+        pub_confidence.confidence = local_confidence.values()
+        self.pub_msg.publish(pub_confidence)
         time.sleep(0.001)
+
+    def inference_information(self, interval):
+        rospy.loginfo("Deployment complete! Use {:.2f} seconds.".format(interval))
+        rospy.loginfo("Start to recognitize image! Theer are {} object you can recognitize: {}".format(len(self.labels), self.labels))
+        rospy.loginfo("You can listen the topic to see how much the confidence about object: {}".format( self.node_name + "/inference"))
+        rospy.loginfo("More information about {} :\n{}".format(self.model_name, self.recording[self.model_name]))
+
 
     def on_shutdown(self): 
         rospy.loginfo("{} Close.".format(self.node_name))
         rospy.loginfo("{} shutdown.".format(self.node_name))
         rospy.sleep(1)
         rospy.is_shutdown=True
-        try:
-            sys.exit(0)
-        except:
-            rospy.loginfo("Now you can press [ctrl] + [c] to shutdwon the lauch file.")
 
     def setup_parameter(self, param_name, default_value):
         value = rospy.get_param(param_name, default_value)

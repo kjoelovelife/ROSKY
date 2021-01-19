@@ -33,11 +33,17 @@
 	<!-- start switch args -->
 	<arg name="camera" default="true"/>
     <arg name="camera_calibration" default="false"/>
-	<arg name="/camera/raw" default="false"/>
+	<arg name="/camera/raw" default="true"/>
 	<arg name="wheels" default="true"/>
     <arg name="fsm" default="true"/>
+	<arg name="line_detector_node_output" default="log"/>
+    <arg name="hsv_reconfigure_output" default="log"/>
 	<arg name="lane_following" default="true"/>
 	<arg name="hsv_reconfigure" default="false"/>
+	<arg name="inference" default="false"/>
+	<arg name="inference_camera" default="false"/>
+	<arg name="inference_reaction" default="true"/>
+	<arg name="inference_reaction_output" default="log"/>
 	<arg name="/lane_following/line_detection" default="true"/>
 	<arg name="/lane_following/ground_projection" default="true"/>
 	<arg name="/lane_following/lane_filter" default="true"/>
@@ -65,10 +71,10 @@
 	<!-- Start Wheels -->
 	<group if="$(arg wheels)">
 
-	        <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+	    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
 		<remap from="inverse_kinematics_node/car_cmd" to="lane_controller_node/car_cmd"/>
 		<include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
-			<arg name="veh" value="$(arg veh)"/>
+		    <arg name="veh" value="$(arg veh)"/>
 		</include>
 
 		<!-- Wheel Driver -->
@@ -93,6 +99,8 @@
 				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
 				<arg name="hsv_reconfigure" value="$(arg hsv_reconfigure)"/>
+				<arg name="line_detector_node_output" value="$(arg line_detector_node_output)"/>
+				<arg name="hsv_reconfigure_output" value="$(arg hsv_reconfigure_output)"/>
 			</include>	
 		</group>
                 <!-- End Line Detector -->
@@ -134,9 +142,20 @@
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg lane_controller_param_file_name)"/>        
 			</include>
-		</group>
-	</group>
-	<!-- End Lane Control -->
+		</group> 	<!-- End Lane Control -->
+
+        <!-- inference model and reaction -->
+        <group if="$(arg inference)">
+            <include file="$(find img_recognition)/launch/inference.launch">
+			    <arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)" />
+				<arg name="camera" value="$(arg inference_camera)"/>
+                <arg name="reaction" value="$(arg inference_reaction)"/>
+				<arg name="reaction_output" value="$(arg inference_reaction_output)"/>
+            </include>
+        </group>    <!-- End inference model and reaction -->
+	</group>    <!-- End Lane Following -->
+
 
 
 
