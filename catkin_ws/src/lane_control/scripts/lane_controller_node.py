@@ -107,10 +107,10 @@ class lane_controller(object):
         #self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def cbPose(self,lane_pose_msg):
-        inference_linear_gain = rospy.get_param("/" + self.veh_name + "/inference_to_reaction/inference_gain/linear_velocity" , [1,1,1]) # [Vx, Vy, Vz]
-        inference_angular_gain = rospy.get_param("/" + self.veh_name + "/inference_to_reaction/inference_gain/angular_velocity" , [1,1,1]) # [Ax, Ay, Az]
-        inference_linear_gain = float(inference_linear_gain[0])
-        inference_angular_gain = float(inference_angular_gain[2])
+        #inference_linear_gain = rospy.get_param("/" + self.veh_name + "/inference_to_reaction/inference_gain/linear_velocity" , [1,1,1]) # [Vx, Vy, Vz]
+        #inference_angular_gain = rospy.get_param("/" + self.veh_name + "/inference_to_reaction/inference_gain/angular_velocity" , [1,1,1]) # [Ax, Ay, Az]
+        #inference_linear_gain = float(inference_linear_gain[0])
+        #inference_angular_gain = float(inference_angular_gain[2])
         # self.d_offset = 0.23
         self.lane_reading = lane_pose_msg 
 
@@ -119,11 +119,11 @@ class lane_controller(object):
 
         car_control_msg = Twist2DStamped()
         car_control_msg.header = lane_pose_msg.header
-        car_control_msg.v = self.v_bar * inference_linear_gain #*self.speed_gain #Left stick V-axis. Up is positive
+        car_control_msg.v = self.v_bar #* self.speed_gain # * inference_linear_gain #Left stick V-axis. Up is positive
         
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
-        car_control_msg.omega =  (self.k_d * cross_track_err + self.k_theta * heading_err * self.steer_gain) * inference_angular_gain #Right stick H-axis. Right is negative
+        car_control_msg.omega =  (self.k_d * cross_track_err + self.k_theta * heading_err * self.steer_gain) #* inference_angular_gain #Right stick H-axis. Right is negative
         
         # controller mapping issue
         # car_control_msg.steering = -car_control_msg.steering

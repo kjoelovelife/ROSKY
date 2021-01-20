@@ -15,15 +15,24 @@ class Inference_To_Reaction(object):
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
         rospy.loginfo("{}  Initializing inference_model.py......".format(self.node_name))
+        self.start = rospy.wait_for_message("/" + self.veh_name +"/inference_model/inference", Inference)
      
         # local parameter
         self.confidence = {}
+        self.inference_gain = {
+                "linear_velocity": [1, 1, 1], # Vx, Vy, Vz
+                "angular_velocity": [1, 1, 1], # Ax, Ay, Az
+        } 
 
         # ros parameter
         self.confidence_threshold = self.setup_parameter("~confidence_threshold", 0.75) 
 
         # setup the subscriber
         self.sub_msg_inference = rospy.Subscriber("~inference", Inference, self.inference_analyze, queue_size=1)
+        self.sub_car_cmd = rospy.Subscriber("~sub_car_cmd", Twist2DStamped, self.cb_car_cmd, queue_size=1)
+
+        # setup the publisher
+        self.pub_car_cmd = rospy.Publisher("~pub_car_cmd", Twist2DStamped, queue_size=1)
 
     def inference_analyze(self, data):
         if data == None:
@@ -35,22 +44,29 @@ class Inference_To_Reaction(object):
             if self.confidence[recognition] > self.confidence_threshold: 
                 _reaction = self.reaction(recognition)
 
-    def reaction(self, recognition):
-        inference_gain = {
-                "linear_velocity": [1, 1, 1], # Vx, Vy, Vz
-                "angular_velocity": [1, 1, 1], # Ax, Ay, Az
-        } 
+    def reaction(self, recognition): 
         if recognition == "free":
-            inference_gain = inference_gain
+            for key in self.inference_gain.keys():
+                for index in range(len(self.inference_gain[key])):
+                    self.inference_gain[key][index] = 1
         elif recognition == "blocked":
-            for key in inference_gain.keys():
-                for index in range(len(inference_gain[key])):
-                    inference_gain[key][index] = 0
+            for key in self.inference_gain.keys():
+                for index in range(len(self.inference_gain[key])):
+                    self.inference_gain[key][index] = 0
         else:
-            for key in inference_gain.keys():
-                for index in range(len(inference_gain[key])):
-                    inference_gain[key][index] = 0
-        self.setup_parameter("~inference_gain", inference_gain)
+            for key in self.inference_gain.keys():
+                for index in range(len(self.inference_gain[key])):
+                    self.inference_gain[key][index] = 1
+        #self.setup_parameter("~inference_gain", inference_gain)
+
+    def cb_car_cmd(self, car_cmd_msg):
+         car_cmd_msg.v = car_cmd_msg.v * self.inference_gain["linear_velocity"][0]
+         car_cmd_msg.omega = car_cmd_msg.omega * self.inference_gain["angular_velocity"][2]
+         self.pub_msg(car_cmd_msg)
+    
+    def pub_msg(self, car_cmd_msg):
+        self.pub_car_cmd.publish(car_cmd_msg)
+
 
     def on_shutdown(self): 
         rospy.loginfo("{} Close.".format(self.node_name))

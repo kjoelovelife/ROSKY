@@ -43,7 +43,7 @@
 	<arg name="inference" default="false"/>
 	<arg name="inference_camera" default="false"/>
 	<arg name="inference_reaction" default="true"/>
-	<arg name="inference_reaction_output" default="log"/>
+	<arg name="inference_reaction_output" default="screen"/>
 	<arg name="/lane_following/line_detection" default="true"/>
 	<arg name="/lane_following/ground_projection" default="true"/>
 	<arg name="/lane_following/lane_filter" default="true"/>
@@ -70,13 +70,20 @@
 
 	<!-- Start Wheels -->
 	<group if="$(arg wheels)">
-
-	    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
-		<remap from="inverse_kinematics_node/car_cmd" to="lane_controller_node/car_cmd"/>
-		<include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
-		    <arg name="veh" value="$(arg veh)"/>
-		</include>
-
+	    <group if="$(arg inference)">
+	        <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+		    <remap from="inverse_kinematics_node/car_cmd" to="inference_to_reaction/pub_car_cmd"/>
+		    <include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
+		        <arg name="veh" value="$(arg veh)"/>
+		    </include>
+		</group>
+		<group unless="$(arg inference)">
+	        <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+		    <remap from="inverse_kinematics_node/car_cmd" to="lane_controller_node/car_cmd"/>
+		    <include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
+		        <arg name="veh" value="$(arg veh)"/>
+		    </include>
+		</group>
 		<!-- Wheel Driver -->
 		<include file="$(find ominibot_car)/launch/wheels_ominibot_driver_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
@@ -146,6 +153,7 @@
 
         <!-- inference model and reaction -->
         <group if="$(arg inference)">
+		    <remap from="inference_to_reaction/sub_car_cmd" to="lane_controller_node/car_cmd"/>
             <include file="$(find img_recognition)/launch/inference.launch">
 			    <arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)" />
@@ -155,9 +163,4 @@
             </include>
         </group>    <!-- End inference model and reaction -->
 	</group>    <!-- End Lane Following -->
-
-
-
-
-
 </launch>
