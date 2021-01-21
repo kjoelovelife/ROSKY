@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosky_msgs # Every duckietown packages should use this.
   cv_bridge
   tf
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions

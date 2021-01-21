@@ -10,14 +10,14 @@ d_min: -0.15
 phi_min: -1.5
 phi_max: 1.5
 cov_v: 0.5
-linewidth_white: 0.05
-linewidth_yellow: 0.025
-lanewidth: 0.20
+linewidth_white: 0.017
+linewidth_yellow: 0.017
+lanewidth: 0.22
 min_max: 0.1
 
 # minimum number of segments for generating measurement:
 use_min_segs: False
-min_segs: 10
+min_segs: 1
 
 # maximum segment distance:
 use_maximum_segment_dist: False

@@ -9,9 +9,10 @@
 
     <group ns="$(arg veh)">        
         <!-- run remote -->
-        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" clear_params="true" required="true">
-            <rosparam command="load" file="$(find rosky_base)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
-        </node>
+        <node name="lane_filter_reconfigure" pkg="$(arg pkg_name)" type="lane_filter_reconfigure.py" output="screen" required="true"/>
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" clear_params="true" required="true"/>
+            <!--<rosparam command="load" file="$(find rosky_base)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>-->
+
     </group>
 
     <!-- Publications -->

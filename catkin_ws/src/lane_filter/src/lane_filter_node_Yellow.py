@@ -4,7 +4,7 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
-from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped, Twist2DStamped
+from rosky_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped, Twist2DStamped
 from scipy.stats import multivariate_normal, entropy
 from scipy.ndimage.filters import gaussian_filter
 from math import floor, atan2, pi, cos, sin, sqrt

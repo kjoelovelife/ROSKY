@@ -145,6 +145,7 @@ generate_messages(
 generate_dynamic_reconfigure_options(
    cfg/Line_Detector_Param.cfg
    cfg/Lane_Controller_Param.cfg
+   cfg/Lane_Filter_Param.cfg
  )
 
 ###################################

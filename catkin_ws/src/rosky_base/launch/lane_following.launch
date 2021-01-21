@@ -36,7 +36,7 @@
 	<arg name="/camera/raw" default="true"/>
 	<arg name="wheels" default="true"/>
     <arg name="fsm" default="true"/>
-	<arg name="line_detector_node_output" default="log"/>
+	<arg name="line_detector_node_output" default="screen"/>
     <arg name="hsv_reconfigure_output" default="log"/>
 	<arg name="lane_following" default="true"/>
 	<arg name="hsv_reconfigure" default="false"/>
@@ -135,7 +135,7 @@
 			<include file="$(find lane_filter)/launch/lane_filter_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/> 
 			</include>
 		</group>
 
@@ -147,7 +147,7 @@
 			<include file="$(find lane_control)/launch/lane_controller_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg lane_controller_param_file_name)"/>        
+				<arg name="param_file_name" value="$(arg lane_controller_param_file_name)"/>     
 			</include>
 		</group> 	<!-- End Lane Control -->
 
