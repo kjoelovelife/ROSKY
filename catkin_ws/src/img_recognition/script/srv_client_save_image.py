@@ -7,7 +7,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
 from geometry_msgs.msg import Twist
 from uuid import uuid1
-from object.srv import save_action, save_actionResponse, select_label, select_labelResponse
+from img_recognition.srv import save_action, save_actionResponse, select_label, select_labelResponse
 
 
 

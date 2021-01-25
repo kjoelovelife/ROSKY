@@ -120,7 +120,6 @@ class lane_controller(object):
         car_control_msg = Twist2DStamped()
         car_control_msg.header = lane_pose_msg.header
         car_control_msg.v = self.v_bar #* self.speed_gain # * inference_linear_gain #Left stick V-axis. Up is positive
-        
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
         # self.k_d * (0.22/self.v_bar) * self.cross_track_err + self.k_theta * (0.22/self.v_bar) * self.heading_err
