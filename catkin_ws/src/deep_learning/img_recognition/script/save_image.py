@@ -57,7 +57,8 @@ class Save_Image_Node():
         rospy.loginfo("[{}] Remember checkout the image size(width={} ,height={}).".format(self.node_name, self.camera_width, self.camera_height))
         rospy.loginfo("[{}] You can use service with [srv_client_save_image.py] to start collecting your data!".format(self.node_name))
         rospy.loginfo("[{}] The label(folder) and image you have :".format(self.node_name))
-        rospy.loginfo("[{}] {}".format(sorted(self.yaml_dict.items(), key=lambda x:x[0])))
+        
+        rospy.loginfo("[{}] {}".format(self.node_name, sorted(self.yaml_dict.items(), key=lambda x:x[0])))
 
     def getFilePath(self , package, folder, file_name):
         rospack = rospkg.RosPack()
