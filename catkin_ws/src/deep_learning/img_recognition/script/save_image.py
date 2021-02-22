@@ -109,7 +109,7 @@ class Save_Image_Node():
             rospy.loginfo("[{}] Save action Start!!".format(self.node_name))
         else:
             self.save_action_status = False
-            self.yaml_dict = self.read_param_from_file()
+            self.yaml_dict = self.read_param_from_file(package=self.package, folder="param", file_name="image_label.yaml")
             if self.label in self.yaml_dict :
                 self.label_image_count = self.yaml_dict[self.label]
                 set_param = rospy.set_param("~label_image_count",self.label_image_count) 
