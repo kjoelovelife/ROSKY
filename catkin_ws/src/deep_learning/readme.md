@@ -328,4 +328,6 @@ If you select the parameter "save_parameter", it will save in [../catkin_ws/src/
 
 Note: "$hostname" is the hostname on your ROSKY.
 
+If you want to define your ROSKY's motion, please use [../catkin_ws/src/deep_learning/self_deiving/src/sef_driving_inerence_to_reaction] to define.
+
 If you want to stop it, remember use pressing [ctrl] + [c] in any terminal for closing correctly.

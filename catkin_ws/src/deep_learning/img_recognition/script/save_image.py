@@ -60,9 +60,12 @@ class Save_Image_Node():
         
         rospy.loginfo("[{}] {}".format(self.node_name, sorted(self.yaml_dict.items(), key=lambda x:x[0])))
 
-    def getFilePath(self , package, folder, file_name):
+    def getFilePath(self , package, folder, file_name=None):
         rospack = rospkg.RosPack()
-        return rospack.get_path(package) + "/" + folder + "/" + file_name   
+        if file_name == None:
+            return rospack.get_path(package) + "/" + folder
+        else:
+            return rospack.get_path(package) + "/" + folder + "/" + file_name   
 
     def read_param_from_file(self, package, folder, file_name):
         fname = self.getFilePath(package=package, folder=folder, file_name=file_name)
@@ -124,7 +127,7 @@ class Save_Image_Node():
         if request.value in self.yaml_dict :
             rospy.set_param("~label",request.value)
             self.label = request.value
-            self.path = self.getFilePath(self.label)
+            self.path = self.getFilePath(package=self.package, folder="image/" + self.label)
             rospy.loginfo("[{}] You select the label : [{}]".format(self.node_name, self.label))
             rospy.loginfo("[{}] Now your image will save in [{}]".format(self.node_name, self.path))
         else:

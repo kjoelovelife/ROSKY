@@ -1,3 +1,4 @@
+dataset: dataset_xy
 loader:
   batch_size: 8
   shuffle: true

@@ -14,7 +14,7 @@ class Inference_Model_Node(object):
         self.node_name = rospy.get_name()
         self.veh_name = self.node_name.split("/")[1]
         self.start = rospy.wait_for_message("/" + self.veh_name +"/jetson_camera/image/raw", Image)
-        rospy.loginfo("{}  Initializing inference_model.py......".format(self.node_name))
+        rospy.loginfo("[{}]  Initializing inference_model.py......".format(self.node_name))
 
         # set/get ros param
         self.model_name  = self.setup_parameter("~model_pth","best.pth")
