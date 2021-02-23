@@ -63,20 +63,13 @@ Note: unit of picture_interval is second.
 if you start without error, will see the information:
 
 > [INFO] [1613979930.707966]: [/rosky01/save_image] ~label = free 
-
-> [INFO] [1613979931.346135]: [/rosky01/save_image] ~picture_interval = 0.5 
-
-> [INFO] [1613979931.523790]: [/rosky01/save_image] Your image label : free 
-
-> [INFO] [1613979931.528219]: [/rosky01/save_image] If your label is wrong, please change the label.
-
-> [INFO] [1613979931.533456]: [/rosky01/save_image] Remember checkout the image size(width=224 ,height=224).
-
-> [INFO] [1613979931.541482]: [/rosky01/save_image] You can use service with [srv_client_save_image.py] to start collecting your data!
-
-> [INFO] [1613979931.549191]: [/rosky01/save_image] The label(folder) and image you have :
-
-> [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
+ [INFO] [1613979931.346135]: [/rosky01/save_image] ~picture_interval = 0.5 
+ [INFO] [1613979931.523790]: [/rosky01/save_image] Your image label : free 
+ [INFO] [1613979931.528219]: [/rosky01/save_image] If your label is wrong, please change the label.
+ [INFO] [1613979931.533456]: [/rosky01/save_image] Remember checkout the image size(width=224 ,height=224).
+ [INFO] [1613979931.541482]: [/rosky01/save_image] You can use service with [srv_client_save_image.py] to start collecting your data!
+ [INFO] [1613979931.549191]: [/rosky01/save_image] The label(folder) and image you have :
+ [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
 
 Great! We can save image now! Please take your object want to recognitize in fron of the camera. And then, open another new terminal and type the code below:
 ```sh
