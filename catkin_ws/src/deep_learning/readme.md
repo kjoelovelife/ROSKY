@@ -13,6 +13,7 @@ This package is for Deep_Learning, rewrite the code below to build it.
 * Cuda: 10.2
 * python: 2.7
 * pytorch: 1.4.0
+
 # Package struct
 
 It contains three package:
@@ -63,13 +64,20 @@ Note: unit of picture_interval is second.
 if you start without error, will see the information:
 
 > [INFO] [1613979930.707966]: [/rosky01/save_image] ~label = free 
- [INFO] [1613979931.346135]: [/rosky01/save_image] ~picture_interval = 0.5 
- [INFO] [1613979931.523790]: [/rosky01/save_image] Your image label : free 
- [INFO] [1613979931.528219]: [/rosky01/save_image] If your label is wrong, please change the label.
- [INFO] [1613979931.533456]: [/rosky01/save_image] Remember checkout the image size(width=224 ,height=224).
- [INFO] [1613979931.541482]: [/rosky01/save_image] You can use service with [srv_client_save_image.py] to start collecting your data!
- [INFO] [1613979931.549191]: [/rosky01/save_image] The label(folder) and image you have :
- [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
+
+> [INFO] [1613979931.346135]: [/rosky01/save_image] ~picture_interval = 0.5 
+
+> [INFO] [1613979931.523790]: [/rosky01/save_image] Your image label : free 
+
+> [INFO] [1613979931.528219]: [/rosky01/save_image] If your label is wrong, please change the label.
+
+> [INFO] [1613979931.533456]: [/rosky01/save_image] Remember checkout the image size(width=224 ,height=224).
+
+> [INFO] [1613979931.541482]: [/rosky01/save_image] You can use service with [srv_client_save_image.py] to start collecting your data!
+
+> [INFO] [1613979931.549191]: [/rosky01/save_image] The label(folder) and image you have :
+
+> [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
 
 Great! We can save image now! Please take your object want to recognitize in fron of the camera. And then, open another new terminal and type the code below:
 ```sh
@@ -79,6 +87,7 @@ Note: [$hostname] is your hostname on ROSKY, package img_recognition will auto-u
 If taking picture successfully, you'll see the information in terminal "save_image.launch":
 
 >[INFO] [1613980950.029004]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/image/free 
+
 >[INFO] [1613980950.529054]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/image/free
 
 While taking picture, you should put the object in any angle and background, this will avoid the model be the "overfitting model".
@@ -103,14 +112,23 @@ $ roslaunch img_recognition train_model.launch
 In this example, information is:
 
 > [INFO] [1613987099.768488]: /rosky01/train_model  Initializing train_model.py......
+
 > [WARN] [1613987100.446557]: Model name repeat nad will be reset! Now the name is: best3-2021-02-22-17-45-00
+
 > [INFO] [1613987100.654610]: You use model [alexnet]. Need some time to load model...
+
 > ...
+
 > [INFO] [1613987185.089697]: Epoch: 1, accuracy: 1.0, loss: 0.173195719719, time: 61.59.
+
 > [INFO] [1613987206.301567]: Epoch: 2, accuracy: 1.0, loss: 0.0143429040909, time: 
+
 > ...
+
 > [INFO] [1613987332.226332]: Now you can press [ctrl] + [c] to shutdwon the lauch file.
-> [rosky01/train_model-2] process has died [pid 7250, exit code -11, cmd /home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/src/train_model.py __name:=train_model __log:=/home/icshop/.ros/log/9d4f9b82-74f2-11eb-9604-a4c3f0eb8755/rosky01-train_model-2.log].
+
+> [rosky01/train_model-2] process has died [pid 7250, exit code -11, cmd 
+/home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/src/train_model.py __name:=train_model __log:=/home/icshop/.ros/log/9d4f9b82-74f2-11eb-9604-a4c3f0eb8755/rosky01-train_model-2.log].
 log file: /home/icshop/.ros/log/9d4f9b82-74f2-11eb-9604-a4c3f0eb8755/rosky01-train_model-2*.log
 
 Great! Because the node will shutdown automatically, the last information will use "red text" to tell you there is an error occur. Dont't worry, if you can see the text "Now you can press [ctrl] + [c] to shutdwon the lauch file.", means training done and successfully. Just press [ctrl] + [c] to cancel the code in terminal "train_model.launch".
@@ -129,8 +147,11 @@ $ roslaunch img_recognition inference.launch
 In this example, when you see the information below, means ROSKY can recognition the object you want!
 
 > ...
+
 > [INFO] [1613989152.729438]: Start to recognitize image! Theer are 2 object you can recognitize: ['blocked', 'free']
+
 > [INFO] [1613989152.734968]: You can listen the topic to see how much the confidence about object: /rosky01/inference_model/inference
+
 > ...
 
 You can listen the topic to see what object to recognitize by typing the code in another terminal:
@@ -140,7 +161,9 @@ $ rostopic echo /[$hostname]/inference_model/inference
 Note: [$hostname] is your hostname on ROSKY, package img_recognition will auto-use the hostname to register the node name. In this example, the hostname is "rosk01". And then you can see the information on terminal:
 
 > labels: [free, blocked]
-confidence: [0.7282347083091736, 0.27176526188850403]
+
+> confidence: [0.7282347083091736, 0.27176526188850403]
+
 > ...
 
 Awesome! we can use ROSKY to recognitize object. When you want stop recognitizing, remember cancael the code using pressing [ctrl] + [c] in terminal "inference.launch".
@@ -195,9 +218,14 @@ $ roslaunch road_following train_model.launch
 In this example, information is:
 
 > [INFO] [1614051323.337509]: [/rosky01/train_model]  Initializing train_model.py......
+
 > ...
-[INFO] [1614051359.547631]: [/rosky01/train_model] Epoch: 1, train_loss: 1.72967553139, > ...
-[WARN] [1614051376.522800]: [/rosky01/train_model] Now you can press [ctrl] + [c] ro close the launch file.
+
+[INFO] [1614051359.547631]: [/rosky01/train_model] Epoch: 1, train_loss: 1.72967553139, 
+
+> ...
+
+> [WARN] [1614051376.522800]: [/rosky01/train_model] Now you can press [ctrl] + [c] ro close the launch file.
 [rosky01/train_model-2] process has died [pid 28548, exit code -11, cmd /home/icshop/ROSKY/catkin_ws/src/deep_learning/road_following/src/train_model.py __name:=train_model __log:=/home/icshop/.ros/log/25746c46-7588-11eb-9e8a-a4c3f0eb8755/rosky01-train_model-2.log].
 log file: /home/icshop/.ros/log/25746c46-7588-11eb-9e8a-a4c3f0eb8755/rosky01-train_model-2*.log
 
@@ -217,8 +245,11 @@ $ roslaunch road_following inference.launch reaction"=true
 In this example, when you see the information below, means ROSKY can find the lane!
 
 > ...
+
 > [INFO] [1614052668.313290]: [/rosky01/road_model_inference] Deployment complete! Use 14.64 seconds.
+
 > [INFO] [1614052668.387532]: [/rosky01/road_model_inference]  You can listen the topic to see how much the angle of head between the lane: /rosky01/road_model_inference/inference
+
 > ...
 
 You can listen the topic to see what message in another terminal:
@@ -228,8 +259,8 @@ $ rostopic echo /[$hostname]/road_model_inference/inference
 Note: [$hostname] is your hostname on ROSKY
 
 > angle: 1.4863204277
+
 > angle_last: 1.4863204277
-> ...
 
 Awesome! Now you can start "another computer", and open new Terminal for typing the code below to adjust the parameter for PID controller:
 ```sh
