@@ -39,26 +39,33 @@ First, we use packae img_recognition to recognitize object, such as traffic ligh
 ## Step 1. Data collection
 
 Before collecting data, we need to make folder to save image. Open Terminal and use the code below to make folder:
+
 ```sh
 $ rosrun img_recognition mkdir.py -n "folder_name"
 ```
-Note: In this examplem, we need replcae "folder_name" to "free" and "blocked". After do it, you can find two folders in [ ../catkin_ws/src/deep_learning/img_recognition/img ]. At the same time, you can check out the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ], it will be
+
+Note: In this example, we need replcae "folder_name" to "free" and "blocked". After do it, you can find two folders in [ ../catkin_ws/src/deep_learning/img_recognition/img ]. At the same time, you can check out the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ], it will be
 
 > blocked: 0
+
 > free: 0
 
 Great! If you check out the folder_name is the same as content in image_label.yaml, you finished make folder to save image. The number in the image_label.yaml is the image number.
 
 Now, you can type the code below to start the launch file:
+
 ```sh
 $ roslaunch img_recognition save_image.launch label:="folder_name" 
 ```
+
 Note: the "folder_name" must be the same as one of you make before. In this example, will be the "free" or "blocked". Don't worry, you can change the "folder_name" while collecting data. 
 
 Also, the interval between taking picture default is 0.5 seconds.If you want to change the interval, you can type the code when start the file "save_image.launch":
+
 ```sh
 $ roslaunch img_recognition save_image.launch label:="folder_name" picture_interval:="time"
 ```
+
 Note: unit of picture_interval is second.
 
 if you start without error, will see the information:
@@ -80,9 +87,11 @@ if you start without error, will see the information:
 > [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
 
 Great! We can save image now! Please take your object want to recognitize in fron of the camera. And then, open another new terminal and type the code below:
+
 ```sh
 $ rosservice call /[$hostname]/save_image/save_image_action -- true 
 ```
+
 Note: [$hostname] is your hostname on ROSKY, package img_recognition will auto-use the hostname to register the node name. In this example, the hostname is "rosk01", so you can see the [Info]... above is the [/rosky01/save_image].. . 
 If taking picture successfully, you'll see the information in terminal "save_image.launch":
 
@@ -93,9 +102,11 @@ If taking picture successfully, you'll see the information in terminal "save_ima
 While taking picture, you should put the object in any angle and background, this will avoid the model be the "overfitting model".
 
 if you want to stop taking picture, please type the code below in terminal can type code(not the terminal "save_image.launch"):
+
 ```sh
 $ rosservice call /[$hostname]/save_image/save_image_action -- false 
 ```
+
 Please repeate the same steps to save image in another folder.
 When finished saving picture, please press [ctrl] + [c] in terminal "save_image.launch" to cancel the save_image.launch, and then you can see the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ].
 
@@ -106,9 +117,11 @@ Befor training the model, we'll configure the parameter about the model. Please 
 Note: Now we just support the model struct is "alexnet". And please check out the save_model_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/img_recognition/model ]. If your model name is repeat, system will auto add time after your model name.  
 
 When you finished modified parameter about training model, you can type the code below to train model:
+
 ```sh
 $ roslaunch img_recognition train_model.launch
 ```
+
 In this example, information is:
 
 > [INFO] [1613987099.768488]: /rosky01/train_model  Initializing train_model.py......
@@ -141,9 +154,11 @@ Before inferencing the model, we need to modify the param in [ ../catkin_ws/src/
 Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/img_recognition/model ].    
 
 And then, you can type the code below to start inferencing the model:
+
 ```sh
 $ roslaunch img_recognition inference.launch
 ```
+
 In this example, when you see the information below, means ROSKY can recognition the object you want!
 
 > ...
@@ -155,9 +170,11 @@ In this example, when you see the information below, means ROSKY can recognition
 > ...
 
 You can listen the topic to see what object to recognitize by typing the code in another terminal:
+
 ```sh
 $ rostopic echo /[$hostname]/inference_model/inference
 ```
+
 Note: [$hostname] is your hostname on ROSKY, package img_recognition will auto-use the hostname to register the node name. In this example, the hostname is "rosk01". And then you can see the information on terminal:
 
 > labels: [free, blocked]
@@ -181,19 +198,27 @@ Store the X, Y values of this green dot along with the image from the robot's ca
 ## Step1. Data collection
 
 We use dynamic configure to adjust parameter about (x, y). Please type your code in the new terminal bellow:
+
 ```sh
 $ roslaunch road_following display_xy.launch
 ```
+
 Great! Let's start to collect data about road. You can start "another computer" and running ROS across multiple machines then type the code below:
+
 ```sh
 $ rosrun rqt_image_view rqt_image_view image:=/[$hostname]/display_xy/image/raw/draw_xy_line
 ```
+
 Then you can see the image from camera. There will a line on the image. If not, please select your topic:  /[$hostname]/display_xy/image/raw/draw_xy_line
+
 Note: [$hostname] is your hostname on ROSKY.
+
 Next, open another terminal and type the code below"
+
 ```sh
 $ rosrun rqt_reconfigure rqt_reconfigure
 ```
+
 Then you can see the window "rqt_reconfigure__Param". Select "display_xy" from left function table, you can see five parametesr. There are introducations below:
 
 * X:  to compute an approximate steering value wiht "Y"
@@ -212,9 +237,11 @@ Befor training the model, we'll configure the parameter about the model. Please 
 Note: Now we just support the model struct is "resnet18". And please check out the save_model_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/road_following/model ]. If your model name is repeat, system will auto add time after your model name.  
 
 When you finished modified parameter about training model, you can type the code below to train model:
+
 ```sh
 $ roslaunch road_following train_model.launch
 ```
+
 In this example, information is:
 
 > [INFO] [1614051323.337509]: [/rosky01/train_model]  Initializing train_model.py......
@@ -239,9 +266,11 @@ Before inferencing the model, we need to modify the param in [ ../catkin_ws/src/
 Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/road_following/model ].    
 
 And then, you can type the code below to start inferencing the model and let ROSKY to move:
+
 ```sh
 $ roslaunch road_following inference.launch reaction"=true
 ```
+
 In this example, when you see the information below, means ROSKY can find the lane!
 
 > ...
@@ -253,9 +282,11 @@ In this example, when you see the information below, means ROSKY can find the la
 > ...
 
 You can listen the topic to see what message in another terminal:
+
 ```sh
 $ rostopic echo /[$hostname]/road_model_inference/inference
 ```
+
 Note: [$hostname] is your hostname on ROSKY
 
 > angle: 1.4863204277
@@ -263,9 +294,11 @@ Note: [$hostname] is your hostname on ROSKY
 > angle_last: 1.4863204277
 
 Awesome! Now you can start "another computer", and open new Terminal for typing the code below to adjust the parameter for PID controller:
+
 ```sh
 $ rosrun rqt_reconfigure rqt_reconfigure
 ```
+
 You can select "road_inference_to_reaction" from left function table, then you can see the five parameter. There are the introducations below:
 
 * speed_gain: to start ROSKY increase speed_gain_slider
@@ -279,13 +312,17 @@ If you want to stop the code, remember use pressing [ctrl] + [c] in any terminal
 ----
 If you have finished package img_recognition and road_following, you can use package self_driving now.
 Place your ROSKY on your map with line and some obstacles, then you can type the code below:
+
 ```sh
 $ roslaunch self_driving inference.launch reaction:=true
 ```
+
 After deploy model, ROSKY will start! You also can use the code below to adjust the parameter:
+
 ```sh
 $ rosrun rqt_reconfigure rqt_reconfigure
 ```
+
 You can select "self_driving_inference_to_reaction" from left function table, then you can see the five parameter as the same as "road_inference_to_reaction".
 If you select the parameter "save_parameter", it will save in [../catkin_ws/src/deep_learning/road_following/param/$hostname_pid.yaml.]
 
