@@ -1,7 +1,7 @@
 # ROSKY
 
 <p align="center">
-  <img src="https://github.com/kjoelovelife/ROSKY/rosky.jpg"/>
+  <img src="https://github.com/kjoelovelife/ROSKY/blob/master/rosky.jpg" />
 </p>
 
 # Information
