@@ -1,4 +1,4 @@
-speed_gain: 0.85
+speed_gain: 0.0
 steering_bias: 0
 steering_gain: 0.2
 steering_kd: 0

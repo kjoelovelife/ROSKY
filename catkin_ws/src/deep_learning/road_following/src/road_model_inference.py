@@ -176,7 +176,7 @@ class Inference_Model_Node(object):
 
     def inference_information(self, interval):
         rospy.loginfo("[{}] Deployment complete! Use {:.2f} seconds.".format(self.node_name, interval))
-        rospy.loginfo("[{}] You can listen the topic to see how much the confidence about object: {}".format(self.node_name, self.node_name + "/inference"))
+        rospy.loginfo("[{}] You can listen the topic to see how much the angle of head between the lane: {}".format(self.node_name, self.node_name + "/inference"))
         rospy.loginfo("[{}] More information about {} :\n{}".format(self.node_name, self.model_name, self.recording[self.model_name]))
 
 
