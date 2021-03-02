@@ -20,6 +20,8 @@ else
 	echo "No hostname provided. Files name Use $HOSTNAME."
 
 fi
+
+#==== Set up kinematics ==== 
 echo ""
 echo "Setup parameter kinematics"
 if test -e ~/$path_kinematics/$file_name".yaml"; then
@@ -36,6 +38,8 @@ else
     echo "Add param kinematics with name \"$file_name\""
 fi
 
+
+#==== Set up keyboard_mapper_node ====
 echo ""
 echo "Setup parameter keyboard_mapper_node"
 if test -e ~/$path_keyboard_mapper_node/$file_name".yaml"; then
@@ -52,6 +56,7 @@ else
     echo "Add param keyboard_mapper_node with name \"$file_name\""
 fi
 
+#==== Set up camera_intrinsic ====
 echo ""
 echo "Setup parameter camera_intrinsic"
 if test -e ~/$path_camera_intrinsic/$file_name".yaml"; then
@@ -68,6 +73,7 @@ else
     echo "Add param camera_intrinsic with name \"$file_name\""
 fi
 
+#==== Set up camera_extrinsic ====
 echo ""
 echo "Setup parameter camera_extrinsic"
 if test -e ~/$path_camera_extrinsic/$file_name".yaml"; then
@@ -84,6 +90,7 @@ else
     echo "Add param camera_extrinsic with name \"$file_name\""
 fi
 
+#==== Set up camera_extrinsic ====
 echo ""
 echo "Setup parameter camera_info"
 if test -e ~/$path_camera_info/$file_name".yaml"; then
@@ -100,6 +107,7 @@ else
     echo "Add param camera_info with name \"$file_name\""
 fi
 
+#==== Set up decoder_node ====
 echo ""
 echo "Setup parameter decoder_node"
 if test -e ~/$path_decoder_node/$file_name".yaml"; then
@@ -116,6 +124,7 @@ else
     echo "Add param decoder_node with name \"$file_name\""
 fi
 
+#==== Set up line_detector ====
 echo ""
 echo "Setup parameter line_detector"
 if test -e ~/$path_line_detector/$file_name".yaml"; then
@@ -132,6 +141,7 @@ else
     echo "Add param line_detector with name \"$file_name\""
 fi
 
+#==== Set up lane_controller ====
 echo ""
 echo "Setup parameter lane_controller"
 if test -e ~/$path_lane_controller/$file_name".yaml"; then
@@ -147,6 +157,19 @@ else
     cp ~/$path_lane_controller/$default ~/$path_lane_controller/$file_name".yaml"
     echo "Add param lane_controller with name \"$file_name\""
 fi
+
+#==== Set up rviz ====
+if test -d ~/.rviz; then
+    echo ""
+else
+    echo "Make /home/$USER/.rviz"
+    mkdir /home/$USER/.rviz
+fi
+echo "Copy the \"/home/$USERNAME/ROSKY/catkin_ws/src/rosky_slam/rviz/default.rviz\" to /home/$USER/.rviz "
+cp /home/$USER/ROSKY/catkin_ws/src/rosky_slam/rviz/default.rviz /home/$USERNAME/.rviz/default.rviz
+
+
+
 echo ""
 echo "Finish setting up."
 echo ""
