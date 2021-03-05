@@ -27,8 +27,8 @@
 #
 # -------------------------------------------------------------------------
 
-git clone https://github.com/kjoelovelife -b neuron-pi
-sudo rm ominibot/rules
+#git clone https://github.com/kjoelovelife -b neuron-pi
+sudo rm /etc/udev/rules.d/ominibot.rules
 source ~/ROSKY/catkin_ws/src/ominibot_car/startup/initenv.sh
 sudo udevadm control --reload-rules
 sudo udevadm trigger 
