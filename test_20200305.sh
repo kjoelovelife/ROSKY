@@ -33,4 +33,8 @@ sudo cp ~/ROSKY/catkin_ws/src/ominibot_car/startup/ominibot_car.rules /etc/udev/
 sudo udevadm control --reload-rules
 sudo udevadm trigger 
 cd ~/ROSKY/catkin_ws && catkin_make
+source ~/ROSKY/setup/set_package_param.sh
+echo "source ~/ROSKY/setup/environment.sh" >> ~/.bashrc
+# roslaunch rosky_base teleop_keyboard.launch
+# roslaunch rosky_slam gmapping.launch
 
