@@ -29,7 +29,8 @@
 
 #git clone https://github.com/kjoelovelife -b neuron-pi
 sudo rm /etc/udev/rules.d/ominibot.rules
-source ~/ROSKY/catkin_ws/src/ominibot_car/startup/initenv.sh
+sudo cp ~/ROSKY/catkin_ws/src/ominibot_car/startup/ominibot_car.rules /etc/udev/rules.d
 sudo udevadm control --reload-rules
 sudo udevadm trigger 
+cd ~/ROSKY/catkin_ws && catkin_make
 
