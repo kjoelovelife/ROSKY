@@ -166,7 +166,7 @@ else
     mkdir /home/$USER/.rviz
 fi
 echo "Copy the \"/home/$USERNAME/ROSKY/catkin_ws/src/rosky_slam/rviz/default.rviz\" to /home/$USER/.rviz "
-cp /home/$USER/ROSKY/catkin_ws/src/rosky_slam/rviz/default.rviz /home/$USERNAME/.rviz/default.rviz
+cp /home/$USER/ROSKY/catkin_ws/src/rosky_slam/rviz/default.rviz /home/$USER/.rviz/default.rviz
 
 
 
