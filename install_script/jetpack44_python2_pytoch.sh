@@ -30,7 +30,7 @@ if [[ `id -u` -eq 0 ]] ; then
     echo "Do not run this with sudo (do not run random things with sudo!)." ;
     exit 1 ;
 fi
-
+sudo pip2 install future
 echo -n "Please enter your password: "
 read -s PASSWORD
 echo ""
