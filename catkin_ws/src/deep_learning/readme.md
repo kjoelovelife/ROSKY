@@ -41,7 +41,7 @@ First, we use packae img_recognition to recognitize object, such as traffic ligh
 Before collecting data, we need to make folder to save image. Open Terminal and use the code below to make folder:
 
 ```sh
-$ rosrun img_recognition mkdir.py -n "folder_name"
+$ rosrun img_recognition mkdir.py -n [folder_name]
 ```
 
 Note: In this example, we need replcae "folder_name" to "free" and "blocked". After do it, you can find two folders in [ ../catkin_ws/src/deep_learning/img_recognition/img ]. At the same time, you can check out the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ], it will be
@@ -55,7 +55,7 @@ Great! If you check out the folder_name is the same as content in image_label.ya
 Now, you can type the code below to start the launch file:
 
 ```sh
-$ roslaunch img_recognition save_image.launch label:="folder_name" 
+$ roslaunch img_recognition save_image.launch label:=[folder_name] 
 ```
 
 Note: the "folder_name" must be the same as one of you make before. In this example, will be the "free" or "blocked". Don't worry, you can change the "folder_name" while collecting data. 
@@ -63,7 +63,7 @@ Note: the "folder_name" must be the same as one of you make before. In this exam
 Also, the interval between taking picture default is 0.5 seconds.If you want to change the interval, you can type the code when start the file "save_image.launch":
 
 ```sh
-$ roslaunch img_recognition save_image.launch label:="folder_name" picture_interval:="time"
+$ roslaunch img_recognition save_image.launch label:=[folder_name] picture_interval:=[time]
 ```
 
 Note: unit of picture_interval is second.
