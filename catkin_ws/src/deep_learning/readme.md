@@ -19,15 +19,15 @@ This package is for Deep_Learning, rewrite the code below to build it.
 It contains three package:
 
 * img_recognition
--- can use [ROS service](http://wiki.ros.org/Services) to collect image, then train model and inference model. If you can, design the ROSKY motion after inference model.
+-- can use [ROS service](http://wiki.ros.org/Services) to collect image, then train inference model. If you can, design the ROSKY motion after inference model.
 * road_following
--- can use [ROS dynamic_reconfigure](http://wiki.ros.org/dynamic_reconfigure/Tutorials/HowToWriteYourFirstCfgFile) to adjist parameter for collecting image, then train model and inference model to recognitize line with color you want to follow.  
+-- can use [ROS dynamic_reconfigure](http://wiki.ros.org/dynamic_reconfigure/Tutorials/HowToWriteYourFirstCfgFile) to adjust parameter for collecting image, then train and inference model to recognitize line with color you want to follow. 
 * self_driving
--- combin package img_recognition and road_following, let ROSKY can run on the road with line and see 
+-- combin package img_recognition and road_following, let ROSKY can run on the road with line and see what is
 
 # Getting started
 ----
-Before using package self-driving, we need finished package img_recognition and road_following. In package img_recognition and road_following, we have three steps to do:
+Before using package self-driving, we need finish package img\_recognition and road\_following. In package img\_recognition and road\_following, we have three steps to do:
 1. Data collection
 2. training
 3. inference model and development
@@ -41,29 +41,29 @@ First, we use packae img_recognition to recognitize object, such as traffic ligh
 Before collecting data, we need to make folder to save image. Open Terminal and use the code below to make folder:
 
 ```sh
-$ rosrun img_recognition mkdir.py -n "folder_name"
+$ rosrun img\_recognition mkdir.py -n "folder_name"
 ```
 
-Note: In this example, we need replcae "folder_name" to "free" and "blocked". After do it, you can find two folders in [ ../catkin_ws/src/deep_learning/img_recognition/img ]. At the same time, you can check out the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ], it will be
+Note: In this example, we need replcae "folder\_name" to "free" and "blocked". After do it, you can find two folders in [ ../catkin_ws/src/deep_learning/img_recognition/img ]. At the same time, you can check out the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ], it will be
 
 > blocked: 0
 
 > free: 0
 
-Great! If you check out the folder_name is the same as content in image_label.yaml, you finished make folder to save image. The number in the image_label.yaml is the image number.
+Great! If you check out the folder\_name is the same as content in image\_label.yaml, you finished make folder to save image. The number in the image\_label.yaml is the image number.
 
 Now, you can type the code below to start the launch file:
 
 ```sh
-$ roslaunch img_recognition save_image.launch label:="folder_name" 
+$ roslaunch img\_recognition save\_image.launch label:="folder_name" 
 ```
 
-Note: the "folder_name" must be the same as one of you make before. In this example, will be the "free" or "blocked". Don't worry, you can change the "folder_name" while collecting data. 
+Note: the "folder\_name" must be the same as one of you make before. In this example, will be the "free" or "blocked". Don't worry, you can change the "folder_name" while collecting data. 
 
 Also, the interval between taking picture default is 0.5 seconds.If you want to change the interval, you can type the code when start the file "save_image.launch":
 
 ```sh
-$ roslaunch img_recognition save_image.launch label:="folder_name" picture_interval:="time"
+$ roslaunch img\_recognition save\_image.launch label:="folder\_name" picture_interval:="time"
 ```
 
 Note: unit of picture_interval is second.
@@ -86,40 +86,40 @@ if you start without error, will see the information:
 
 > [INFO] [1613979931.552938]: [/rosky01/save_image] [('blocked', 0), ('free', 0)]
 
-Great! We can save image now! Please take your object want to recognitize in fron of the camera. And then, open another new terminal and type the code below:
+Great! We can save image now! Please take your object want to recognitize in front of the camera. And then, open another new terminal and type the code below:
 
 ```sh
 $ rosservice call /[$hostname]/save_image/save_image_action -- true 
 ```
 
-Note: [$hostname] is your hostname on ROSKY, package img_recognition will auto-use the hostname to register the node name. In this example, the hostname is "rosk01", so you can see the [Info]... above is the [/rosky01/save_image].. . 
+Note: [$hostname] is your hostname on ROSKY, package img\_recognition will auto-use the hostname to register the node name. In this example, the hostname is "rosk01", so you can see the [Info]... above is the [/rosky01/save_image].. . 
 If taking picture successfully, you'll see the information in terminal "save_image.launch":
 
->[INFO] [1613980950.029004]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/image/free 
+>[INFO] [1613980950.029004]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin\_ws/src/deep\_learning/img_recognition/image/free 
 
->[INFO] [1613980950.529054]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin_ws/src/deep_learning/img_recognition/image/free
+>[INFO] [1613980950.529054]: [/rosky01/save_image] save image in /home/icshop/ROSKY/catkin\_ws/src/deep\_learning/img_recognition/image/free
 
-While taking picture, you should put the object in any angle and background, this will avoid the model be the "overfitting model".
+While taking picture, you should put the object in any angle and background, this will avoid the model be the "overfitting".
 
-if you want to stop taking picture, please type the code below in terminal can type code(not the terminal "save_image.launch"):
+if you want to stop taking picture, please type the code below in new terminal(not the terminal "save_image.launch"):
 
 ```sh
-$ rosservice call /[$hostname]/save_image/save_image_action -- false 
+$ rosservice call /[$hostname]/save\_image/save\_image\_action -- false 
 ```
 
-Please repeate the same steps to save image in another folder.
-When finished saving picture, please press [ctrl] + [c] in terminal "save_image.launch" to cancel the save_image.launch, and then you can see the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ].
+Please repeat the same steps to save image in another folder.
+When finished saving picture, please press [ctrl] + [c] in terminal "save\_image.launch" to cancel the save\_image.launch, and then you can see the content in [ ../catkin_ws/src/deep_learning/img_recognition/param/image_label.yaml ].
 
 ## Step2. Training
 
 Befor training the model, we'll configure the parameter about the model. Please check out and modify the file  [ ../catkin_ws/src/deep_learning/img_recognition/param/train_model.yaml ].
 
-Note: Now we just support the model struct is "alexnet". And please check out the save_model_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/img_recognition/model ]. If your model name is repeat, system will auto add time after your model name.  
+Note: Now we just support the model struct is "alexnet". And please check out the save\_model\_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/img_recognition/model ]. If your model name is repeat, system will auto add time after your model's name. 
 
 When you finished modified parameter about training model, you can type the code below to train model:
 
 ```sh
-$ roslaunch img_recognition train_model.launch
+$ roslaunch img\_recognition train\_model.launch
 ```
 
 In this example, information is:
@@ -151,7 +151,7 @@ Now you can find the trained model in [ ../catkin_ws/src/deep_learning/img_recog
 ## Step3. inference model and development
 
 Before inferencing the model, we need to modify the param in [ ../catkin_ws/src/deep_learning/img_recognition/param/inference_model.yaml ]. 
-Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/img_recognition/model ].    
+Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/img_recognition/model ]. 
 
 And then, you can type the code below to start inferencing the model:
 
@@ -193,7 +193,7 @@ Place the ROSKY in different positions on a path (offset from center, different 
 Remember from collision avoidance, data variation is key!
 
 Display the live camera feed from the robot
-Store the X, Y values of this green dot along with the image from the robot's camera    
+Store the X, Y values of this green dot along with the image from the robot's camera 
 
 ## Step1. Data collection
 
@@ -234,7 +234,7 @@ If you finish saved, please press [ctrl] + [c] in any terminal for closing corre
 
 Befor training the model, we'll configure the parameter about the model. Please check out and modify the file  [ ../catkin_ws/src/deep_learning/road_following/param/train_model.yaml ].
 
-Note: Now we just support the model struct is "resnet18". And please check out the save_model_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/road_following/model ]. If your model name is repeat, system will auto add time after your model name.  
+Note: Now we just support the model struct is "resnet18". And please check out the save_model_name, will not be the same as any model in [ ../catkin_ws/src/deep_learning/road_following/model ]. If your model name is repeat, system will auto add time after your model name.
 
 When you finished modified parameter about training model, you can type the code below to train model:
 
@@ -263,7 +263,7 @@ Now you can find the trained model in [ ../catkin_ws/src/deep_learning/road_foll
 ## Step3. inference model and development
 
 Before inferencing the model, we need to modify the param in [ ../catkin_ws/src/deep_learning/road_following/param/inference_model.yaml ]. 
-Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/road_following/model ].    
+Please check out the "model_pth", must be the same as one of the model in [ ../catkin_ws/src/deep_learning/road_following/model ]. 
 
 And then, you can type the code below to start inferencing the model and let ROSKY to move:
 
