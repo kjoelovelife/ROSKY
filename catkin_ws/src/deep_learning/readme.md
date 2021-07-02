@@ -14,7 +14,7 @@ This package is for Deep_Learning, rewrite the code below to build it.
 * python: 2.7
 * pytorch: 1.4.0
 
-# Package struct
+# Package information
 
 It contains three package:
 
