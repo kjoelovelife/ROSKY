@@ -4,7 +4,7 @@
 # Copyright (c) 2020, iCShop, Inc.
 # All rights reserved.
 #
-# Developer : Lin Wei-Chih , kjoelovelife@gmail.com , on 2020-12-22
+# Developer: Lin Wei-Chih, kjoelovelife@gmail.com, on 2020-12-22
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
