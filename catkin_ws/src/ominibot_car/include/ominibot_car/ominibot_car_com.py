@@ -37,7 +37,7 @@ from serial import Serial, SerialException
 from functools import reduce
 
 class Ominibot_Car(object):
-    def __init__(self,port="ominibot_car", baud=115200, timeout=None, py_version=3):
+    def __init__(self, port="ominibot_car", baud=115200, timeout=None, py_version=3):
         ## setup connected parameter
         self.version = self.__version__()
         self.param = {
@@ -47,7 +47,7 @@ class Ominibot_Car(object):
              "send_interval": 0.1,
              "imu_freq": 100,
              "encoder_freq": 25,
-             "battery_freq": 1 ,
+             "battery_freq": 1,
              "interrupt_time": 1.5,
              "motor_correct": (0, 0, 0, 0),
         }
@@ -69,8 +69,8 @@ class Ominibot_Car(object):
             return
         
         ###### auto return value ######
-        self.imu  = {"accel":[0, 0, 0] , "gyro":[0, 0, 0]}
-        self.imu_bfr  = {"accel":[0, 0, 0] , "gyro":[0, 0, 0]} 
+        self.imu  = {"accel":[0, 0, 0], "gyro":[0, 0, 0]}
+        self.imu_bfr  = {"accel":[0, 0, 0], "gyro":[0, 0, 0]} 
         self.odom = [0, 0, 0, 0]
         self.odom_bfr = [0, 0, 0, 0]
         self.battery = [0, 0, 0]
@@ -188,7 +188,7 @@ class Ominibot_Car(object):
                 break
 
             #====== imu data packet (python3) ======#
-            if reading[0] == self.respond["auto_head"] and reading[1] == self.respond["auto_gyro"] :
+            if reading[0] == self.respond["auto_head"] and reading[1] == self.respond["auto_gyro"]:
                 #ser_in = self.serial.read(13)
                 try:
                     ser_in = self.serial.read(13)
@@ -209,7 +209,7 @@ class Ominibot_Car(object):
                 except Exception:
                     self.error_flag = True
                     break
-                self.odom_decode(ser_in,7)
+                self.odom_decode(ser_in, 7)
                 self._is_synced = True
             
             #====== battery data packet ======#
@@ -220,7 +220,7 @@ class Ominibot_Car(object):
                 except Exception:
                     self.error_flag = True
                     break
-                self.battery_decode(ser_in,5)
+                self.battery_decode(ser_in, 5)
                 self._is_synced = True
 
             #====== lost sync ======#
@@ -264,13 +264,13 @@ class Ominibot_Car(object):
     ###### Decode imu data ######
     def imu_decode(self, data, size):
         # reference: https://docs.python.org/3/library/struct.html
-        self.imu_bfr["accel"][0] = struct.unpack('>h', data[0:2])[0]
-        self.imu_bfr["accel"][1] = struct.unpack('>h', data[2:4])[0]
-        self.imu_bfr["accel"][2] = struct.unpack('>h', data[4:6])[0]
-        self.imu_bfr["gyro"][0] = struct.unpack('>h', data[6:8])[0]
-        self.imu_bfr["gyro"][1] = struct.unpack('>h', data[8:10])[0]
-        self.imu_bfr["gyro"][2] = struct.unpack('>h', data[10:12])[0]
-        self.imu_seq = struct.unpack('>B', data[12:13])[0]
+        self.imu_bfr["accel"][0] = struct.unpack('>h', data[0: 2])[0]
+        self.imu_bfr["accel"][1] = struct.unpack('>h', data[2: 4])[0]
+        self.imu_bfr["accel"][2] = struct.unpack('>h', data[4: 6])[0]
+        self.imu_bfr["gyro"][0] = struct.unpack('>h', data[6: 8])[0]
+        self.imu_bfr["gyro"][1] = struct.unpack('>h', data[8: 10])[0]
+        self.imu_bfr["gyro"][2] = struct.unpack('>h', data[10: 12])[0]
+        self.imu_seq = struct.unpack('>B', data[12: 13])[0]
         #debug
         #print("imu",self.imu_seq)
         self.imu = self.imu_bfr
@@ -279,11 +279,11 @@ class Ominibot_Car(object):
     ###### Decode odometry data ######
     def odom_decode(self, data, size):
         # reference: https://docs.python.org/3/library/struct.html
-        self.odom_bfr[0] = struct.unpack('>h', data[0:2])[0]
-        self.odom_bfr[1] = struct.unpack('>h', data[2:4])[0]
-        self.odom_bfr[2] = struct.unpack('>h', data[4:6])[0]
-        self.odom_bfr[3] = struct.unpack('>h', data[6:8])[0]
-        self.odom_seq = struct.unpack('>B', data[8:9])[0]
+        self.odom_bfr[0] = struct.unpack('>h', data[0: 2])[0]
+        self.odom_bfr[1] = struct.unpack('>h', data[2: 4])[0]
+        self.odom_bfr[2] = struct.unpack('>h', data[4: 6])[0]
+        self.odom_bfr[3] = struct.unpack('>h', data[6: 8])[0]
+        self.odom_seq = struct.unpack('>B', data[8: 9])[0]
         #debug
         #print("odom", self.odom_seq, self.odom[0:4])
         if (self.odom_seq != ((self.last_odom_seq + 1 )%256)):
@@ -298,9 +298,9 @@ class Ominibot_Car(object):
     ###### Decode battery data ######
     def battery_decode(self, data, size):
         # reference: https://docs.python.org/3/library/struct.html
-        self.battery_bfr[0] = struct.unpack('>h', data[0:2])[0]
-        self.battery_bfr[1] = struct.unpack('>h', data[2:4])[0]
-        self.battery_seq = struct.unpack('B', data[4:5])[0]
+        self.battery_bfr[0] = struct.unpack('>h', data[0: 2])[0]
+        self.battery_bfr[1] = struct.unpack('>h', data[2: 4])[0]
+        self.battery_seq = struct.unpack('B', data[4: 5])[0]
 
         #debug
         #print("battery, voltage:{}, power:{}".format(self.battery_bfr[0], self.battery_bfr[1]))
@@ -317,29 +317,29 @@ class Ominibot_Car(object):
     ###### read data 1byte decode ######
     def read_data_decode_1byte(self, param_name, data, size):
         for number in range(size):
-            self.system_value[param_name][number] = struct.unpack('B', data[ number :(number + 1) ])[0]
+            self.system_value[param_name][number] = struct.unpack('B', data[ number: (number + 1) ])[0]
         return self.system_value[param_name]
 
     ###### read data 2byte decode ######
     def read_data_decode_2byte(self, param_name, data, size):
         for number in range(int(size/2)):
-            self.system_value[param_name][number] = struct.unpack('>H', data[ int((number * 2)) : int(math.pow(2, number+1)) ])[0]
+            self.system_value[param_name][number] = struct.unpack('>H', data[ int((number * 2)): int(math.pow(2, number+1)) ])[0]
         return self.system_value[param_name]
 
     ###### read system mode decode ######
     def system_mode_decode(self, data, size):
         for number in range(size):
-            self.system_value["system_mode"][number] = struct.unpack('B', data[ number :(number + 1) ])[0] 
+            self.system_value["system_mode"][number] = struct.unpack('B', data[ number: (number + 1) ])[0] 
 
     ###### read motor voltage decode ######
     def motor_voltage_decode(self, data, size):
-        self.system_value["motor_voltage"][0] = struct.unpack('>H', data[0:2])[0]
-        self.system_value["motor_voltage"][1] = struct.unpack('>H', data[2:4])[0]
+        self.system_value["motor_voltage"][0] = struct.unpack('>H', data[0: 2])[0]
+        self.system_value["motor_voltage"][1] = struct.unpack('>H', data[2: 4])[0]
 
     ###### read motor voltage decode ######
     def cutoff_voltage_decode(self, data, size):
-        self.system_value["cutoff_voltage"][0] = struct.unpack('>H', data[0:2])[0]
-        self.system_value["cutoff_voltage"][1] = struct.unpack('>H', data[2:4])[0]
+        self.system_value["cutoff_voltage"][0] = struct.unpack('>H', data[0: 2])[0]
+        self.system_value["cutoff_voltage"][1] = struct.unpack('>H', data[2: 4])[0]
 
     ######## Module communication from outside ######
     def serialOK(self):
@@ -366,14 +366,14 @@ class Ominibot_Car(object):
         if self._odom_new_data == True:
             # data assign
             self._odom_new_data = False 
-            return {"seq":self.odom_seq, "pos_dt":self.odom}
+            return {"seq": self.odom_seq, "pos_dt": self.odom}
         else:
             return None
 
     def get_battery_data(self):
         if self._battery_new_data == True:
             self._battery_new_data = False
-            return {"seq":self.battery_seq, "battery":self.battery}
+            return {"seq": self.battery_seq, "battery": self.battery}
         else:
             None
 
@@ -396,7 +396,7 @@ class Ominibot_Car(object):
 
     def motor_correct(self, v1=0, v2=0, v3=0, v4=0, information=False, debug=False):
         self.param["motor_correct"] = (v1, v2 ,v3 ,v4)
-        if information == True :
+        if information == True:
             print("Your motor correct: {}".format(self.param["motor_correct"]))
 
     
@@ -404,9 +404,9 @@ class Ominibot_Car(object):
     def omnibot(self, Vx=0.0, Vy=0.0, Vz=0.0, information=False, debug=False, platform="omnibot"):
         # set direction
         function = {
-            "Vx": lambda V: 0 if V >= 0 else math.pow(2,2),
-            "Vy": lambda V: 0 if V >= 0 else math.pow(2,1),
-            "Vz": lambda V: 0 if V < 0 else math.pow(2,0),
+            "Vx": lambda V: 0 if V >= 0 else math.pow(2, 2),
+            "Vy": lambda V: 0 if V >= 0 else math.pow(2, 1),
+            "Vz": lambda V: 0 if V < 0 else math.pow(2, 0),
         } 
         direction = [
             function["Vx"](Vx),
@@ -421,8 +421,8 @@ class Ominibot_Car(object):
         cmd += struct.pack('>h', Vx) # 2-bytes , velocity for x axis 
         cmd += struct.pack('>h', Vy) # 2-bytes , velocity for y axis 
         cmd += struct.pack('>h', Vz)  # 2-bytes , velocity for z axis       
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
-        cmd += struct.pack('>b',direction)
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
+        cmd += struct.pack('>b', direction)
         if debug == True :
             print("send signal about {}: {} ".format(platform, binascii.hexlify(cmd)))
         if self._serialOK == True:       
@@ -433,13 +433,13 @@ class Ominibot_Car(object):
         self.omnibot(Vx=Vx, Vy=Vy, Vz=Vz, platform="mecanum")
 
     def individual_wheel(self, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03,  information=False, debug=False):
-        ## mode : 0x02 -> with encoder, 0x03 -> without encoder 
-        ## setting up reverse , left motors are normal direction, right motors are reverse direction 
+        ## mode: 0x02 -> with encoder, 0x03 -> without encoder 
+        ## setting up reverse, left motors are normal direction, right motors are reverse direction 
         function = {
-            "v1": lambda V: math.pow(2,2) if V < 0 else 0,
-            "v2": lambda V: math.pow(2,1) if V < 0 else 0,
-            "v3": lambda V: math.pow(2,0) if V < 0 else 0,
-            "v4": lambda V: math.pow(2,3) if V < 0 else 0,
+            "v1": lambda V: math.pow(2, 2) if V < 0 else 0,
+            "v2": lambda V: math.pow(2, 1) if V < 0 else 0,
+            "v3": lambda V: math.pow(2, 0) if V < 0 else 0,
+            "v4": lambda V: math.pow(2, 3) if V < 0 else 0,
         }
         direction = [
             function["v1"](v1),
@@ -465,11 +465,11 @@ class Ominibot_Car(object):
         ## setting up wheel velocity
         cmd = bytearray(b'\xFF\xFE')
         cmd.append(mode)
-        cmd += struct.pack('>h',speed["v1"])  # 2-bytes
-        cmd += struct.pack('>h',speed["v2"])   # 2-bytes
-        cmd += struct.pack('>h',speed["v3"])  # 2-bytes
-        cmd += struct.pack('>h',speed["v4"])   # 2-bytes     
-        cmd += struct.pack('>b',direction) # 1-bytes 
+        cmd += struct.pack('>h', speed["v1"])  # 2-bytes
+        cmd += struct.pack('>h', speed["v2"])   # 2-bytes
+        cmd += struct.pack('>h', speed["v3"])  # 2-bytes
+        cmd += struct.pack('>h', speed["v4"])   # 2-bytes     
+        cmd += struct.pack('>b', direction) # 1-bytes 
         if debug == True :
             print("send signal about individual_wheel: {} ".format(binascii.hexlify(cmd)))
         if self._serialOK == True:       
@@ -478,17 +478,17 @@ class Ominibot_Car(object):
 
     def rosky_diff_drive(self, left=0.0, right=0.0, alpha=-1, mode=0x02, magnification=1, information=False, debug=False):
         # mode : 0x02 -> with encoderm 0x03 -> without encoder
-        # V1 : rf, V2 : lf, V3 : rb, V4 : lb
+        # V1: rf, V2: lf, V3: rb, V4: lb
         speed_limit = {
             "max": 100 if mode == 0x02 else 10000,
             "min":0,
         }
         left = left if mode == 0x03 else left * alpha
         right = right if mode == 0x03 else right * alpha
-        ## setting up reverse , left motors are normal direction, right motors are reverse direction 
+        ## setting up reverse, left motors are normal direction, right motors are reverse direction 
         function = {
-            "right": lambda V: math.pow(2,0) + math.pow(2,2)  if V < 0 else 0,
-            "left" : lambda V: 0 if V < 0 else math.pow(2,1) + math.pow(2,3),
+            "right": lambda V: math.pow(2, 0) + math.pow(2, 2)  if V < 0 else 0,
+            "left" : lambda V: 0 if V < 0 else math.pow(2, 1) + math.pow(2, 3),
         }
         direction = [
             function["right"](right),
@@ -581,8 +581,8 @@ class Ominibot_Car(object):
             "motor_voltage": 0x0B,
             "battery_voltage": 0x0C,
         }
-        item_value_byte_2 = ["speed_limit", "location_limit", "gyro_correct","motor_voltage"]
-        item_value_byte_4 = ["location_kp","location_ki","location_kd","speed_kp","speed_ki","gyro_compensate","system_mode","location_kp"]
+        item_value_byte_2 = ["speed_limit", "location_limit", "gyro_correct", "motor_voltage"]
+        item_value_byte_4 = ["location_kp", "location_ki", "location_kd", "speed_kp", "speed_ki", "gyro_compensate", "system_mode", "location_kp"]
         item_value_2      = ["battery_voltage"]
         if param_name in item:
             Tx4 = item.get(param_name)
@@ -622,7 +622,7 @@ class Ominibot_Car(object):
         self.set_mode_B(param_name="location_limit", value_1=int(location), information=information, debug=debug)
     
     def set_location_PID(self, controller, gain, information=False, debug=False):
-        _controller = ["kp","ki","kd"]
+        _controller = ["kp", "ki", "kd"]
         if controller in _controller:
             if controller == "kp":
                 param_name = "location_kp"
@@ -636,7 +636,7 @@ class Ominibot_Car(object):
         self.set_mode_B(param_name=param_name, value_1=int(gain), information=information, debug=debug)
 
     def set_speed_PI(self, controller, gain, information=False, debug=False):
-        _controller = ["kp","ki"]
+        _controller = ["kp", "ki"]
         if controller in _controller:
             if controller == "kp":
                 param_name = "speed_kp"
@@ -661,12 +661,12 @@ class Ominibot_Car(object):
     #================================================
     def set_system_mode(self, information=False, debug=False, platform=None, vehicle=0, imu_correct=False, imu_axis_correct=False, motor_reverse=False, encoder_reverse=False, turn_reverse=False, imu_reverse=False): 
         _platform = {
-                "omnibot":0,
-                "mecanum":1,
-                "four_wheel":2,
+                "omnibot": 0,
+                "mecanum": 1,
+                "four_wheel": 2,
             }
         if platform in _platform.keys():
-            vehicle = _platform.get( platform , 0 )
+            vehicle = _platform.get(platform, 0 )
         else:
             if platform == None:
                 print("Please choose platform: {} ".format(list(_platform)))
@@ -677,12 +677,12 @@ class Ominibot_Car(object):
                 return
         calculate={
             "vehicle"       : lambda setting : setting,
-            "imu"           : lambda setting : 0 if setting == False else math.pow(2,3),
-            "imu_axis"      : lambda setting : 0 if setting == False else math.pow(2,4),
-            "motor_direct"  : lambda setting : 0 if setting == False else math.pow(2,8),
-            "encoder_direct": lambda setting : 0 if setting == False else math.pow(2,9),
-            "turn_direct"   : lambda setting : 0 if setting == False else math.pow(2,10),
-            "imu_direct"    : lambda setting : 0 if setting == False else math.pow(2,11),
+            "imu"           : lambda setting : 0 if setting == False else math.pow(2, 3),
+            "imu_axis"      : lambda setting : 0 if setting == False else math.pow(2, 4),
+            "motor_direct"  : lambda setting : 0 if setting == False else math.pow(2, 8),
+            "encoder_direct": lambda setting : 0 if setting == False else math.pow(2, 9),
+            "turn_direct"   : lambda setting : 0 if setting == False else math.pow(2, 10),
+            "imu_direct"    : lambda setting : 0 if setting == False else math.pow(2, 11),
         }  
         mode = [
             calculate["vehicle"](vehicle),
@@ -747,7 +747,7 @@ class Ominibot_Car(object):
         # send signal      Tx0 Tx1 Tx2 Tx3 
         cmd = bytearray(b'\xFF\xFE\x80\x80') 
         cmd.append(Tx4)    # Tx4
-        for index in range(5,10,1): # Tx5 ~ Tx9
+        for index in range(5, 10, 1): # Tx5 ~ Tx9
             cmd.append(0x00)
         if debug == True :
             print("send signal about {}: {} ".format(param_name, binascii.hexlify(cmd)))
