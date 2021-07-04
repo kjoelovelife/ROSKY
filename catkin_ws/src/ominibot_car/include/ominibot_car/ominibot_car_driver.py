@@ -4,7 +4,7 @@
 # Copyright (c) 2020, iCShop, Inc.
 # All rights reserved.
 #
-# Developer : Lin Wei-Chih , kjoelovelife@gmail.com , on 2020-02-04
+# Developer: Lin Wei-Chih, kjoelovelife@gmail.com, on 2020-02-04
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -33,18 +33,18 @@
 
 ## import library
 import numpy as np
-import time , struct ,binascii ,math
-from serial import Serial , SerialException
+import time, struct, binascii, math
+from serial import Serial, SerialException
 
 
 class ominibot_car:
-    def __init__(self,port,baud):
+    def __init__(self, port, baud):
 
         ## setup connected parameter
         self.param = {}
         self.param["device_port"] = port
         self.param["baudrate"]    = baud
-        self.imu_decode = {"accel":[0,0,0] , "gyro":[0,0,0]} 
+        self.imu_decode = {"accel": [0,0,0], "gyro":[0,0,0]} 
         self.odom_decode = [0,0,0]
         self.odom_seq = 0
         self.cmd_decode = [0 ,0 ,0]
@@ -56,7 +56,7 @@ class ominibot_car:
     def connect(self):
         print("Try to connect the Smart Robot")
         try:
-            self.device = Serial(self.param["device_port"] , self.param["baudrate"] )
+            self.device = Serial(self.param["device_port"], self.param["baudrate"] )
             self.read_system_mode()
             self.read_system_mode()
             self.connected = True
@@ -75,27 +75,27 @@ class ominibot_car:
       
         speed = bytearray(b'\xFF\xFE')
         speed.append(0x01)
-        speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), 0, 65536 ) ) # 2-bytes , velocity for x axis 
-        speed += struct.pack('>h',self.clamp( abs(veh_cmd[0]), 0, 65536 ))  # 2-bytes , velocity for y axis 
-        speed += struct.pack('>h',self.clamp( abs(veh_cmd[2]), 0, 65536 ))  # 2-bytes , velocity for z axis 
+        speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), 0, 65536 ))  # 2-bytes, velocity for x axis 
+        speed += struct.pack('>h',self.clamp( abs(veh_cmd[0]), 0, 65536 ))  # 2-bytes, velocity for y axis 
+        speed += struct.pack('>h',self.clamp( abs(veh_cmd[2]), 0, 65536 ))  # 2-bytes, velocity for z axis 
 
         # set direction
         direction_x = 0
         direction_y = 0
         direction_z = 0         
  
-        if veh_cmd[0] >= 0 :
+        if veh_cmd[0] >= 0:
             direction_y = 0
         else :
-            direction_y = math.pow(2,1)
-        if veh_cmd[2] >= 0 :
-            direction_z = math.pow(2,0)
+            direction_y = math.pow(2, 1)
+        if veh_cmd[2] >= 0:
+            direction_z = math.pow(2, 0)
         else :
             direction_z = 0
 
         direction = direction_x + direction_y + direction_z
         
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
         speed += struct.pack('>b',direction)  
             
         # debug
@@ -126,7 +126,7 @@ class ominibot_car:
         direction = direction_y + direction_z
         print("Direction : {}".format(direction))
         
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
         speed += struct.pack('>b',direction)  
         # debug
         print(binascii.hexlify(speed))
@@ -138,7 +138,7 @@ class ominibot_car:
 
         self.param["motor_axis_width"]  = 0.13 #(m)
         self.param["motor_axis_length"] = 0.14 #(m)
-        self.param["turn_radius"] = 0.2  # (m)
+        self.param["turn_radius"] = 0.2  #(m)
         # under parameter use turning right
         self.param["V4_turn_radius"] = self.param["turn_radius"] - ( self.param["motor_axis_width"] / 2  )
         self.param["V3_turn_radius"] = self.param["turn_radius"] + ( self.param["motor_axis_width"] / 2  )
@@ -150,24 +150,24 @@ class ominibot_car:
         min_speed = 0
         speed = bytearray(b'\xFF\xFE')
         speed.append(0x02)
-        # V1 = left_front , V2 = right_front , V3 = left_back , V4 = right_back
+        # V1 = left_front, V2 = right_front, V3 = left_back, V4 = right_back
         if veh_cmd[1] >= 0 :
-            reverse = math.pow(2,3) + math.pow(2,1)
+            reverse = math.pow(2, 3) + math.pow(2, 1)
             if veh_cmd[2] == 0:    # go forward and do not turn
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V1
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V2
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V3
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V4
+                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes, velocity for V1
+                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes, velocity for V2
+                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes, velocity for V3
+                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes, velocity for V4
             else:
                 if veh_cmd[2] < 0: # go forward and turn right
                     V4 = self.clamp(int(abs( ( self.param["V4_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 4500 )
                     V3 = self.clamp(int(abs( ( self.param["V3_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 8900 )
                     V2 = self.clamp(int(abs( ( self.param["V2_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 6500 )
                     V1 = self.clamp(int(abs( ( self.param["V1_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , max_speed )
-                    speed += struct.pack('>h',V1)  # 2-bytes , velocity for V1
-                    speed += struct.pack('>h',V2)  # 2-bytes , velocity for V2
-                    speed += struct.pack('>h',V3)  # 2-bytes , velocity for V3
-                    speed += struct.pack('>h',V4)  # 2-bytes , velocity for V4
+                    speed += struct.pack('>h', V1)  # 2-bytes , velocity for V1
+                    speed += struct.pack('>h', V2)  # 2-bytes , velocity for V2
+                    speed += struct.pack('>h', V3)  # 2-bytes , velocity for V3
+                    speed += struct.pack('>h', V4)  # 2-bytes , velocity for V4
                 else:              # go back and turn left
                     V4 = self.clamp(int(abs( ( self.param["V3_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 4500 )
                     V3 = self.clamp(int(abs( ( self.param["V4_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 8900 )
@@ -177,37 +177,37 @@ class ominibot_car:
                     speed += struct.pack('>h',self.clamp( V2, min_speed, max_speed ))  # 2-bytes , velocity for V2
                     speed += struct.pack('>h',self.clamp( V3, min_speed, max_speed ))  # 2-bytes , velocity for V3
                     speed += struct.pack('>h',self.clamp( V4, min_speed, max_speed ))  # 2-bytes , velocity for V4
-                print(" left_front: {} , right_front: {} , left_back: {} , right_back: {}  ".format(V1,V2,V3,V4) )
+                print(" left_front: {} , right_front: {} , left_back: {} , right_back: {}  ".format(V1, V2, V3, V4) )
         else:                     
-            reverse = math.pow(2,2) + math.pow(2,0)
+            reverse = math.pow(2, 2) + math.pow(2, 0)
             if veh_cmd[2] == 0:    # go back and do not turn 
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V1
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V2
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V3
-                speed += struct.pack('>h',self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V4
+                speed += struct.pack('>h', self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V1
+                speed += struct.pack('>h', self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V2
+                speed += struct.pack('>h' ,self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V3
+                speed += struct.pack('>h' ,self.clamp( abs(veh_cmd[1]), min_speed, max_speed ))  # 2-bytes , velocity for V4
             else:
                 if veh_cmd[2] < 0: # go back and turn right
                     V4 = self.clamp(int(abs( ( self.param["V4_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 4500 )
                     V3 = self.clamp(int(abs( ( self.param["V3_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 8900 )
                     V2 = self.clamp(int(abs( ( self.param["V2_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 6500 )
                     V1 = self.clamp(int(abs( ( self.param["V1_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , max_speed )
-                    speed += struct.pack('>h',self.clamp( V1, min_speed, max_speed ))  # 2-bytes , velocity for V1
-                    speed += struct.pack('>h',self.clamp( V2, min_speed, max_speed ))  # 2-bytes , velocity for V2
-                    speed += struct.pack('>h',self.clamp( V3, min_speed, max_speed ))  # 2-bytes , velocity for V3
-                    speed += struct.pack('>h',self.clamp( V4, min_speed, max_speed ))  # 2-bytes , velocity for V4
+                    speed += struct.pack('>h', self.clamp( V1, min_speed, max_speed ))  # 2-bytes , velocity for V1
+                    speed += struct.pack('>h', self.clamp( V2, min_speed, max_speed ))  # 2-bytes , velocity for V2
+                    speed += struct.pack('>h', self.clamp( V3, min_speed, max_speed ))  # 2-bytes , velocity for V3
+                    speed += struct.pack('>h', self.clamp( V4, min_speed, max_speed ))  # 2-bytes , velocity for V4
                 else:              # go back and turn left
                     V4 = self.clamp(int(abs( ( self.param["V3_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 4500 )
                     V3 = self.clamp(int(abs( ( self.param["V4_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 8900 )
                     V2 = self.clamp(int(abs( ( self.param["V1_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , 6500 )
                     V1 = self.clamp(int(abs( ( self.param["V2_turn_radius"] / self.param["velocity_function_Denominator"] ) * veh_cmd[2] * math.cos(self.param["turn_angle"])  )) + abs(veh_cmd[1]), min_speed , max_speed )
-                    speed += struct.pack('>h',self.clamp( V1, min_speed, max_speed ))  # 2-bytes , velocity for V1
-                    speed += struct.pack('>h',self.clamp( V2, min_speed, max_speed ))  # 2-bytes , velocity for V2
-                    speed += struct.pack('>h',self.clamp( V3, min_speed, max_speed ))  # 2-bytes , velocity for V3
-                    speed += struct.pack('>h',self.clamp( V4, min_speed, max_speed ))  # 2-bytes , velocity for V4
-                print(" left_front: {} , right_front: {} , left_back: {} , right_back: {}  ".format(V1,V2,V3,V4))
+                    speed += struct.pack('>h', self.clamp( V1, min_speed, max_speed ))  # 2-bytes , velocity for V1
+                    speed += struct.pack('>h', self.clamp( V2, min_speed, max_speed ))  # 2-bytes , velocity for V2
+                    speed += struct.pack('>h', self.clamp( V3, min_speed, max_speed ))  # 2-bytes , velocity for V3
+                    speed += struct.pack('>h', self.clamp( V4, min_speed, max_speed ))  # 2-bytes , velocity for V4
+                print(" left_front: {}, right_front: {}, left_back: {}, right_back: {} ".format(V1, V2, V3, V4))
           
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
-        speed += struct.pack('>b',reverse)  
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
+        speed += struct.pack('>b, reverse)  
         # debug
         print(binascii.hexlify(speed))
         if self.connected == True:       
@@ -221,25 +221,25 @@ class ominibot_car:
         fricition_limit = 400
         speed = bytearray(b'\xFF\xFE')
         speed.append(0x02)
-        # V1 = left_front , V2 = right_front , V3 = left_back , V4 = right_back
-        if veh_cmd[1] >= 0 :
+        # V1 = left_front, V2 = right_front, V3 = left_back, V4 = right_back
+        if veh_cmd[1] >= 0:
             self.Vel_car = int(abs(veh_cmd[1] + veh_cmd[2]) + fricition_limit)
             if veh_cmd[2] == 0:
-                reverse = math.pow(2,3) + math.pow(2,1)
+                reverse = math.pow(2, 3) + math.pow(2, 1)
             elif veh_cmd[2] > 0 :
-                reverse = math.pow(2,3) + math.pow(2,2) + math.pow(2,1) + math.pow(2,0)          
+                reverse = math.pow(2, 3) + math.pow(2, 2) + math.pow(2, 1) + math.pow(2, 0)          
             else:
                 reverse = 0
         else :
             self.Vel_car = int(abs(veh_cmd[1] + veh_cmd[2]) + fricition_limit)
-            reverse = math.pow(2,2) + math.pow(2,0)     
-        speed += struct.pack('>h',self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes , velocity for V1
-        speed += struct.pack('>h',self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes , velocity for V2
-        speed += struct.pack('>h',self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes , velocity for V3
-        speed += struct.pack('>h',self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes , velocity for V4         
+            reverse = math.pow(2, 2) + math.pow(2, 0)     
+        speed += struct.pack('>h', self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes, velocity for V1
+        speed += struct.pack('>h', self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes, velocity for V2
+        speed += struct.pack('>h', self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes, velocity for V3
+        speed += struct.pack('>h', self.clamp( self.Vel_car, min_speed, max_speed ))  # 2-bytes, velocity for V4         
        
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
-        speed += struct.pack('>b',reverse)  
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
+        speed += struct.pack('>b', reverse)  
         # debug
         print(binascii.hexlify(speed))
         if self.connected == True:       
@@ -247,43 +247,43 @@ class ominibot_car:
             print("Reverse: {}".format(reverse))
 
     # Knight_car Use
-    def TT_motor_knightcar(self, left=0.0,right=0.0):
+    def TT_motor_knightcar(self, left=0.0, right=0.0):
         max_speed = 5000
         min_speed = 0
-        reverse = { "right":0,"left":0,"value":0 }
+        reverse = { "right": 0, "left": 0, "value": 0 }
         fricition_limit = 0
         limit = 20000
 
-        #print("left motor : {} , right motor : {}\n".format( left , right ))
+        #print("left motor: {}, right motor: {}\n".format(left, right ))
 
-        ## setting up reverse , left motors are normal direction, right motors are reverse direction 
+        ## setting up reverse, left motors are normal direction, right motors are reverse direction 
         if right > 0:
-            reverse["right"] = math.pow(2,0) + math.pow(2,2)
+            reverse["right"] = math.pow(2, 0) + math.pow(2, 2)
         else :
             reverse["right"] = 0
         if left > 0:
             reverse["left"] =  0
         else :
-            reverse["left"] = math.pow(2,1) + math.pow(2,3)
+            reverse["left"] = math.pow(2, 1) + math.pow(2, 3)
 
         reverse["value"] = int(reverse["left"] + reverse["right"])
-        #print("Direction : {}".format(reverse))
+        #print("Direction: {}".format(reverse))
 
         ## setting up wheel velocity
-        left  = self.clamp(int( abs( (left  * limit) + fricition_limit ) ), min_speed, max_speed)
-        right = self.clamp(int( abs( (right * limit) + fricition_limit ) ), min_speed, max_speed)
-        #print(" right_speed : {} , left_speed : {} ".format( right,left ) )
+        left  = self.clamp(int(abs((left  * limit) + fricition_limit)), min_speed, max_speed)
+        right = self.clamp(int(abs((right * limit) + fricition_limit)), min_speed, max_speed)
+        #print("right_speed: {} , left_speed: {} ".format(right, left ) )
         
 
         speed = bytearray(b'\xFF\xFE')
         speed.append(0x02)
-        speed += struct.pack('>H',right)  # 2-bytes , velocity for V1lsusb
-        speed += struct.pack('>H',left)  # 2-bytes , velocity for V2
-        speed += struct.pack('>H',right)  # 2-bytes , velocity for V3
-        speed += struct.pack('>H',left)  # 2-bytes , velocity for V4    
+        speed += struct.pack('>H', right)  # 2-bytes, velocity for V1lsusb
+        speed += struct.pack('>H', left)  # 2-bytes, velocity for V2
+        speed += struct.pack('>H', right)  # 2-bytes, velocity for V3
+        speed += struct.pack('>H', left)  # 2-bytes, velocity for V4    
         
-        # 1-bytes , direction for x(bit2) ,y(bit1) ,z(bit0) ,and 0 : normal , 1 : reverse
-        speed += struct.pack('>B',reverse["value"])  
+        # 1-bytes, direction for x(bit2), y(bit1), z(bit0), and 0: normal, 1: reverse
+        speed += struct.pack('>B', reverse["value"])  
         # debug
         #print(binascii.hexlify(speed))
         if self.connected == True:       
@@ -292,14 +292,14 @@ class ominibot_car:
             time.sleep(0.01)
 
 
-    def set_speed_limit(self , speed_limit):
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+    def set_speed_limit(self, speed_limit):
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x01) # Tx[4]
         cmd.append(0x00) # Tx[5]
         cmd.append(0x00) # Tx[6]
-        cmd += struct.pack('>h',self.clamp( abs(speed_limit), 0, 65536 )) # Tx[7] , Tx[8] 
+        cmd += struct.pack('>h', self.clamp(abs(speed_limit), 0, 65536)) # Tx[7], Tx[8] 
         cmd.append(0x00) # Tx[9]
         if self.connected == True:       
             self.device.write(cmd)
@@ -307,7 +307,7 @@ class ominibot_car:
             self.read_speed_limit()
 
     def read_speed_limit(self):
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x11) # Tx[4]
@@ -319,14 +319,14 @@ class ominibot_car:
         if self.connected == True:       
             self.device.write(cmd)
             respond = []
-            for index in range(1,7,1):
+            for index in range(1, 7, 1):
                 respond.append(binascii.hexlify(self.device.read(1)))
             #respond = self.device.readlines()
-            print("System mode : {}" .format(respond))
+            print("System mode : {}".format(respond))
 
 
     def load_setting(self):
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x00) # Tx[4]
@@ -340,7 +340,7 @@ class ominibot_car:
             print("OmniboardV12 load setting!!")
 
     def load_initial(self):
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x00) # Tx[4]
@@ -354,7 +354,7 @@ class ominibot_car:
             print("Initialize OmniboradV12.")
 
     def write_setting(self):
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x00) # Tx[4]
@@ -365,63 +365,63 @@ class ominibot_car:
         cmd.append(0x00) # Tx[9]
         if self.connected == True:       
             self.device.write(cmd)
-            print("Omniboard writing setting and don't do anything , include shutdown the power , it will take 20 seconds ....... ")
+            print("Omniboard writing setting and don't do anything, include shutdown the power, it will take 20 seconds.......")
             time.sleep(20)
             print("You can restart OmniboardV12 now!")
 
 
     # set system node ==============================
-    # vehicle       (Bit0)  : 0 -> omnibot   ; 1 -> Mecanum ; 2 --> encoder , angle param and no imu(1C) ; 3 --> encoder , no angle parameter and no imu(1D) ; 
-    #                         4 -->  no encoder , angle param , and no imu(1D) ; 5 --> no encoder , no angle parameter , and no imu(1D)
-    # imu           (Bit3)  : 0 -> not to do , 1 -> do it
-    # imu_axis      (Bit4)  : 0 -> not to do , 1 -> do it
-    # return_encoder(Bit6)  : 0 -> not to do , 1 -> do it
-    # command       (Bit7)  : 0 -> control   , 1 -> APP
-    # motor_direct  (Bit8)  : 0 -> normal    , 1 -> reverse
-    # encoder_direct(Bit9)  : 0 -> normal    , 1 -> reverse
-    # turn_direct   (Bit10) : 0 -> normal    , 1 -> reverse
-    # imu_reverse   (Bit11) : 0 -> normal    , 1 -> reverse    
+    # vehicle       (Bit0)  : 0 -> omnibot   ;1 -> Mecanum; 2 --> encoder, angle param and no imu(1C); 3 --> encoder, no angle parameter and no imu(1D) ; 
+    #                         4 --> no encoder, angle param, and no imu(1D); 5 --> no encoder, no angle parameter, and no imu(1D)
+    # imu           (Bit3)  : 0 -> not to do, 1 -> do it
+    # imu_axis      (Bit4)  : 0 -> not to do, 1 -> do it
+    # return_encoder(Bit6)  : 0 -> not to do, 1 -> do it
+    # command       (Bit7)  : 0 -> control  , 1 -> APP
+    # motor_direct  (Bit8)  : 0 -> normal   , 1 -> reverse
+    # encoder_direct(Bit9)  : 0 -> normal   , 1 -> reverse
+    # turn_direct   (Bit10) : 0 -> normal   , 1 -> reverse
+    # imu_reverse   (Bit11) : 0 -> normal   , 1 -> reverse    
     #================================================
-    def set_system_mode(self,vehicle=0,imu=0,imu_axis=0,return_encoder=0,command=0,motor_direct=0,encoder_direct=0,turn_direct=0,imu_reverse=0):      
+    def set_system_mode(self, vehicle=0, imu=0, imu_axis=0, return_encoder=0, command=0, motor_direct=0, encoder_direct=0, turn_direct=0, imu_reverse=0):      
         # calculate
-        key_word = ["vehicle","imu","imu_axis","return_encoder","command","motor_direct","encoder_direct","turn_direct","imu_reverse"]
-        parameter= [vehicle,imu,imu_axis,return_encoder,command,motor_direct,encoder_direct,turn_direct,imu_reverse]
+        key_word = ["vehicle", "imu", "imu_axis", "return_encoder", "command", "motor_direct", "encoder_direct", "turn_direct", "imu_reverse"]
+        parameter= [vehicle, imu, imu_axis, return_encoder, command, motor_direct, encoder_direct, turn_direct, imu_reverse]
         calculate= {}  
         calculate["vehicle"]            = lambda setting : setting
-        calculate["imu"]                = lambda setting : 0 if setting == 0 else math.pow(2,3)  
-        calculate["imu_axis"]           = lambda setting : 0 if setting == 0 else math.pow(2,4)
-        calculate["return_encoder"]     = lambda setting : 0 if setting == 0 else math.pow(2,6)
-        calculate["command"]            = lambda setting : 0 if setting == 0 else math.pow(2,7)
-        calculate["motor_direct"]       = lambda setting : 0 if setting == 0 else math.pow(2,8)
-        calculate["encoder_direct"]     = lambda setting : 0 if setting == 0 else math.pow(2,9)
-        calculate["turn_direct"]        = lambda setting : 0 if setting == 0 else math.pow(2,10)
-        calculate["imu_reverse"]        = lambda setting : 0 if setting == 0 else math.pow(2,11)
+        calculate["imu"]                = lambda setting : 0 if setting == 0 else math.pow(2, 3)  
+        calculate["imu_axis"]           = lambda setting : 0 if setting == 0 else math.pow(2, 4)
+        calculate["return_encoder"]     = lambda setting : 0 if setting == 0 else math.pow(2, 6)
+        calculate["command"]            = lambda setting : 0 if setting == 0 else math.pow(2, 7)
+        calculate["motor_direct"]       = lambda setting : 0 if setting == 0 else math.pow(2, 8)
+        calculate["encoder_direct"]     = lambda setting : 0 if setting == 0 else math.pow(2, 9)
+        calculate["turn_direct"]        = lambda setting : 0 if setting == 0 else math.pow(2, 10)
+        calculate["imu_reverse"]        = lambda setting : 0 if setting == 0 else math.pow(2, 11)
         mode = 0
         for index in range(len(key_word)):
-             mode += calculate[ key_word[index] ](parameter[index])
+             mode += calculate[key_word[index]](parameter[index])
         print(mode)
-        cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
+        cmd = bytearray(b'\xFF\xFE') # Tx[0], Tx[1]
         cmd.append(0x80) # Tx[2]
         cmd.append(0x80) # Tx[3]
         cmd.append(0x09) # Tx[4]
         cmd.append(0x00) # Tx[5]
         cmd.append(0x00) # Tx[6]
-        cmd += struct.pack('>h',int(mode)) # Tx[7] ,Tx[8]
+        cmd += struct.pack('>h', int(mode)) # Tx[7], Tx[8]
         print("Omniboard write setting!")
         cmd.append(0x00) # Tx[9]
         if self.connected == True:       
             self.device.write(cmd)
-            print("Send to omniboardV12 : {} ".format(binascii.hexlify(cmd)))
+            print("Send to omniboardV12: {} ".format(binascii.hexlify(cmd)))
 
     def read_system_mode(self):
         cmd = bytearray(b'\xFF\xFE\x80\x80\x19\x00\x00\x00\x00\x00')
         if self.connected == True:       
             self.device.write(cmd)
             respond = []
-            for index in range(1,7,1):
+            for index in range(1, 7, 1):
                 respond.append(binascii.hexlify(self.device.read(1)))
             #respond = self.device.readlines()
-            print("System mode : {}" .format(respond))
+            print("System mode: {}".format(respond))
 
     def read_imu(self):
         cmd = bytearray(b'\xFF\xFE') # Tx[0] , Tx[1]
@@ -436,10 +436,10 @@ class ominibot_car:
         if self.connected == True:       
             self.device.write(cmd)
             respond = []
-            for index in range(1,25,1):
+            for index in range(1, 25, 1):
                 respond.append(binascii.hexlify(self.device.read(1)))
             #respond = self.device.readlines()
-            #print("System mode : {}" .format(respond))
+            #print("System mode: {}" .format(respond))
             self.imu_decode["accel"][0] = struct.unpack('>h',respond[2:4])[0]
             self.imu_decode["accel"][1] = struct.unpack('>h',respond[6:8])[0]
             self.imu_decode["accel"][2] = struct.unpack('>h',respond[10:12])[0]
@@ -454,17 +454,17 @@ if __name__ == '__main__':
         baud = 115200
 
         # Setup publishers
-        robot = smart_robotV12(port,baud)
+        robot = smart_robotV12(port, baud)
         robot.connect()
         for i in range(2):
-            robot.set_system_mode(vehicle=3,imu=0,
-                                        imu_axis=0,return_encoder=0,
-                                        command=0,motor_direct=0,
-                                        encoder_direct=0,turn_direct=0,
+            robot.set_system_mode(vehicle=3, imu=0,
+                                        imu_axis=0, return_encoder=0,
+                                        command=0, motor_direct=0,
+                                        encoder_direct=0, turn_direct=0,
                                         imu_reverse=0)
             time.sleep(0.5)
         robot.read_system_mode()
-        robot.TT_motor_knightcar(left=0.1,right=0.1)
+        robot.TT_motor_knightcar(left=0.1, right=0.1)
         time.sleep(1)
-        robot.TT_motor_knightcar(left=-0.1,right=-0.1) 
+        robot.TT_motor_knightcar(left=-0.1, right=-0.1) 
 
