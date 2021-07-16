@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 current_ip=$(hostname -I | awk '{print $1}')
-hardware=$(uname -i)
+hardware=$(uname -r)
 echo "========================================================"
 echo "Setting ROS_MASTER_URI..."
 if [ $# -gt 0 ]; then
@@ -15,7 +15,7 @@ echo "ROS_MASTER_URI set to $ROS_MASTER_URI"
 echo ""
 
 #==== set ROS_HOSTNAME ====
-if [ "$hardware" "==" "aarch64" ]; then
+if [ "$hardware" "==" "4.9.140-tegra" ]; then
     echo "You may use ROSKY on Jetson nano. If not, please checkout the ROS_HOSTNAME is right."
 else
     echo "Setting ROS_HOSTNAME..."
