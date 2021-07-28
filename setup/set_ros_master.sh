@@ -19,4 +19,4 @@ echo "Setting ROS_HOSTNAME..."
 export ROS_HOSTNAME=$current_ip
 echo "ROS_HOSTNAME set to $current_ip"
 
-echo "==== End ===="
+echo "======== End ========"
