@@ -14,13 +14,9 @@ fi
 echo "ROS_MASTER_URI set to $ROS_MASTER_URI"
 echo ""
 
-#==== set ROS_HOSTNAME ====
-if [ "$hardware" "==" "4.9.140-tegra" ]; then
-    echo "You may use ROSKY on Jetson nano. If not, please checkout the ROS_HOSTNAME is right."
-else
-    echo "Setting ROS_HOSTNAME..."
-    export ROS_HOSTNAME=$current_ip
-    echo "ROS_HOSTNAME set to $current_ip"
-fi
+# set ROS_HOSTNAME
+echo "Setting ROS_HOSTNAME..."
+export ROS_HOSTNAME=$current_ip
+echo "ROS_HOSTNAME set to $current_ip"
 
 echo "========================================================"
