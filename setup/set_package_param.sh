@@ -90,40 +90,6 @@ else
     echo "Add param camera_extrinsic with name \"$file_name\""
 fi
 
-#==== Set up camera_extrinsic ====
-echo ""
-echo "Setup parameter camera_info"
-if test -e ~/$path_camera_info/$file_name".yaml"; then
-    echo -n "You already have the parameter about camera_info, do you want to reset it? (y/N): "
-    read reset
-    if [[ "$reset" == "y" ]] || [[ "$reset" == "Y" ]]; then
-        cp ~/$path_camera_info/$default ~/$path_camera_info/$file_name".yaml"
-        echo "Reset param camera_info."
-    else
-        echo "Skip set param camera_info."
-    fi
-else
-    cp ~/$path_camera_info/$default ~/$path_camera_info/$file_name".yaml"
-    echo "Add param camera_info with name \"$file_name\""
-fi
-
-#==== Set up decoder_node ====
-echo ""
-echo "Setup parameter decoder_node"
-if test -e ~/$path_decoder_node/$file_name".yaml"; then
-    echo -n "You already have the parameter about decoder_node, do you want to reset it? (y/N): "
-    read reset
-    if [[ "$reset" == "y" ]] || [[ "$reset" == "Y" ]]; then
-        cp ~/$path_decoder_node/$default ~/$path_decoder_node/$file_name".yaml"
-        echo "Reset param decoder_node."
-    else
-        echo "Skip set param decoder_node."
-    fi
-else
-    cp ~/$path_decoder_node/$default ~/$path_decoder_node/$file_name".yaml"
-    echo "Add param decoder_node with name \"$file_name\""
-fi
-
 #==== Set up line_detector ====
 echo ""
 echo "Setup parameter line_detector"
