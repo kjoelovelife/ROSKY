@@ -1,0 +1,31 @@
+<launch>
+    <!-- Turtlesim Node-->
+    <arg name="pkg_name" default="practice"/>
+    <node pkg="turtlesim" type="turtlesim_node" name="sim"/>
+    <node pkg="turtlesim" type="turtle_teleop_key" name="teleop" output="screen"/>
+    
+    <!-- Arg -->
+    <arg name="turtlesim2" default="false"/>
+    <arg name="add_frame" default="false"/>
+    <arg name="fixed_frame" default="false"/>
+    
+    
+    <group if="$(arg turtlesim2)"> 
+        <node pkg="$(arg pkg_name)" type="turtle_tf_listener.py" name="listener" />
+    </group>
+    <node name="turtle1_tf_broadcaster" pkg="$(arg pkg_name)" type="turtle_tf_broadcaster.py" respawn="false" output="screen" >
+      <param name="turtle" type="string" value="turtle1" />
+    </node>
+    <node name="turtle2_tf_broadcaster" pkg="$(arg pkg_name)" type="turtle_tf_broadcaster.py" respawn="false" output="screen" >
+      <param name="turtle" type="string" value="turtle2" /> 
+    </node>
+
+    <group if="$(arg fixed_frame)">
+        <node pkg="$(arg pkg_name)" type="fixed_tf_broadcaster.py" name="broadcaster_fixed" />
+    </group>
+
+    <group if="$(arg add_frame)"> 
+        <node pkg="tf" type="static_transform_publisher" name="carrot1_2_turtle1" args="2.0 0.0 0.0 3.1415927 0.0  0.0 /carrot1 /turtle1 40" />
+    </group>
+
+  </launch>
