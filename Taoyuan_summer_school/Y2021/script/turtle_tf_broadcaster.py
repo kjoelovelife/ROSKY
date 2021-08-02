@@ -1,6 +1,4 @@
-#!/usr/bin/env python3  
-import roslib
-roslib.load_manifest('practice')
+#!/usr/bin/env python
 import rospy, time
 
 import tf
