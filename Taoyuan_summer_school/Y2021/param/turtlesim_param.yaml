@@ -1,0 +1,9 @@
+turtlesim1:
+    sim: 
+        background_b: 255
+        background_g: 255
+        background_r: 0
+
+/turtlesim2/sim/background_b: 255
+/turtlesim2/sim/background_g: 0
+/turtlesim2/sim/background_r: 255

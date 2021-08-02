@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <arg name="ns_1" default="turtlesim1" doc="namescape of turtlesim 1."/>
+    <arg name="ns_2" default="turtlesim2"/>
+    <arg name="pkg_name" default="turtlesim"/>
+
+    <group ns="$(arg ns_1)">
+        <node pkg="$(arg pkg_name)" name="sim" type="turtlesim_node">
+            <param name="background_b" type="int" value="0"/>
+        </node>
+        <node pkg="$(arg pkg_name)" name="teleop" type="turtle_teleop_key" output="screen"/>
+    </group>
+
+    <group ns="$(arg ns_2)">
+        <remap from="turtle1/cmd_vel" to="/$(arg ns_1)/turtle1/cmd_vel"/>
+        <node pkg="$(arg pkg_name)" name="sim" type="turtlesim_node">
+            <param name="background_r" type="int" value="255"/>
+        </node>
+    </group>
+
+</launch>
+
+
