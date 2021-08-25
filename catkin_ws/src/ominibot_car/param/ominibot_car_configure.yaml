@@ -1,9 +1,4 @@
 
 board_name: ominibot_car
-baud: 115200
-motor_encoder: false
-### motor encoder false: speed range between 0 and 10000
-### motor encoder true: speed range between 0 and 100 
-### motor port  V1    V2    V3    V4          
-motor_correct: [0, 0, 0, 0] 
-
+baud: 115200   
+wheel: mecanum

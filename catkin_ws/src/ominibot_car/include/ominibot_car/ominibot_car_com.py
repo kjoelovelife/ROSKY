@@ -415,8 +415,8 @@ class Ominibot_Car(object):
         ]       
         direction = int(reduce(lambda add_x, add_y: add_x + add_y, direction)) 
         Vx = int(round(self.clamp( abs(Vx), 0, 65536 )))
-        Vy = int(round(self.clamp( abs(Vx), 0, 65536 )))
-        Vz = int(round(self.clamp( abs(Vx), 0, 65536 )))           
+        Vy = int(round(self.clamp( abs(Vy), 0, 65536 )))
+        Vz = int(round(self.clamp( abs(Vz), 0, 65536 )))           
         cmd = bytearray(b'\xFF\xFE\x01')
         cmd += struct.pack('>h', Vx) # 2-bytes , velocity for x axis 
         cmd += struct.pack('>h', Vy) # 2-bytes , velocity for y axis 
@@ -430,7 +430,7 @@ class Ominibot_Car(object):
             time.sleep(self.param["send_interval"])
     
     def mecanum(self, Vx=0.0, Vy=0.0, Vz=0.0):
-        self.omnibot(Vx=Vx, Vy=Vy, Vz=Vz, platform="mecanum")
+        self.omnibot(Vx=Vx, Vy=Vy, Vz=-Vz, platform="mecanum")
 
     def individual_wheel(self, v1=0.0, v2=0.0, v3=0.0, v4=0.0, mode=0x03,  information=False, debug=False):
         ## mode: 0x02 -> with encoder, 0x03 -> without encoder 
@@ -666,7 +666,7 @@ class Ominibot_Car(object):
                 "four_wheel": 2,
             }
         if platform in _platform.keys():
-            vehicle = _platform.get(platform, 0 )
+            vehicle = _platform.get(platform, 0)
         else:
             if platform == None:
                 print("Please choose platform: {} ".format(list(_platform)))
@@ -841,7 +841,7 @@ if __name__ == '__main__':
     #ominibot.__version__(information=True)
     #ominibot.set_battery_voltage(cut=11.1, information=True)
     #ominibot.read_battery_voltage(information=True)
-    #motor_driver.set_cutoff_voltage(11.1)
+    #ominibot.set_battery_voltage(10.1)
     #motor_driver.set_motor_voltage(7.4)
     #ominibot.gyro_compensate(switch="off", information=True, debug=True)
 
@@ -873,18 +873,20 @@ if __name__ == '__main__':
 
     ###### motor control example ######
 
-    #ominibot.set_system_mode(platform="omnibot")
+    ominibot.set_system_mode(platform="mecanum")
     start = time.time()
-    end   = time.time()
-    interval = end - start
+    interval = 0
     while(interval< 10):
-        # left: left side, right: right side
-        # mode=0x02: with encode, mode=0x03: without encode
-        # ominibot.mecanum(-30,0,0) 
-        #ominibot.individual_wheel(30,0,0)
-        ominibot.motor_correct(2000, 2000, 3000, 3000)
-        ominibot.rosky_diff_drive(500, 500, mode=0x03)
-        end = time.time()
-        interval = end - start
+        interval = time.time() - start
+        if interval < 3:
+            speed = [0, 0, 100]
+        elif interval > 3 and interval < 7:
+            speed = [0, 0, -100]
+        else:
+            speed = [0, 0, 100]
+        ominibot.mecanum(speed[0], speed[1], speed[2])
+        
+    ominibot.mecanum(0, 0, 0)
+    ominibot.disconnect()
 
 

@@ -11,24 +11,30 @@
     </group>
 
     <!-- keyboard_mapper -->
-    <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="cmd_vel"/>
+    <remap from="/$(arg veh)/keyboard_mapper_node/cmd_vel" to="/$(arg veh)/cmd_vel"/>
     <include file="$(find mapper)/launch/keyboard_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>
 
-    <!-- run inverse_kinematics_node -->
-    <remap from="inverse_kinematics_node/car_cmd" to="keyboard_mapper_node/car_cmd"/>
-    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
-    <include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="config" value="$(arg config)"/>
-    </include>
-
-
     <!-- Wheels Driver -->
+    <remap from="/$(arg veh)/wheels_driver_node/wheels_cmd" to="/$(arg veh)/keyboard_mapper_node/car_cmd"/>
     <include file="$(find ominibot_car)/launch/wheels_ominibot_driver_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>
 
 
 </launch>
+
+
+
+
+
+
+<!-- 
+    <remap from="inverse_kinematics_node/car_cmd" to="keyboard_mapper_node/car_cmd"/>
+    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+    <include file="$(find ominibot_car)/launch/inverse_kinematics_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+    </include>
+-->
