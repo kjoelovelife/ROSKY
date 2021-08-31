@@ -199,7 +199,7 @@ cd /$main_path/setup && python3 /$main_path/setup/create_jupyter_service.py
 echo $PASSWORD | sudo -S mv /$main_path/setup/jupyter.service /etc/systemd/system/jupyter.service
 
 #step 8. Install python3 dependencies
-sudo -H pip3 install -U jetson-stats
+sudo -H pip3 install -U jetson-stats ruamel.yaml
 
 
 #step 9. Active services
