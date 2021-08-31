@@ -95,7 +95,7 @@ else
     fi ### test build      
 fi ## test $L4T_VERSION_STRING
 
-#step 5. install ros dependencies	
+# step 5. install ros dependencies	
 echo $PASSWORD | sudo -S apt install -y \
         build-essential \
         cmake \
@@ -146,6 +146,7 @@ echo $PASSWORD | sudo -S apt install -y \
         python3-ipython \
         python3-sklearn \
         python3-smbus \
+        python3-serial \
         libmrpt-dev \
         libopencv-dev \
         mrpt-apps \
@@ -175,7 +176,7 @@ echo $PASSWORD | sudo -S apt install -y \
 
 echo $PASSWORD | sudo -S pip3 install rospkg catkin_pkg
 
-#step 6. Create the name "/dev/ydlidar" for YDLIDAR and "/dev/omnibot_car" for omnibot_car
+# step 6. Create the name "/dev/ydlidar" for YDLIDAR and "/dev/omnibot_car" for omnibot_car
 echo "Setup YDLidar X4 , and it information in /$main_path/catkin_ws/src/ydlidar/README.md."
 cd /$main_path/catkin_ws/src/ydlidar/startup
 echo $PASSWORD | sudo -S chmod 777 ./*
@@ -188,7 +189,7 @@ echo $PASSWORD | sudo -S sh initenv.sh
 echo $PASSWORD | sudo -S udevadm control --reload-rules
 echo $PASSWORD | sudo -S udevadm trigger
 
-#step 7. Install Jupyter Lab
+# step 7. Install Jupyter Lab
 sudo apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates 'gcc' g++ 'make'
 sudo pip3 install ipython pygments traitlets --upgrade
 sudo -H pip3 install -U jupyter jupyterlab
@@ -198,14 +199,18 @@ echo "c.ServerApp.password = '$passwd'" >> /home/$USER/.jupyter/jupyter_lab_conf
 cd /$main_path/setup && python3 /$main_path/setup/create_jupyter_service.py
 echo $PASSWORD | sudo -S mv /$main_path/setup/jupyter.service /etc/systemd/system/jupyter.service
 
-#step 8. Install python3 dependencies
+# step 8. Install python3 dependencies
 sudo -H pip3 install -U jetson-stats ruamel.yaml
 
 
-#step 9. Active services
+# step 9. Active services
 echo $PASSWORD | sudo systemctl restart jetson_stats.service
 echo $PASSWORD | sudo systemctl enable jupyter
 echo $PASSWORD | sudo systemctl start jupyter
+
+# step 10. build Symbolic Link
+echo $PASSWORD | sudo ln -s /usr/bin/python3 /usr/bin/python
+
 
 echo -e "\e[93mInstall done! Please reboot your machine to active services.\e[0m"
 

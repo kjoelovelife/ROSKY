@@ -6,9 +6,7 @@ from rosky_msgs.msg import  Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 import time
-from __builtin__ import True
-
-
+#from __builtin__ import True
 
 class keyboardMapper(object):
     def __init__(self):
