@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import sys , rospy ,cv2 ,time ,signal ,rospkg ,os.path , yaml , io ,thread
+import sys, rospy, cv2, time, signal, rospkg, os.path, yaml, io, _thread as thread 
 import numpy as np
-import camera_info_manager
+# import camera_info_manager
 from std_msgs.msg import String , Header
 from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 from sensor_msgs.srv import SetCameraInfo, SetCameraInfoResponse

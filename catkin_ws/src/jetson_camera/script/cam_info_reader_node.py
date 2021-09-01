@@ -58,8 +58,10 @@ class CamInfoReader(object):
         return value
 
     def loadCameraInfo(self, filename):
-        stream = file(filename, 'r')
-        calib_data = yaml.load(stream)
+        with open(filename) as stream:
+            calib_data = yaml.load(stream)
+        #stream = file(filename, 'r')
+        #calib_data = yaml.load(stream)
         cam_info = CameraInfo()
         cam_info.width = calib_data['image_width']
         cam_info.height = calib_data['image_height']
