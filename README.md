@@ -49,7 +49,7 @@ And then, you can start the Master Node through launching a file or running ```r
   <img src="https://github.com/kjoelovelife/ROSKY/blob/noetic/readme_resource/master_node.png" width=280 />
 </p>
 
-Open another terminal throught press [ctrl] + [shift] + [T] in the same terminal, then will open another terminal pagination.
+Open another terminal throught pressing [ctrl] + [shift] + [T] in the same terminal, then will open another terminal pagination.
 In this pagination, select option 3 to auto-start package ROS2-ROS1 bridge.
 
 <p align="center">
