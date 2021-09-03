@@ -32,8 +32,13 @@ read -s PASSWORD
 
 # set parameter
 ubuntu_distro=$(grep RELEASE /etc/lsb-release | awk -F '=' {'print $2'})
-install_source="install_scripts"
 main_path="home/$USER/ROSKY"
+install_source="install_scripts"
+setup="setup"
+setup_shell="setup/shell_scripts"
+setup_python="setup/python_scripts"
+
+
 ## ros information
 if [ $ubuntu_distro == '20.04' ]; then
     ros1_distro=noetic
@@ -65,21 +70,21 @@ echo $PASSWORD | sudo -S apt-get install git cmake
 # step 4. Install Jetson-inference
 ## reference: https://github.com/dusty-nv/jetson-inference
 ### test downloda source file
-if test -d /$main_path/setup/jetson-inference ;then
+if test -d /$main_path/$setup/jetson-inference ;then
     echo -e "\e[93mjetson-inference exist. Do not download again.\e[0m"
 else
-    git clone https://github.com/dusty-nv/jetson-inference /$main_path/setup/jetson-inference
+    git clone https://github.com/dusty-nv/jetson-inference /$main_path/$setup/jetson-inference
 fi ###test downloda source file
 
 ## test $L4T_VERSION_STRING
 if test -z "$L4T_VERSION_STRING" ;then
-    echo -e "\e[93mThere is not jetpack on this computer. Skip install jetson-inference\e[0m"
+    echo -e "\e[93mThere is no jetpack on this computer. Skip install jetson-inference\e[0m"
 else
-    cd /$main_path/setup/jetson-inference 
+    cd /$main_path/$setup/jetson-inference 
     git submodule update --init
 
     ### test build
-    if test -d /$main_path/setup/jetson-inference/build ;then
+    if test -d /$main_path/$setup/jetson-inference/build ;then
         echo -e "\e[93mPerhaps you had installed jetson-inference. If you want to re-install, please manual installing it.\e[0m"
     else
         ### build from source
@@ -196,8 +201,8 @@ sudo -H pip3 install -U jupyter jupyterlab
 jupyter lab --generate-config
 passwd=$(python3 -c "from notebook.auth import passwd; print(passwd('$PASSWORD'))")
 echo "c.ServerApp.password = '$passwd'" >> /home/$USER/.jupyter/jupyter_lab_config.py
-cd /$main_path/setup && python3 /$main_path/setup/create_jupyter_service.py
-echo $PASSWORD | sudo -S mv /$main_path/setup/jupyter.service /etc/systemd/system/jupyter.service
+python3 /$main_path/$setup/$setup_python/create_jupyter_service.py
+echo $PASSWORD | sudo -S mv /$main_path/$setup/$setup_python/jupyter.service /etc/systemd/system/jupyter.service
 
 # step 8. Install python3 dependencies
 sudo -H pip3 install -U jetson-stats ruamel.yaml
@@ -205,16 +210,18 @@ sudo -H pip3 install -U jetson-stats ruamel.yaml
 
 # step 9. Active services
 echo $PASSWORD | sudo systemctl restart jetson_stats.service
-echo $PASSWORD | sudo systemctl enable jupyter
-echo $PASSWORD | sudo systemctl start jupyter
+echo $PASSWORD | sudo systemctl enable jupyter.service
+echo $PASSWORD | sudo systemctl start jupyter.service
 
-# step 10. build Symbolic Link
+# setp 10. insert command to ~/ros_menu/config.,yaml
+pytohn3 /$main_path/$setup/$setup_python/config_ros_menu.py
+
+# step 11. build Symbolic Link
 echo $PASSWORD | sudo ln -s /usr/bin/python3 /usr/bin/python
-
 
 echo -e "\e[93mInstall done! Please reboot your machine to active services.\e[0m"
 
-cd /$main_path/install_script
+cd /$main_path/$install_source
 
 # None of this should be needed. Next time you think you need it, let me know and we figure it out. -AC
 # sudo pip install --upgrade pip setuptools wheel

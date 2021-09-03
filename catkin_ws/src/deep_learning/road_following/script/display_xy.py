@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import sys , rospy ,cv2 ,time ,signal ,rospkg ,os.path , yaml , io ,thread, datetime
+import sys , rospy ,cv2 ,time ,signal ,rospkg ,os.path , yaml , io ,_thread, datetime
 import numpy as np
 from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError

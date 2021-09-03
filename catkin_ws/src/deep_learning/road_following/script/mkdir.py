@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-import os , sys , argparse ,errno , yaml
+import os, sys, argparse,  errno
+from ruamel.yaml import YAML 
 import rospy
 
 
 class mkdir(object):
     
     def __init__(self):
+    
+        # set function
+        self.yaml = YAML()
+    
         self.package = "img_recognition"
         self.parser = argparse.ArgumentParser(description="Make a folder in ~/ROSKY/catkin_ws/src/" + self.package +"/image",epilog="save your image")
         self.parser.add_argument("--name" , "-n" , type=str,required=True,help="Please type you want the name of folder.")
@@ -16,6 +21,8 @@ class mkdir(object):
         action_1 = self.try_make(self.args.name)
         action_2 = self.read_param_from_file()
         action_3 = self.write_to_file(self.make,self.args.name)
+        
+
 
     def try_make(self,name):
         try:
@@ -33,8 +40,8 @@ class mkdir(object):
         fname = self.path + "/param/image_label.yaml"
         with open(fname, 'r') as in_file:
             try:
-                self.yaml_dict = yaml.load(in_file)
-            except yaml.YAMLError as exc:
+                self.yaml_dict = self.yaml.load(in_file)
+            except self.yaml.YAMLError as exc:
                 print(" YAML syntax error. File: {}".format(fname))
         if self.yaml_dict != None: 
             for label_name in self.yaml_dict:
