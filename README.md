@@ -11,8 +11,11 @@ Four wheels and ROS1 robot with Jetson nano 4G Developer kit.
 - Single Computer Board(SBD): Jetson Nano 4G Developer Kit
 - Operating System: [Xubuntu 20.04 Focal Fossa L4T R32.3.1](https://forums.developer.nvidia.com/t/xubuntu-20-04-focal-fossa-l4t-r32-3-1-custom-image-for-the-jetson-nano/121768)
 - Framework:
+
 -- Robot Operating System(ROS) - Noetic
+
 -- Robot Operating System 2(ROS2) - Foxy
+
 - Python: 3.8 
 
 ## Developer
