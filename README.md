@@ -61,5 +61,5 @@ Awesome! Now you can use ROS2 to communicate ROS1 package!
 There is a example on ROSKY: use ROS1 to run gmapping.launch, and then use ROS2 and rviz2 to get the map!
 
 <p align="center">
-  <img src="https://github.com/kjoelovelife/ROSKY/blob/noetic/readme_resource/ROS2_ROS1_bridge_example.png" width=280 />
+  <img src="https://github.com/kjoelovelife/ROSKY/blob/noetic/readme_resource/ROS2_ROS1_bridge_example.png"/>
 </p>
