@@ -1,123 +1,120 @@
 #!/usr/bin/env bash
 
-# Shell script scripts to install useful tools , such as opencv , pytorch...
+# Main installer for ROSKY. Prompts for which components to install, then
+# delegates to the individual scripts in install_script/.
 # -------------------------------------------------------------------------
-#Copyright © 2019 Wei-Chih Lin , kjoelovelife@gmail.com 
-
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
-
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
-
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
-# -------------------------------------------------------------------------
-# reference
-# https://chtseng.wordpress.com/2019/05/01/nvida-jetson-nano-%E5%88%9D%E9%AB%94%E9%A9%97%EF%BC%9A%E5%AE%89%E8%A3%9D%E8%88%87%E6%B8%AC%E8%A9%A6/
+# Copyright © 2019 Wei-Chih Lin, kjoelovelife@gmail.com
 #
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 # -------------------------------------------------------------------------
 
-## set parameter
+set -euo pipefail
 
-### ros information ###
+# ---------------------------------------------------------------------------
+# Parameters
+# ---------------------------------------------------------------------------
+
+### ROS ###
 ros1_distro="melodic"
-ros1_install_script="ros_install_"$ros1_distro".sh"
+ros1_install_script="ros_install_${ros1_distro}.sh"
 install_source="install_script"
 
-### hardware ###
+### Hardware detection ###
 platform="tegra"
 kernel=$(uname -a)
-shell=`echo $SHELL | awk -F '/' '{print $NF}'`
 
-### install package ###
-ros1=false
-rosky=false
-ssh_setup=false
+### Resolved paths ###
+# Assume the repo lives at ~/ROSKY (the expected install location).
+main_path="${HOME}/ROSKY"
 
-## file path
-main_path="ROSKY"
+### Install flags ###
+install_ros1=false
+install_rosky=false
+setup_ssh=false
 
-## Configure power mode
-if [[ $kernel =~ $platform ]] ; then
-    #echo $PASSWORD | sudo -S nvpmodel -m1 # 5W
-    echo $PASSWORD | sudo -S nvpmodel -m0 # 10W
-    echo $PASSWORD | sudo -S nvpmodel -q
+# ---------------------------------------------------------------------------
+# Jetson-specific: set max performance mode (10W)
+# ---------------------------------------------------------------------------
+if [[ $kernel =~ $platform ]]; then
+    sudo nvpmodel -m0  # 10W mode
+    sudo nvpmodel -q
 fi
 
-## setup msg
-msg="You install :"
-msg_ros=""
-msg_rosky=""
-msg_ssh=""
-
-## install ros
-echo -n "Do you want to install ROS automatically? (y/N): "
-read ros_install
-if [ "$ros_install" '==' "y" ] || [ "$ros_install" '==' "Y" ];
-then
-    # Install ROS 1 melodic
-    ros1=true
+# ---------------------------------------------------------------------------
+# Prompt for components
+# ---------------------------------------------------------------------------
+echo ""
+read -rp "Do you want to install ROS automatically? (y/N): " ros_answer
+if [[ "$ros_answer" == "y" || "$ros_answer" == "Y" ]]; then
+    install_ros1=true
 else
-    echo "Skip installing ROS"
+    echo "Skipping ROS installation."
 fi
 
-## install ROSKY-jetson_nano dependencies
-echo -n "Do you use ROSKY-jetson_nano and want to install dependenices? (y/N): "
-read ROSKY_jetson_nano
-if [ "$ROSKY_jetson_nano" '==' "y" ] || [ "$ROSKY_jetson_nano" '==' "Y" ];
-then
-    echo "Please check your internet , we'll download package."
-    echo "we suggest downloading all module for machine learning."
-    # Install jetson-inference
-    rosky=true
+read -rp "Do you use ROSKY-jetson_nano and want to install dependencies? (y/N): " rosky_answer
+if [[ "$rosky_answer" == "y" || "$rosky_answer" == "Y" ]]; then
+    echo "Ensure you have an internet connection — packages will be downloaded."
+    install_rosky=true
 else
-    echo "Skip installing ROSKY-jetson_nano dependencies"
+    echo "Skipping ROSKY Jetson Nano dependencies."
 fi
 
-
-## setup ssh
-echo -n "Do you want to setup ssh? (y/N): "
-read ssh_
-if [ "$ssh_" '==' "y" ] || [ "$ssh_" '==' "Y" ];
-then
-    # setup ssh
-    ssh_setup=true
+read -rp "Do you want to set up SSH? (y/N): " ssh_answer
+if [[ "$ssh_answer" == "y" || "$ssh_answer" == "Y" ]]; then
+    setup_ssh=true
 else
-    echo "Skip setup ssh."
-fi
-  
-echo "Do not leave your seat!! Some package you need to chek...."
-sleep 5s
-
-## which package install
-if [ $ros1 == true ] ; then
-    echo $PASSWORD | source ~/$main_path/$install_source/$ros1_install_script
-    msg_ros="ROS , version : $ros1_distro ."
+    echo "Skipping SSH setup."
 fi
 
-if [ $rosky == true ] ; then
-    echo $PASSWORD | source ~/$main_path/$install_source/rosky_jetson_nano_dependiences.sh
-    msg_rosky="ROSKY dependenices."
+echo ""
+echo "Starting installation — do not leave your seat, some steps require interaction."
+sleep 3
+
+# ---------------------------------------------------------------------------
+# Run selected install scripts
+# ---------------------------------------------------------------------------
+installed=()
+
+if [[ "$install_ros1" == true ]]; then
+    bash "${main_path}/${install_source}/${ros1_install_script}"
+    installed+=("ROS ${ros1_distro}")
 fi
 
-if [ $ssh_setup == true ] ; then
-    echo $PASSWORD | source ~/$main_path/$install_source/ssh_setup.sh
-    msg_ssh="SSH."
+if [[ "$install_rosky" == true ]]; then
+    bash "${main_path}/${install_source}/rosky_jetson_nano_dependiences.sh"
+    installed+=("ROSKY Jetson Nano dependencies")
 fi
 
-## install done
-echo $msg
-echo $msg_ros
-echo $msg_rosky
-echo $msg_ssh
+if [[ "$setup_ssh" == true ]]; then
+    bash "${main_path}/${install_source}/ssh_setup.sh"
+    installed+=("SSH")
+fi
 
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+echo ""
+if [[ ${#installed[@]} -eq 0 ]]; then
+    echo "Nothing was installed."
+else
+    echo "Installed:"
+    for item in "${installed[@]}"; do
+        echo "  - $item"
+    done
+fi
